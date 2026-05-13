@@ -34,4 +34,4 @@
     ?>
   </div>
 </header>
-<div class="pt-[76px]">
+<div class="min-w-0 max-w-full overflow-x-hidden pt-[76px]">

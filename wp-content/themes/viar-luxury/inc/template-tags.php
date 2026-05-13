@@ -78,7 +78,7 @@ function viar_render_editor_content(): void {
         return;
     }
     ?>
-    <section class="max-w-[1440px] mx-auto px-6 md:px-12 py-20 prose prose-slate max-w-none">
+    <section class="mx-auto w-full max-w-[1440px] min-w-0 overflow-x-hidden px-6 py-20 md:px-12 prose prose-slate">
         <?php echo apply_filters('the_content', $content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
     </section>
     <?php
@@ -116,7 +116,7 @@ function viar_render_editor_sections_page(?int $post_id = null): void {
     }
     ?>
     <main id="primary" class="site-main">
-        <section class="max-w-[1440px] mx-auto px-6 md:px-12 py-16 md:py-24 prose prose-slate max-w-none">
+        <section class="mx-auto w-full max-w-[1440px] min-w-0 overflow-x-hidden px-6 py-16 md:px-12 md:py-24 prose prose-slate">
             <?php echo apply_filters('the_content', $content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </section>
     </main>
