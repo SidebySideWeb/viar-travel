@@ -22,41 +22,39 @@ $viar_hero_cta_url = viar_field_value('viar_hero_cta_url', home_url('/contact'))
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-412940dffd89.jpg');
 $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri() . '/assets/images/remote-576fe30197aa.jpg');
 ?>
-<main class="site-main">
-<!-- Main Content Canvas -->
-<main class="pt-[100px]">
+<main class="site-main w-full max-w-full min-w-0 overflow-x-clip pt-[100px]">
 <!-- Hero Section: Narrative Intro -->
-<section class="px-12 py-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center">
-<div class="col-span-12 md:col-span-5 mb-16 md:mb-0">
+<section class="px-6 md:px-12 py-16 md:py-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center min-w-0">
+<div class="col-span-12 md:col-span-5 mb-16 md:mb-0 min-w-0">
 <span class="font-label-caps text-label-caps text-secondary mb-6 block"><?php echo esc_html($viar_hero_eyebrow); ?></span>
 <h1 class="font-headline-h1 text-headline-h1 text-primary-container mb-8"><?php echo esc_html($viar_hero_title); ?></h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-md"><?php echo esc_html($viar_hero_description); ?></p>
 </div>
-<div class="col-span-12 md:col-span-7">
-<div class="relative h-[600px] w-full overflow-hidden shadow-sm">
+<div class="col-span-12 md:col-span-7 min-w-0">
+<div class="relative h-[320px] md:h-[600px] w-full overflow-hidden shadow-sm">
 <img class="w-full h-full object-cover" data-alt="A cinematic, high-angle view of a minimalist luxury villa terrace overlooking the deep blue Aegean Sea in Santorini at dusk. The lighting is soft and golden, illuminating clean white architectural lines and a single crystal glass on a stone table. The atmosphere is serene and exclusive, emphasizing high-end Mediterranean travel and sophisticated tranquility." src="<?php echo esc_url($viar_hero_image); ?>"/>
 </div>
 </div>
 </section>
 <!-- Full Width Editorial Quote -->
-<section class="bg-surface-container-low py-40">
-<div class="max-w-[1000px] mx-auto px-12 text-center">
+<section class="bg-surface-container-low py-20 md:py-40">
+<div class="max-w-[1000px] mx-auto px-6 md:px-12 text-center min-w-0">
 <span class="material-symbols-outlined text-secondary text-5xl mb-12 block">format_quote</span>
-<blockquote class="font-display text-[42px] leading-tight italic text-primary-container mb-12">
+<blockquote class="font-display text-2xl sm:text-3xl md:text-[42px] leading-tight italic text-primary-container mb-12 break-words max-w-full">
                     "True luxury isn't found in the obvious; it is found in the silence of a private cove at dawn and the wisdom of a local artisan whose family has guarded secrets for centuries."
                 </blockquote>
 <cite class="font-label-caps text-label-caps text-secondary not-italic">— ELENI VASSILAKIS, FOUNDING PARTNER</cite>
 </div>
 </section>
 <!-- Narrative Content: Asymmetric Layout -->
-<section class="py-[120px] max-w-[1440px] mx-auto px-12 grid grid-cols-12 gap-y-32 gap-x-12">
+<section class="py-[120px] max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-12 gap-y-16 md:gap-y-32 gap-x-6 md:gap-x-12 min-w-0">
 <!-- Part 1 -->
-<div class="col-span-12 md:col-span-6 order-2 md:order-1">
+<div class="col-span-12 md:col-span-6 order-2 md:order-1 min-w-0">
 <div class="h-[700px] overflow-hidden">
 <img class="w-full h-full object-cover" data-alt="An intimate, low-key interior shot of a traditional yet refined stone dwelling in Mani, Greece. Soft natural light spills across a dark wooden table holding a bowl of fresh olives and a decanter of oil. The aesthetic is atmospheric minimalism, focusing on texture, heritage, and the quiet luxury of authentic Greek craftsmanship." src="<?php echo esc_url($viar_card_image); ?>"/>
 </div>
 </div>
-<div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-1 md:order-2">
+<div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-1 md:order-2 min-w-0">
 <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6">Unrivaled Access</h2>
 <p class="font-body-md text-body-md text-on-surface-variant mb-8">
                     Our network spans the length of the Hellenic peninsula, from the hidden vineyards of Nemea to the restricted monasteries of Meteora. We provide keys to gates that remain closed to the public, ensuring your journey is defined by intimacy rather than crowds.
@@ -73,14 +71,14 @@ $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri(
 </div>
 </div>
 <!-- Part 2 -->
-<div class="col-span-12 md:col-span-5 flex flex-col justify-center order-3">
+<div class="col-span-12 md:col-span-5 flex flex-col justify-center order-3 min-w-0">
 <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6">The Art of Consulting</h2>
 <p class="font-body-md text-body-md text-on-surface-variant mb-8">
                     We do not offer packages. Every itinerary starts with a dialogue. We listen to your preferences for light, pace, and gastronomy to construct a narrative that resonates with your personal identity. This is travel as a form of bespoke portraiture.
                 </p>
-<a class="font-cta text-cta text-secondary border-b border-secondary pb-1 w-max hover:opacity-70 transition-opacity" href="#">DISCOVER OUR PROCESS</a>
+<a class="font-cta text-cta text-secondary border-b border-secondary pb-1 inline-block max-w-full break-words hover:opacity-70 transition-opacity" href="#">DISCOVER OUR PROCESS</a>
 </div>
-<div class="col-span-12 md:col-span-6 md:col-start-7 order-4">
+<div class="col-span-12 md:col-span-6 md:col-start-7 order-4 min-w-0">
 <div class="h-[500px] overflow-hidden">
 <img class="w-full h-full object-cover" data-alt="A wide, cinematic landscape of the rolling hills of Crete during the golden hour. The lighting is warm and ethereal, casting long shadows across ancient olive groves and a winding dirt path. The color palette is dominated by ochre, sage green, and the deep blue of the distant horizon, evoking a sense of timelessness and curated exploration." src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/remote-b1b81a886280.jpg"/>
 </div>
@@ -88,11 +86,11 @@ $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri(
 </section>
 <!-- Meet our Consultants Section -->
 <section class="bg-[#F2F0ED] py-[120px]">
-<div class="max-w-[1440px] mx-auto px-12 text-center mb-20">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 text-center mb-20 min-w-0">
 <span class="font-label-caps text-label-caps text-secondary mb-4 block">THE CURATORS</span>
 <h2 class="font-headline-h2 text-headline-h2 text-primary">Meet Our Consultants</h2>
 </div>
-<div class="max-w-[1440px] mx-auto px-12 grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-12 min-w-0">
 <!-- Consultant 1 -->
 <div class="group cursor-pointer">
 <div class="aspect-[4/5] overflow-hidden mb-8 bg-white">
@@ -124,13 +122,12 @@ $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri(
 </section>
 <!-- Final CTA Section -->
 <section class="py-32 bg-primary-container text-white text-center">
-<div class="max-w-[800px] mx-auto px-12">
+<div class="max-w-[800px] mx-auto px-6 md:px-12 min-w-0">
 <h2 class="font-display text-4xl mb-8 italic">Ready to begin your narrative?</h2>
 <p class="font-body-lg mb-12 text-primary-fixed-dim">Join us for a private consultation to discuss your next Greek odyssey.</p>
 <a href="<?php echo esc_url($viar_hero_cta_url); ?>" class="bg-[#C5A059] text-[#00234B] font-cta text-cta px-10 py-5 uppercase tracking-widest hover:bg-white transition-colors duration-300 inline-block"><?php echo esc_html($viar_hero_cta_label); ?></a>
 </div>
 </section>
 <?php viar_render_editor_content(); ?>
-</main>
 </main>
 <?php get_footer(); ?>

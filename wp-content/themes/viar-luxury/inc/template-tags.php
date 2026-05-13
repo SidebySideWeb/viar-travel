@@ -78,7 +78,7 @@ function viar_render_editor_content(): void {
         return;
     }
     ?>
-    <section class="max-w-[1440px] mx-auto px-12 py-20 prose prose-slate max-w-none">
+    <section class="max-w-[1440px] mx-auto px-6 md:px-12 py-20 prose prose-slate max-w-none">
         <?php echo apply_filters('the_content', $content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
     </section>
     <?php

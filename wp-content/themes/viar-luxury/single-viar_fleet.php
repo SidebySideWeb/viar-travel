@@ -21,12 +21,12 @@ while (have_posts()) :
     $fleet_hero_image = viar_image_url('viar_fleet_hero_image', '', get_the_ID());
     ?>
     <main class="site-main">
-        <section class="max-w-[1440px] mx-auto px-12 py-20">
+        <section class="max-w-[1440px] mx-auto px-6 md:px-12 py-20">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                 <div class="lg:col-span-6">
                     <div class="overflow-hidden bg-[#F2F0ED]">
                         <?php if ($fleet_hero_image !== '') : ?>
-                            <img src="<?php echo esc_url($fleet_hero_image); ?>" class="w-full h-[520px] object-cover" alt="<?php echo esc_attr(get_the_title()); ?>">
+                            <img src="<?php echo esc_url($fleet_hero_image); ?>" class="w-full h-[280px] md:h-[520px] object-cover" alt="<?php echo esc_attr(get_the_title()); ?>">
                         <?php endif; ?>
                     </div>
                 </div>

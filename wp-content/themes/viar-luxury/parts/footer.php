@@ -8,7 +8,7 @@ $footer_copyright = get_theme_mod('viar_footer_copyright', '© 2024 ViaR Travel 
 $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly realized.');
 ?>
 <footer class="w-full pt-32 pb-12 bg-[#F2F0ED] dark:bg-slate-900 border-t border-[#00234B]/10 dark:border-white/10">
-  <div class="max-w-[1440px] mx-auto px-12 flex flex-col md:flex-row justify-between gap-12">
+  <div class="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between gap-12">
     <div class="mb-12 md:mb-0 max-w-sm">
       <h2 class="text-xl font-serif text-[#00234B] dark:text-white mb-4"><?php echo esc_html($footer_heading); ?></h2>
       <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($footer_description); ?></p>
@@ -45,7 +45,7 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
       </div>
     </div>
   </div>
-  <div class="max-w-[1440px] mx-auto px-12 mt-24 flex justify-between items-center border-t border-[#00234B]/5 pt-8">
+  <div class="max-w-[1440px] mx-auto px-6 md:px-12 mt-24 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-t border-[#00234B]/5 pt-8">
     <span class="font-sans text-[10px] text-[#00234B]/40 uppercase tracking-widest"><?php echo esc_html($footer_copyright); ?></span>
     <span class="font-serif italic text-sm text-primary"><?php echo esc_html($footer_tagline); ?></span>
   </div>

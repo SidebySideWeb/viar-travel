@@ -72,13 +72,13 @@ $home_tours_query = new WP_Query([
 </section>
 <!-- Section 2: Explore Our Trips (Carousel) -->
 <section class="py-[120px] bg-white">
-<div class="max-w-[1440px] mx-auto px-12">
-<div class="flex justify-between items-end mb-16">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-16">
 <div>
 <span class="font-label-caps text-label-caps text-secondary mb-4 block"><?php echo esc_html($viar_home_tours_label); ?></span>
 <h2 class="font-headline-h1 text-headline-h1 text-primary"><?php echo esc_html($viar_home_tours_title); ?></h2>
 </div>
-<div class="flex gap-4">
+<div class="flex gap-4 shrink-0">
 <button class="w-12 h-12 flex items-center justify-center border border-outline-variant hover:border-secondary transition-colors">
 <span class="material-symbols-outlined">arrow_back</span>
 </button>
@@ -95,7 +95,7 @@ $home_tours_query = new WP_Query([
         $experience_terms = wp_get_post_terms(get_the_ID(), 'viar_tour_experience_type', ['fields' => 'names']);
         $card_meta = trim(implode(' • ', array_filter([$region_terms[0] ?? '', $experience_terms[0] ?? ''])));
         ?>
-        <article class="min-w-[450px] group cursor-pointer">
+        <article class="w-[min(100%,28rem)] max-w-[450px] shrink-0 group cursor-pointer">
             <a href="<?php echo esc_url(get_permalink()); ?>" class="block">
                 <div class="aspect-[4/5] overflow-hidden mb-6">
                     <?php $tour_card_image = viar_image_url('viar_tour_card_image', '', get_the_ID()); ?>
@@ -119,11 +119,11 @@ $home_tours_query = new WP_Query([
 </section>
 <!-- Section 3: Bespoke Consulting (Alternating) -->
 <section class="bg-[#F2F0ED] py-[120px]">
-<div class="max-w-[1440px] mx-auto px-12">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
 <!-- Row 1 -->
 <div class="flex flex-col md:flex-row items-center gap-24 mb-32">
 <div class="w-full md:w-1/2">
-<img class="w-full h-[600px] object-cover shadow-sm" data-alt="A close-up, editorial detail of a high-end travel consultant's workspace, featuring a minimalist layout with a thick vellum itinerary, a gold fountain pen, and a crystal glass of water. The background is a soft-focus view of a lush garden. The lighting is diffused and natural, highlighting textures of paper and metal. The aesthetic is extremely quiet, professional, and sophisticated, emphasizing the human element of curation." src="<?php echo esc_url($viar_home_zigzag_row1_image); ?>"/>
+<img class="w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm" data-alt="A close-up, editorial detail of a high-end travel consultant's workspace, featuring a minimalist layout with a thick vellum itinerary, a gold fountain pen, and a crystal glass of water. The background is a soft-focus view of a lush garden. The lighting is diffused and natural, highlighting textures of paper and metal. The aesthetic is extremely quiet, professional, and sophisticated, emphasizing the human element of curation." src="<?php echo esc_url($viar_home_zigzag_row1_image); ?>"/>
 </div>
 <div class="w-full md:w-1/2 space-y-8">
 <span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.3em]"><?php echo esc_html($viar_home_zigzag_row1_label); ?></span>
@@ -145,14 +145,14 @@ $home_tours_query = new WP_Query([
 <a href="<?php echo esc_url($viar_home_zigzag_row2_cta_url); ?>" class="font-cta text-cta text-secondary border-b border-secondary pb-1 uppercase tracking-widest hover:text-primary transition-colors inline-block"><?php echo esc_html($viar_home_zigzag_row2_cta_label); ?></a>
 </div>
 <div class="w-full md:w-1/2">
-<img class="w-full h-[600px] object-cover shadow-sm" data-alt="A sophisticated lifestyle image of a couple enjoying a private dinner on a remote wooden pier at dusk. The water is calm and dark, reflecting the warm glow of subtle lanterns. The setting is minimalist and atmospheric, focusing on the high-quality table settings and the vast, open horizon. The overall mood is one of romantic serenity and extreme luxury, using a palette of deep navy and champagne gold." src="<?php echo esc_url($viar_home_zigzag_row2_image); ?>"/>
+<img class="w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm" data-alt="A sophisticated lifestyle image of a couple enjoying a private dinner on a remote wooden pier at dusk. The water is calm and dark, reflecting the warm glow of subtle lanterns. The setting is minimalist and atmospheric, focusing on the high-quality table settings and the vast, open horizon. The overall mood is one of romantic serenity and extreme luxury, using a palette of deep navy and champagne gold." src="<?php echo esc_url($viar_home_zigzag_row2_image); ?>"/>
 </div>
 </div>
 </div>
 </section>
 <!-- Section 4: The ViaR Standard -->
 <section class="bg-primary-container text-white py-[120px]">
-<div class="max-w-[1440px] mx-auto px-12 text-center">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 text-center">
 <span class="font-label-caps text-label-caps text-secondary-fixed mb-8 block tracking-[0.4em]"><?php echo esc_html($viar_home_standard_label); ?></span>
 <h2 class="font-headline-h1 text-headline-h1 mb-24 max-w-4xl mx-auto"><?php echo esc_html($viar_home_standard_title); ?></h2>
 <div class="grid md:grid-cols-3 gap-16 text-left border-t border-white/10 pt-16">
@@ -173,18 +173,18 @@ $home_tours_query = new WP_Query([
 </section>
 <!-- Section 5: Client Reviews -->
 <section class="py-[120px] bg-white">
-<div class="max-w-[1440px] mx-auto px-12">
-<div class="grid md:grid-cols-2 gap-24 items-start">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="grid md:grid-cols-2 gap-12 md:gap-24 items-start">
 <div>
 <span class="font-label-caps text-label-caps text-secondary mb-4 block"><?php echo esc_html($viar_home_testimonials_label); ?></span>
 <h2 class="font-headline-h1 text-headline-h1 text-primary"><?php echo esc_html($viar_home_testimonials_title); ?></h2>
 </div>
 <div class="space-y-24">
-<div class="border-l-2 border-secondary pl-12">
+<div class="border-l-2 border-secondary pl-6 md:pl-12">
 <p class="font-display text-2xl italic text-primary mb-6"><?php echo esc_html($viar_home_testimonial_1_quote); ?></p>
 <span class="font-label-caps text-xs text-on-surface-variant"><?php echo esc_html($viar_home_testimonial_1_author); ?></span>
 </div>
-<div class="border-l-2 border-secondary pl-12">
+<div class="border-l-2 border-secondary pl-6 md:pl-12">
 <p class="font-display text-2xl italic text-primary mb-6"><?php echo esc_html($viar_home_testimonial_2_quote); ?></p>
 <span class="font-label-caps text-xs text-on-surface-variant"><?php echo esc_html($viar_home_testimonial_2_author); ?></span>
 </div>

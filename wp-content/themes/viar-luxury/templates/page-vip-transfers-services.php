@@ -16,14 +16,14 @@ if (viar_has_editor_sections()) {
 
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-bc1dabf815b0.jpg');
 ?>
-<main class="site-main">
+<main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <!-- Hero Section -->
 <header class="relative w-full h-[921px] flex items-center overflow-hidden">
 <div class="absolute inset-0 z-0">
 <img class="w-full h-full object-cover" data-alt="A cinematic, high-angle shot of a sleek black luxury sedan parked on a clean, minimalist cobblestone driveway in front of a modern architectural villa. The lighting is soft morning gold, casting long, elegant shadows. The overall mood is quiet, exclusive, and serene, utilizing a palette of deep navy, charcoal, and alabaster white to match a high-end luxury travel aesthetic." src="<?php echo esc_url($viar_hero_image); ?>"/>
 <div class="absolute inset-0 bg-primary/20"></div>
 </div>
-<div class="relative z-10 max-w-[1440px] mx-auto px-12 w-full">
+<div class="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 w-full min-w-0">
 <div class="max-w-2xl text-white">
 <span class="font-label-caps text-label-caps mb-6 block text-secondary-fixed uppercase tracking-[0.3em]">Precision in Motion</span>
 <h1 class="font-display text-display mb-8">Seamless Logistics for the Discerning Traveler</h1>
@@ -37,10 +37,10 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 </div>
 </header>
 <!-- Services Grid: Asymmetric Layout -->
-<section class="py-[120px] max-w-[1440px] mx-auto px-12">
-<div class="grid grid-cols-12 gap-gutter items-start">
-<!-- Intro Text Column -->
-<div class="col-span-12 lg:col-span-4 sticky top-32 mb-16 lg:mb-0">
+<section class="py-[120px] max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
+<div class="grid grid-cols-12 gap-gutter items-start min-w-0">
+<!-- Intro Text Column (not sticky: sticky caused headline to stack over the services grid on scroll) -->
+<div class="col-span-12 lg:col-span-4 lg:self-start mb-16 lg:mb-0 min-w-0">
 <h2 class="font-headline-h1 text-headline-h1 text-primary-container mb-8">Our Signature Services</h2>
 <p class="font-body-md text-body-md text-on-surface-variant mb-12 max-w-sm">
                     We believe that luxury is found in the things you don't have to think about. Our logistical experts ensure your arrival is as effortless as your destination.
@@ -51,7 +51,7 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 </div>
 </div>
 <!-- Services Bento Grid -->
-<div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+<div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12 min-w-0">
 <!-- Service 01 -->
 <div class="group">
 <div class="aspect-[4/5] overflow-hidden mb-6">
@@ -96,7 +96,7 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 </div>
 </section>
 <section class="py-[120px] bg-white border-t border-[#F2F0ED]">
-<div class="max-w-[1440px] mx-auto px-12">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
 <div class="mb-14">
 <span class="font-label-caps text-label-caps text-[#C5A059] mb-3 block">Fleet Booking</span>
 <h2 class="font-headline-h1 text-headline-h1 text-[#00234B]">Select Your Vehicle</h2>
@@ -138,8 +138,8 @@ endif;
 </section>
 <!-- Content / Stats Section -->
 <section class="bg-[#F2F0ED] py-[120px]">
-<div class="max-w-[1440px] mx-auto px-12">
-<div class="border-l border-primary/10 pl-12 max-w-4xl">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
+<div class="border-l border-primary/10 pl-6 md:pl-12 max-w-4xl min-w-0">
 <h2 class="font-display text-headline-h1 text-primary-container mb-12 leading-tight">
                     Travel is an art. Logistics is the frame that protects it.
                 </h2>
@@ -161,7 +161,7 @@ endif;
 </div>
 </section>
 <!-- Call to Action Section -->
-<section class="py-[160px] text-center max-w-[1440px] mx-auto px-12">
+<section class="py-[160px] text-center max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
 <div class="max-w-3xl mx-auto">
 <span class="material-symbols-outlined text-4xl text-secondary mb-8">transportation</span>
 <h2 class="font-display text-display text-primary mb-8">Your Journey, Perfected.</h2>
