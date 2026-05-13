@@ -1,0 +1,141 @@
+/* ViaR unified form design system */
+
+:root {
+  --viar-navy: #00234b;
+  --viar-gold: #c5a059;
+  --viar-text-muted: rgba(0, 35, 75, 0.72);
+  --viar-border: rgba(0, 35, 75, 0.2);
+}
+
+/* Generic forms in templates/content */
+.site-main form input[type="text"],
+.site-main form input[type="email"],
+.site-main form input[type="tel"],
+.site-main form input[type="url"],
+.site-main form input[type="number"],
+.site-main form input[type="date"],
+.site-main form input[type="time"],
+.site-main form input[type="password"],
+.site-main form select,
+.site-main form textarea {
+  width: 100%;
+  border: 1px solid var(--viar-border);
+  border-radius: 0;
+  background-color: #fff;
+  color: var(--viar-navy);
+  font-family: Manrope, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 48px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.site-main form input::placeholder,
+.site-main form textarea::placeholder {
+  color: var(--viar-text-muted);
+}
+
+.site-main form input:focus,
+.site-main form select:focus,
+.site-main form textarea:focus {
+  outline: 0;
+  border-color: var(--viar-gold);
+  box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.25);
+}
+
+.site-main form label {
+  display: block;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--viar-text-muted);
+  margin-bottom: 8px;
+}
+
+.site-main form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.site-main form button,
+.site-main form input[type="submit"],
+.site-main form .button,
+.site-main form .wp-element-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--viar-gold);
+  border-radius: 0;
+  background: var(--viar-gold);
+  color: var(--viar-navy);
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  min-height: 48px;
+  padding: 12px 22px;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.site-main form button:hover,
+.site-main form input[type="submit"]:hover,
+.site-main form .button:hover,
+.site-main form .wp-element-button:hover {
+  opacity: 0.9;
+}
+
+.site-main form button:active,
+.site-main form input[type="submit"]:active,
+.site-main form .button:active,
+.site-main form .wp-element-button:active {
+  transform: scale(0.98);
+}
+
+/* BookingPress harmonization */
+.bookingpress-main-container,
+.bookingpress-form-wrapper {
+  color: var(--viar-navy) !important;
+  font-family: Manrope, sans-serif !important;
+}
+
+.bookingpress-main-container input,
+.bookingpress-main-container select,
+.bookingpress-main-container textarea,
+.bookingpress-form-wrapper input,
+.bookingpress-form-wrapper select,
+.bookingpress-form-wrapper textarea {
+  border: 1px solid var(--viar-border) !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  color: var(--viar-navy) !important;
+  min-height: 48px !important;
+  padding: 12px 14px !important;
+}
+
+.bookingpress-main-container input:focus,
+.bookingpress-main-container select:focus,
+.bookingpress-main-container textarea:focus,
+.bookingpress-form-wrapper input:focus,
+.bookingpress-form-wrapper select:focus,
+.bookingpress-form-wrapper textarea:focus {
+  border-color: var(--viar-gold) !important;
+  box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.25) !important;
+}
+
+.bookingpress-main-container .bookingpress_btn,
+.bookingpress-form-wrapper button {
+  border: 1px solid var(--viar-gold) !important;
+  border-radius: 0 !important;
+  background: var(--viar-gold) !important;
+  color: var(--viar-navy) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  min-height: 48px !important;
+  padding: 12px 22px !important;
+}

@@ -1,0 +1,16 @@
+# Local / secrets — do not commit
+wp-config.php
+local-xdebuginfo.php
+.env
+.env.*
+
+# Media (large; regenerate or sync separately)
+wp-content/uploads/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+*.log
+
+# Dependencies (if any under web root)
+node_modules/
