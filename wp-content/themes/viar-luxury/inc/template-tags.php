@@ -102,6 +102,66 @@ function viar_has_editor_sections(?int $post_id = null): bool {
 }
 
 /**
+ * Curated experience rows for a bespoke tour.
+ *
+ * @return array<int, array{title: string, description: string, image: string}>
+ */
+function viar_get_tour_experiences(?int $post_id = null): array {
+    $post_id = $post_id ?: get_the_ID();
+    if (!$post_id || !function_exists('have_rows') || !have_rows('viar_tour_experiences', $post_id)) {
+        return [];
+    }
+
+    $rows = [];
+    while (have_rows('viar_tour_experiences', $post_id)) {
+        the_row();
+        $image = get_sub_field('experience_image');
+        $image_url = '';
+
+        if (is_array($image) && !empty($image['url'])) {
+            $image_url = (string) $image['url'];
+        } elseif (is_numeric($image)) {
+            $src = wp_get_attachment_image_url((int) $image, 'full');
+            $image_url = is_string($src) ? $src : '';
+        } elseif (is_string($image)) {
+            $image_url = $image;
+        }
+
+        $rows[] = [
+            'title' => (string) get_sub_field('experience_title'),
+            'description' => (string) get_sub_field('experience_description'),
+            'image' => $image_url,
+        ];
+    }
+
+    return $rows;
+}
+
+/**
+ * File URL from an ACF file field.
+ */
+function viar_file_url(string $field_key, string $fallback = '', ?int $post_id = null): string {
+    $post_id = $post_id ?: get_the_ID();
+
+    if (function_exists('get_field')) {
+        $value = get_field($field_key, $post_id);
+        if (is_array($value) && !empty($value['url'])) {
+            return (string) $value['url'];
+        }
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+    }
+
+    $meta_value = get_post_meta($post_id, $field_key, true);
+    if (is_string($meta_value) && trim($meta_value) !== '') {
+        return $meta_value;
+    }
+
+    return $fallback;
+}
+
+/**
  * Render full-page sections from editor content.
  */
 function viar_render_editor_sections_page(?int $post_id = null): void {

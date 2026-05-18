@@ -78,6 +78,8 @@ module.exports = {
                         "label-caps": ["Manrope"],
                         "headline-h2": ["Noto Serif"],
                         "headline-h1": ["Noto Serif"],
+                        "headline-h2-mobile": ["Noto Serif"],
+                        "headline-h1-mobile": ["Noto Serif"],
                         "body-md": ["Manrope"]
                     },
                     "fontSize": {
@@ -87,6 +89,8 @@ module.exports = {
                         "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600"}],
                         "headline-h2": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
                         "headline-h1": ["48px", {"lineHeight": "1.2", "fontWeight": "400"}],
+                        "headline-h2-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "headline-h1-mobile": ["36px", {"lineHeight": "1.2", "fontWeight": "400"}],
                         "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}]
                     }
                 },

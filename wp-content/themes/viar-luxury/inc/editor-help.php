@@ -22,7 +22,7 @@ function viar_editor_help_notice(): void {
     } elseif ($post_type === 'viar_fleet') {
         echo 'Use Fleet Card Image for VIP listing cards, Fleet Hero Image for the single fleet page, and BookingPress Shortcode for the booking form.';
     } else {
-        echo 'Use Tour Card Image for listings/home cards, Tour Hero Image for single tour page, and BookingPress Shortcode for tour booking form.';
+        echo 'Use Tour Card Image for listings, then fill Hero & Introduction, At a Glance, Curated Experiences, and Inquiry CTA tabs for the tour detail page. BookingPress shortcode is optional.';
     }
     echo '</p></div>';
 }
