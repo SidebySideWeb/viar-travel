@@ -108,11 +108,37 @@ function viar_has_editor_sections(?int $post_id = null): bool {
  */
 function viar_get_tour_experiences(?int $post_id = null): array {
     $post_id = $post_id ?: get_the_ID();
-    if (!$post_id || !function_exists('have_rows') || !have_rows('viar_tour_experiences', $post_id)) {
+    if (!$post_id) {
         return [];
     }
 
     $rows = [];
+
+    for ($slot = 1; $slot <= 3; $slot++) {
+        $title = viar_field_value("viar_tour_experience_{$slot}_title", '', $post_id);
+        $description = viar_field_value("viar_tour_experience_{$slot}_description", '', $post_id);
+        $image = viar_image_url("viar_tour_experience_{$slot}_image", '', $post_id);
+
+        if ($title === '' && $description === '' && $image === '') {
+            continue;
+        }
+
+        $rows[] = [
+            'title' => $title,
+            'description' => $description,
+            'image' => $image,
+        ];
+    }
+
+    if ($rows !== []) {
+        return $rows;
+    }
+
+    // Legacy fallback: ACF Pro repeater data saved before fixed fields were added.
+    if (!function_exists('have_rows') || !have_rows('viar_tour_experiences', $post_id)) {
+        return [];
+    }
+
     while (have_rows('viar_tour_experiences', $post_id)) {
         the_row();
         $image = get_sub_field('experience_image');

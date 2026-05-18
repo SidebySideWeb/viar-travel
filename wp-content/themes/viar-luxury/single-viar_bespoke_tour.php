@@ -135,10 +135,8 @@ while (have_posts()) :
         <?php endif; ?>
 
         <!-- Curated Experiences -->
-        <?php if ($experiences !== [] || $quote !== '') : ?>
-            <section class="bg-white px-8 py-24 md:px-12 md:py-[120px] max-w-[1440px] mx-auto">
-                <?php if ($experiences !== []) : ?>
-                <div class="mb-12 md:mb-16">
+        <section class="bg-white px-8 py-24 md:px-12 md:py-[120px] max-w-[1440px] mx-auto">
+            <div class="mb-12 md:mb-16">
                     <?php if ($experiences_label !== '') : ?>
                         <p class="font-label-caps text-label-caps text-secondary-container mb-4 uppercase tracking-[0.2em]">
                             <?php echo esc_html($experiences_label); ?>
@@ -149,10 +147,9 @@ while (have_posts()) :
                             <?php echo esc_html($experiences_title); ?>
                         </h2>
                     <?php endif; ?>
-                </div>
-                <?php endif; ?>
+            </div>
 
-                <!-- Mobile: vertical stack -->
+            <!-- Mobile: vertical stack -->
                 <?php if ($experiences !== []) : ?>
                     <div class="space-y-24 md:hidden">
                         <?php foreach ($experiences as $experience) : ?>
@@ -179,11 +176,11 @@ while (have_posts()) :
                             </article>
                         <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
+            <?php endif; ?>
 
-                <!-- Desktop: editorial grid -->
-                <?php if ($experiences !== [] || $quote !== '') : ?>
-                    <div class="hidden md:grid md:grid-cols-12 md:gap-8">
+            <!-- Desktop: editorial grid -->
+            <?php if ($experiences !== [] || $quote !== '') : ?>
+                <div class="hidden md:grid md:grid-cols-12 md:gap-8">
                         <?php foreach ($experiences as $index => $experience) :
                             $layout = $desktop_experience_layouts[$index] ?? $desktop_experience_layouts[0];
                             ?>
@@ -243,8 +240,7 @@ while (have_posts()) :
                         </div>
                     </section>
                 <?php endif; ?>
-            </section>
-        <?php endif; ?>
+        </section>
 
         <!-- CTA -->
         <section class="px-8 py-24 md:px-12 md:mb-[120px] bg-[#F2F0ED] md:bg-transparent text-center border-t border-[#00234B]/5 md:border-0 max-w-[1440px] mx-auto">
