@@ -8,12 +8,6 @@
 
 get_header();
 
-if (viar_has_editor_sections()) {
-    viar_render_editor_sections_page();
-    get_footer();
-    return;
-}
-
 while (have_posts()) :
     the_post();
 
