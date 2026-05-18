@@ -18,7 +18,7 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 ?>
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <!-- Hero Section -->
-<header class="relative w-full h-[921px] flex items-center overflow-hidden">
+<header class="viar-hero-flush relative w-full h-[921px] flex items-center overflow-hidden">
 <div class="absolute inset-0 z-0">
 <img class="w-full h-full object-cover" data-alt="A cinematic, high-angle shot of a sleek black luxury sedan parked on a clean, minimalist cobblestone driveway in front of a modern architectural villa. The lighting is soft morning gold, casting long, elegant shadows. The overall mood is quiet, exclusive, and serene, utilizing a palette of deep navy, charcoal, and alabaster white to match a high-end luxury travel aesthetic." src="<?php echo esc_url($viar_hero_image); ?>"/>
 <div class="absolute inset-0 bg-primary/20"></div>

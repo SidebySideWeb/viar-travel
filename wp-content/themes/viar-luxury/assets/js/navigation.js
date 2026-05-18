@@ -1,4 +1,15 @@
+function viarSyncHeaderHeight() {
+  const header = document.querySelector('.viar-header');
+  if (!header) {
+    return;
+  }
+  document.documentElement.style.setProperty('--viar-header-height', `${header.offsetHeight}px`);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  viarSyncHeaderHeight();
+  window.addEventListener('resize', viarSyncHeaderHeight);
+
   const btn = document.querySelector('.viar-nav-toggle');
   const menu = document.getElementById('primary-menu') || document.querySelector('.menu');
   if (!btn || !menu) return;
@@ -17,5 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', String(!expanded));
     menu.classList.toggle('hidden');
+    requestAnimationFrame(viarSyncHeaderHeight);
   });
 });

@@ -16,7 +16,7 @@ if (viar_has_editor_sections()) {
 ?>
 <main class="site-main">
 <!-- Main Content Canvas -->
-<main class="pt-40 pb-32 max-w-7xl mx-auto px-12">
+<main class="viar-content-below-header pb-32 max-w-7xl mx-auto px-12">
 <div class="grid grid-cols-12 gap-12">
 <!-- Payment Column -->
 <div class="col-span-12 lg:col-span-7">

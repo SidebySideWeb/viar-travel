@@ -64,7 +64,7 @@ while (have_posts()) :
     ?>
     <main class="site-main w-full max-w-full min-w-0 overflow-x-clip bg-background text-on-background">
         <!-- Hero -->
-        <section class="relative h-[min(85vh,751px)] md:h-[min(92vh,1024px)] w-full overflow-hidden">
+        <section class="viar-hero-flush relative h-[min(85vh,751px)] md:h-[min(92vh,1024px)] w-full overflow-hidden">
             <?php if ($hero_image !== '') : ?>
                 <img
                     src="<?php echo esc_url($hero_image); ?>"

@@ -46,7 +46,7 @@ if (viar_has_editor_sections()) {
 </div>
 </aside>
 <!-- Main Content -->
-<main class="lg:ml-72 pt-32 pb-24 px-8 md:px-16 max-w-[1440px]">
+<main class="viar-content-below-header lg:ml-72 pb-24 px-8 md:px-16 max-w-[1440px]">
 <!-- Search Header -->
 <header class="mb-16">
 <div class="flex items-center gap-2 text-slate-400 mb-4 font-label-caps text-[10px]">

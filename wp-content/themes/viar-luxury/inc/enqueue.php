@@ -22,7 +22,8 @@ function viar_luxury_enqueue_assets(): void {
     );
 
     wp_enqueue_style('viar-luxury-main', get_template_directory_uri() . '/assets/css/style.css', [], $version);
-    wp_enqueue_style('viar-luxury-forms', get_template_directory_uri() . '/assets/css/forms.css', ['viar-luxury-main'], $version);
+    wp_enqueue_style('viar-luxury-layout', get_template_directory_uri() . '/assets/css/layout.css', ['viar-luxury-main'], $version);
+    wp_enqueue_style('viar-luxury-forms', get_template_directory_uri() . '/assets/css/forms.css', ['viar-luxury-main', 'viar-luxury-layout'], $version);
     wp_enqueue_style('viar-luxury-bookingpress', get_template_directory_uri() . '/assets/css/bookingpress.css', ['viar-luxury-main', 'viar-luxury-forms'], $version);
 
     $custom_css = '.material-symbols-outlined{font-variation-settings:"FILL" 0,"wght" 300,"GRAD" 0,"opsz" 24}.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}.viar-logo .custom-logo-link{display:inline-flex;align-items:center}.viar-logo .custom-logo{max-height:48px;width:auto;height:auto;display:block}';

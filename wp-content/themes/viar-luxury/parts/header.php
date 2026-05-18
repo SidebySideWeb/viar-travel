@@ -34,4 +34,4 @@
     ?>
   </div>
 </header>
-<div class="min-w-0 max-w-full overflow-x-hidden pt-[76px]">
+<div id="viar-site-content" class="viar-site-content min-w-0 max-w-full overflow-x-hidden">

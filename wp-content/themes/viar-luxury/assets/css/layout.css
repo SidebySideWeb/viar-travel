@@ -1,0 +1,22 @@
+/**
+ * Fixed header layout — heroes flush to viewport top; content pages offset once.
+ */
+:root {
+  --viar-header-height: 4.5rem;
+}
+
+/* Site shell: no extra gap below fixed header. */
+.viar-site-content {
+  padding-top: 0;
+}
+
+/* Full-bleed heroes: image starts at top; header overlays; inner content clears the bar. */
+.viar-hero-flush {
+  margin-top: calc(-1 * var(--viar-header-height));
+  padding-top: var(--viar-header-height);
+}
+
+/* Standard page intro (title blocks, no full-bleed image). */
+.viar-content-below-header {
+  padding-top: var(--viar-header-height);
+}

@@ -64,7 +64,7 @@ $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Check Availabili
 </div>
 </aside>
 <!-- Main Content Canvas -->
-<main class="md:ml-72 pt-32 pb-24 px-8 md:px-16 min-h-screen">
+<main class="viar-content-below-header md:ml-72 pb-24 px-8 md:px-16 min-h-screen">
 <div class="max-w-5xl mx-auto">
 <!-- Header Section -->
 <div class="flex items-center gap-4 mb-12">

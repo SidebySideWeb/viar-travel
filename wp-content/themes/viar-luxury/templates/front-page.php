@@ -55,7 +55,7 @@ $home_tours_query = new WP_Query([
 ?>
 <main class="site-main">
 <!-- Section 1: Hero -->
-<section class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+<section class="viar-hero-flush relative h-screen w-full flex items-center justify-center overflow-hidden">
 <div class="absolute inset-0 z-0">
 <img class="w-full h-full object-cover grayscale-[20%]" data-alt="A wide, cinematic shot of a pristine, secluded beach at golden hour, where soft waves gently lap against ivory sands. The lighting is ethereal and warm, creating a high-end luxury atmosphere with long shadows. The color palette features soft whites, champagne golds, and deep cerulean blues, evoking a sense of absolute peace and exclusivity. This visual acts as a serene background for the minimalist UI of a bespoke travel consultancy." src="<?php echo esc_url($viar_hero_image); ?>"/>
 <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>

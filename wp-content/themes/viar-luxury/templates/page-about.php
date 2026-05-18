@@ -22,9 +22,9 @@ $viar_hero_cta_url = viar_field_value('viar_hero_cta_url', home_url('/contact'))
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-412940dffd89.jpg');
 $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri() . '/assets/images/remote-576fe30197aa.jpg');
 ?>
-<main class="site-main w-full max-w-full min-w-0 overflow-x-clip pt-[100px]">
+<main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <!-- Hero Section: Narrative Intro -->
-<section class="px-6 md:px-12 py-16 md:py-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center min-w-0">
+<section class="viar-content-below-header px-6 md:px-12 py-16 md:py-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center min-w-0">
 <div class="col-span-12 md:col-span-5 mb-16 md:mb-0 min-w-0">
 <span class="font-label-caps text-label-caps text-secondary mb-6 block"><?php echo esc_html($viar_hero_eyebrow); ?></span>
 <h1 class="font-headline-h1 text-headline-h1 text-primary-container mb-8"><?php echo esc_html($viar_hero_title); ?></h1>

@@ -12,7 +12,14 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
     <div class="mb-12 md:mb-0 max-w-sm">
       <h2 class="text-xl font-serif text-[#00234B] dark:text-white mb-4"><?php echo esc_html($footer_heading); ?></h2>
       <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($footer_description); ?></p>
-      <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400"><?php echo esc_html($footer_phone); ?><br><?php echo esc_html($footer_email); ?></p>
+      <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400">
+        <?php if ($footer_phone !== '') : ?>
+          <?php echo esc_html($footer_phone); ?><br>
+        <?php endif; ?>
+        <?php if ($footer_email !== '') : ?>
+          <a class="hover:text-[#C5A059] transition-colors" href="mailto:<?php echo esc_attr($footer_email); ?>"><?php echo esc_html($footer_email); ?></a>
+        <?php endif; ?>
+      </p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-8">
       <div class="flex flex-col gap-4">
