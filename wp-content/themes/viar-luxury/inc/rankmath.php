@@ -6,18 +6,31 @@
  */
 
 function viar_rankmath_schema_data(array $data, $jsonld): array {
-    if (!is_front_page()) {
-        return $data;
-    }
+    $subtitle = viar_get_logo_subtitle();
+    $logo_url = viar_get_custom_logo_url();
 
-    $data['Organization'] = [
+    $organization = [
         '@type' => 'TravelAgency',
         'name' => get_bloginfo('name'),
         'url' => home_url('/'),
-        'description' => 'Luxury travel agency specializing in curated bespoke tours and VIP transfers.',
-        'telephone' => '+30 000 000 0000',
-        'email' => 'concierge@viartravel.com',
+        'slogan' => $subtitle,
+        'description' => $subtitle,
+        'telephone' => get_theme_mod('viar_footer_phone', '+30 000 000 0000'),
+        'email' => get_theme_mod('viar_footer_email', 'concierge@viartravel.com'),
     ];
+
+    if ($logo_url !== '') {
+        $organization['logo'] = [
+            '@type' => 'ImageObject',
+            'url' => $logo_url,
+        ];
+    }
+
+    if (isset($data['Organization']) && is_array($data['Organization'])) {
+        $data['Organization'] = array_merge($data['Organization'], $organization);
+    } else {
+        $data['Organization'] = $organization;
+    }
 
     return $data;
 }

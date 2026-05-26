@@ -1,7 +1,6 @@
 </div>
 <?php
-$footer_heading = get_theme_mod('viar_footer_heading', 'ViaR Travel Solutions');
-$footer_description = get_theme_mod('viar_footer_description', 'Crafting bespoke itineraries for those who value time and exclusivity above all else.');
+$logo_subtitle = viar_get_logo_subtitle();
 $footer_phone = get_theme_mod('viar_footer_phone', '+30 000 000 0000');
 $footer_email = get_theme_mod('viar_footer_email', 'concierge@viartravel.com');
 $footer_copyright = get_theme_mod('viar_footer_copyright', '© 2024 ViaR Travel Solutions. All rights reserved.');
@@ -10,8 +9,14 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
 <footer class="w-full pt-32 pb-12 bg-[#F2F0ED] dark:bg-slate-900 border-t border-[#00234B]/10 dark:border-white/10">
   <div class="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between gap-12">
     <div class="mb-12 md:mb-0 max-w-sm">
-      <h2 class="text-xl font-serif text-[#00234B] dark:text-white mb-4"><?php echo esc_html($footer_heading); ?></h2>
-      <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($footer_description); ?></p>
+      <div class="viar-logo text-[#00234B] dark:text-white mb-4">
+        <?php if (function_exists('the_custom_logo') && has_custom_logo()) : ?>
+          <?php the_custom_logo(); ?>
+        <?php else : ?>
+          <a href="<?php echo esc_url(home_url('/')); ?>" class="font-['Cormorant_Garamond'] text-2xl tracking-[0.08em] text-[#00234B] dark:text-white">VIAR</a>
+        <?php endif; ?>
+      </div>
+      <p class="viar-logo-subtitle font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($logo_subtitle); ?></p>
       <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400">
         <?php if ($footer_phone !== '') : ?>
           <?php echo esc_html($footer_phone); ?><br>

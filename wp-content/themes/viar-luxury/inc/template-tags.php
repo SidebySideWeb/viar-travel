@@ -6,6 +6,36 @@
  */
 
 /**
+ * Default brand subtitle shown under the site logo (footer + schema).
+ */
+function viar_logo_subtitle_default(): string {
+    return 'ViaR Travel Solutions: Premier Private Transfers, Mercedes Van Tours, and Travel Consulting in Athens, Greece.';
+}
+
+/**
+ * Brand subtitle under the site logo.
+ */
+function viar_get_logo_subtitle(): string {
+    $subtitle = get_theme_mod('viar_logo_subtitle', viar_logo_subtitle_default());
+
+    return is_string($subtitle) ? $subtitle : viar_logo_subtitle_default();
+}
+
+/**
+ * Absolute URL for the theme custom logo.
+ */
+function viar_get_custom_logo_url(): string {
+    $logo_id = (int) get_theme_mod('custom_logo');
+    if ($logo_id <= 0) {
+        return '';
+    }
+
+    $url = wp_get_attachment_image_url($logo_id, 'full');
+
+    return is_string($url) ? $url : '';
+}
+
+/**
  * Get ACF field value with fallback.
  */
 function viar_field_value(string $field_key, string $fallback = '', ?int $post_id = null): string {
