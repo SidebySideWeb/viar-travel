@@ -260,6 +260,9 @@ function viar_register_acf_fields(): void {
         'show_in_rest' => 1,
         'description' => 'Edit designed page sections here. Hero Image controls the main hero visual; Card / Secondary Image is used where the template supports it. Keep the page editor empty to use the theme layout.',
     ]);
+
+    acf_add_local_field_group([
+        'key' => 'group_viar_fleet_booking',
         'title' => 'ViaR Fleet Booking Content',
         'fields' => [
             [
