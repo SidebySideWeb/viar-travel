@@ -2,6 +2,16 @@
 
 This guide is written for non-technical editors. It explains **where each website element is edited in WordPress admin**, what fields affect what parts of the website, and how to verify your changes.
 
+## WordPress 7 notes
+
+This site runs **WordPress 7**. A few things to know when editing:
+
+- The page editor now runs inside an **isolated iframe**. Theme styles no longer affect the admin UI, which is expected.
+- Most ViaR page content is edited in **ACF field panels** (for example “ViaR Hero Content”), not in the main block editor.
+- If you add block content to a page, the theme may switch to **editor override mode** and show your blocks instead of the designed layout.
+- **Appearance → Customize** still works for logo, footer content, and global settings.
+- After saving, hard refresh the live page if changes do not appear immediately (cache plugins may delay updates).
+
 ## Quick “Where do I edit this?” map
 
 - **Site logo (header + footer)**: `Appearance → Customize → Site Identity → Logo`

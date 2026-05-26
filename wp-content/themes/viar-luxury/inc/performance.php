@@ -33,7 +33,11 @@ add_filter('wp_resource_hints', 'viar_resource_hints', 10, 2);
  * Add modern loading attributes to non-critical images in raw template HTML.
  */
 function viar_buffer_start(): void {
-    if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
+    if (is_admin() || wp_doing_ajax() || is_customize_preview() || wp_is_json_request()) {
+        return;
+    }
+
+    if (defined('REST_REQUEST') && REST_REQUEST) {
         return;
     }
 

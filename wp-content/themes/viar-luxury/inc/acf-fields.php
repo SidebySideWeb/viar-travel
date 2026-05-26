@@ -257,10 +257,9 @@ function viar_register_acf_fields(): void {
         ],
         'style' => 'default',
         'position' => 'normal',
+        'show_in_rest' => 1,
+        'description' => 'Edit designed page sections here. Hero Image controls the main hero visual; Card / Secondary Image is used where the template supports it. Keep the page editor empty to use the theme layout.',
     ]);
-
-    acf_add_local_field_group([
-        'key' => 'group_viar_fleet_booking',
         'title' => 'ViaR Fleet Booking Content',
         'fields' => [
             [
@@ -307,6 +306,8 @@ function viar_register_acf_fields(): void {
         ],
         'style' => 'default',
         'position' => 'normal',
+        'show_in_rest' => 1,
+        'description' => 'Fleet booking page content and BookingPress shortcode for this template.',
     ]);
 
     acf_add_local_field_group([
@@ -357,6 +358,8 @@ function viar_register_acf_fields(): void {
         ],
         'style' => 'default',
         'position' => 'normal',
+        'show_in_rest' => 1,
+        'description' => 'Fleet Card Image is used on VIP Transfers listing cards. Fleet Hero Image is used on the single fleet page. BookingPress Shortcode controls the booking form.',
     ]);
 
     acf_add_local_field_group([
@@ -638,6 +641,8 @@ function viar_register_acf_fields(): void {
         ],
         'style' => 'default',
         'position' => 'normal',
+        'show_in_rest' => 1,
+        'description' => 'Tour Card Image is used on listings and the homepage carousel. Fill Hero & Introduction, At a Glance, Experiences 1–3, quote, and Inquiry CTA for the tour detail page.',
     ]);
 }
 add_action('acf/init', 'viar_register_acf_fields');
