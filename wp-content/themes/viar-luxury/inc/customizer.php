@@ -6,6 +6,22 @@
  */
 
 function viar_customize_register(WP_Customize_Manager $wp_customize): void {
+    $wp_customize->add_section('viar_homepage_hero', [
+        'title' => __('ViaR Homepage Hero', 'viar-luxury'),
+        'priority' => 155,
+    ]);
+
+    $wp_customize->add_setting('viar_home_hero_vimeo_url', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control('viar_home_hero_vimeo_url', [
+        'label' => __('Hero Vimeo Video URL', 'viar-luxury'),
+        'description' => __('Paste a Vimeo link (e.g. https://vimeo.com/123456789). Leave empty to use the hero image only.', 'viar-luxury'),
+        'section' => 'viar_homepage_hero',
+        'type' => 'url',
+    ]);
+
     $wp_customize->add_section('viar_footer_content', [
         'title' => __('ViaR Footer Content', 'viar-luxury'),
         'priority' => 160,

@@ -18,6 +18,7 @@ $viar_hero_description = viar_field_value('viar_hero_description', 'Curation for
 $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Begin Your Journey');
 $viar_hero_cta_url = viar_field_value('viar_hero_cta_url', home_url('/inquiry'));
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-2018f584e2ab.jpg');
+$viar_hero_vimeo_url = viar_get_home_hero_vimeo_url();
 $viar_home_tours_label = viar_field_value('viar_home_tours_label', 'WORLDWIDE CURATION');
 $viar_home_tours_title = viar_field_value('viar_home_tours_title', 'EXPLORE OUR TRIPS');
 $viar_home_zigzag_row1_label = viar_field_value('viar_home_zigzag_row1_label', 'Personalized Vision');
@@ -56,10 +57,13 @@ $home_tours_query = new WP_Query([
 <main class="site-main">
 <!-- Section 1: Hero -->
 <section class="viar-hero-flush relative h-screen w-full flex items-center justify-center overflow-hidden">
-<div class="absolute inset-0 z-0">
-<img class="w-full h-full object-cover grayscale-[20%]" data-alt="A wide, cinematic shot of a pristine, secluded beach at golden hour, where soft waves gently lap against ivory sands. The lighting is ethereal and warm, creating a high-end luxury atmosphere with long shadows. The color palette features soft whites, champagne golds, and deep cerulean blues, evoking a sense of absolute peace and exclusivity. This visual acts as a serene background for the minimalist UI of a bespoke travel consultancy." src="<?php echo esc_url($viar_hero_image); ?>"/>
-<div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
-</div>
+<?php
+viar_render_hero_background(
+    $viar_hero_image,
+    $viar_hero_vimeo_url,
+    'ViaR Travel homepage hero'
+);
+?>
 <div class="relative z-10 text-center text-white px-6">
 <h1 class="font-display text-display mb-8 max-w-4xl mx-auto"><?php echo esc_html($viar_hero_title); ?></h1>
 <p class="font-body-lg text-body-lg mb-12 max-w-xl mx-auto opacity-90"><?php echo esc_html($viar_hero_description); ?></p>

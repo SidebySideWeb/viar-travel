@@ -36,6 +36,94 @@ function viar_get_custom_logo_url(): string {
 }
 
 /**
+ * Extract a Vimeo video ID from a URL or raw ID string.
+ */
+function viar_parse_vimeo_id(string $input): string {
+    $input = trim($input);
+    if ($input === '') {
+        return '';
+    }
+
+    if (preg_match('/^\d+$/', $input)) {
+        return $input;
+    }
+
+    if (preg_match('/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/', $input, $matches)) {
+        return $matches[1];
+    }
+
+    return '';
+}
+
+/**
+ * Homepage hero Vimeo URL (Customizer overrides the Home page ACF field).
+ */
+function viar_get_home_hero_vimeo_url(?int $post_id = null): string {
+    $customizer_url = get_theme_mod('viar_home_hero_vimeo_url', '');
+    if (is_string($customizer_url) && trim($customizer_url) !== '') {
+        return trim($customizer_url);
+    }
+
+    return viar_field_value('viar_hero_vimeo_url', '', $post_id);
+}
+
+/**
+ * Background-mode Vimeo embed URL for full-bleed hero videos.
+ */
+function viar_vimeo_background_embed_url(string $video_id): string {
+    return add_query_arg(
+        [
+            'background' => '1',
+            'autoplay' => '1',
+            'loop' => '1',
+            'muted' => '1',
+            'controls' => '0',
+            'title' => '0',
+            'byline' => '0',
+            'portrait' => '0',
+            'dnt' => '1',
+        ],
+        'https://player.vimeo.com/video/' . rawurlencode($video_id)
+    );
+}
+
+/**
+ * Render a full-bleed hero background with optional Vimeo video and image fallback.
+ */
+function viar_render_hero_background(
+    string $image_url,
+    string $vimeo_input = '',
+    string $image_alt = '',
+    string $image_class = 'w-full h-full object-cover grayscale-[20%]'
+): void {
+    $vimeo_id = viar_parse_vimeo_id($vimeo_input);
+    ?>
+    <div class="absolute inset-0 z-0">
+        <?php if ($image_url !== '') : ?>
+            <img
+                class="<?php echo esc_attr($image_class); ?>"
+                alt="<?php echo esc_attr($image_alt); ?>"
+                src="<?php echo esc_url($image_url); ?>"
+                <?php echo $vimeo_id !== '' ? 'aria-hidden="true"' : ''; ?>
+            >
+        <?php endif; ?>
+        <?php if ($vimeo_id !== '') : ?>
+            <div class="viar-hero-video absolute inset-0 overflow-hidden">
+                <iframe
+                    class="viar-hero-video__iframe"
+                    src="<?php echo esc_url(viar_vimeo_background_embed_url($vimeo_id)); ?>"
+                    title="<?php esc_attr_e('Homepage hero video', 'viar-luxury'); ?>"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    loading="lazy"
+                ></iframe>
+            </div>
+        <?php endif; ?>
+        <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
+    </div>
+    <?php
+}
+
+/**
  * Get ACF field value with fallback.
  */
 function viar_field_value(string $field_key, string $fallback = '', ?int $post_id = null): string {

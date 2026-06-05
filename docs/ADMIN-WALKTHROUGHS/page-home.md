@@ -1,23 +1,33 @@
 # Walkthrough — Home page
 
-## Option A (recommended): Use the designed homepage layout (ACF fields)
+## Option A (easiest): Customizer — Hero Vimeo video
+
+1. Go to `Appearance → Customize → ViaR Homepage Hero`.
+2. Paste your Vimeo URL into **Hero Vimeo Video URL**.
+3. Click **Publish**.
+4. Refresh the homepage.
+
+## Option B: Home page ACF fields (designed homepage layout)
 
 1. Go to `Pages → All Pages`.
 2. Edit the page named **Home**.
-3. Scroll to the custom fields section **ViaR Hero Content**.
-4. Update the fields you need (examples):
-   - Hero Title / Hero Description / Hero Image / Hero CTA Label / Hero CTA URL
+3. Scroll to the custom fields section **ViaR Hero Content** (below the block editor, or in the sidebar panel).
+4. Find **Hero Vimeo Video (Homepage)** — directly under **Hero Image**.
+5. Update the fields you need (examples):
+   - Hero Title / Hero Description / Hero Image / Hero Vimeo Video (Homepage) / Hero CTA Label / Hero CTA URL
    - Tours label + title
    - Zigzag rows (labels, titles, descriptions, CTAs, images)
    - “ViaR Standard” section label/title + 3 items
    - Testimonials label/title + quotes/authors
-5. Click **Update**.
+6. Click **Update**.
+
+> **Tip:** For the Vimeo video, use `Appearance → Customize → ViaR Homepage Hero` — it is easier to find.
 
 ### Verify
 
 - Open the homepage in a new tab and hard refresh.
 
-## Option B: Use the editor override (custom blocks)
+## Option C: Use the editor override (custom blocks)
 
 If you add meaningful block content in the page editor, the site will show your blocks as the page sections.
 

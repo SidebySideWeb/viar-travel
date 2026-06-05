@@ -43,6 +43,13 @@ function viar_register_acf_fields(): void {
                 'library' => 'all',
             ],
             [
+                'key' => 'field_viar_hero_vimeo_url',
+                'label' => 'Hero Vimeo Video (Homepage)',
+                'name' => 'viar_hero_vimeo_url',
+                'type' => 'url',
+                'instructions' => 'Optional. Paste a Vimeo URL or video ID to replace the homepage hero image with a background video. Hero Image is still used as a fallback while the video loads.',
+            ],
+            [
                 'key' => 'field_viar_card_image',
                 'label' => 'Card / Secondary Image',
                 'name' => 'viar_card_image',
