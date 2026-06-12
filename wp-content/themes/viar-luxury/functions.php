@@ -30,108 +30,80 @@ function viar_print_google_places_script(): void {
         return;
     }
 
+    $maps_url = add_query_arg(
+        [
+            'key' => $api_key,
+            'libraries' => 'places',
+            'v' => 'weekly',
+            'callback' => 'initPlaces',
+            'loading' => 'async',
+        ],
+        'https://maps.googleapis.com/maps/api/js'
+    );
     ?>
     <script>
-    (function(apiKey) {
-        (function(g) {
-            var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__', m = document, b = window;
-            b = b[c] || (b[c] = {});
-            var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams,
-                u = function() {
-                    return h || (h = new Promise(function(resolve, reject) {
-                        a = m.createElement('script');
-                        e.set('libraries', [].concat(Array.from(r)).join(''));
-                        for (k in g) {
-                            e.set(k.replace(/[A-Z]/g, function(t) { return '_' + t[0].toLowerCase(); }), g[k]);
-                        }
-                        e.set('callback', c + '.maps.' + q);
-                        a.src = 'https://maps.' + c + 'apis.com/maps/api/js?' + e;
-                        d[q] = resolve;
-                        a.onerror = function() { reject(new Error(p + ' could not load.')); };
-                        a.nonce = m.querySelector('script[nonce]')?.nonce || '';
-                        m.head.append(a);
-                    }));
-                };
-            d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = function(f) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                r.add(f);
-                return u().then(function() { return d[l].apply(d, [f].concat(args)); });
-            };
-        })({ key: apiKey, v: 'weekly' });
+    window.initPlaces = function() {
+        var greeceOptions = {
+            types: ['geocode'],
+            componentRestrictions: { country: 'gr' }
+        };
 
-        function stylePlaceAutocompleteElement(element) {
-            element.classList.add('viar-place-autocomplete');
-            element.style.setProperty('width', '100%');
-            element.style.setProperty('max-width', '100%');
-            element.style.setProperty('display', 'block');
-            element.style.setProperty('box-sizing', 'border-box');
-            element.style.setProperty('margin', '0');
-            element.style.setProperty('color-scheme', 'light');
-            element.style.setProperty('background-color', '#fff');
-            element.style.setProperty('border', '1px solid #74777f');
-            element.style.setProperty('border-radius', '0');
-            element.style.setProperty('color', '#1a1c1c');
-            element.style.setProperty('font-family', 'Manrope, sans-serif');
-            element.style.setProperty('font-size', '16px');
-            element.style.setProperty('line-height', '1.6');
-            element.style.setProperty('min-height', '48px');
-        }
+        var inputStyle = 'width:100%; padding:10px 12px; border:1px solid #74777f; border-radius:0; font-size:16px; font-family:Manrope,sans-serif; box-sizing:border-box; background:#fff;';
 
-        function stylePlaceWrapper(wrapper) {
-            wrapper.style.setProperty('width', '100%');
-            wrapper.style.setProperty('max-width', '100%');
-            wrapper.style.setProperty('display', 'block');
-            wrapper.style.setProperty('margin', '0');
-            wrapper.style.setProperty('padding', '0');
-            wrapper.style.setProperty('box-sizing', 'border-box');
-        }
+        var pickupWrapper = document.getElementById('pickup_location_wrapper');
+        if (pickupWrapper) {
+            pickupWrapper.innerHTML = '';
+            var pickupInput = document.createElement('input');
+            pickupInput.type = 'text';
+            pickupInput.id = 'pickup_location_js';
+            pickupInput.placeholder = 'Start typing location...';
+            pickupInput.autocomplete = 'off';
+            pickupInput.style.cssText = inputStyle;
+            pickupWrapper.appendChild(pickupInput);
 
-        async function setupPlaceAutocomplete(wrapperId, hiddenFieldPart, placeholder) {
-            var wrapper = document.getElementById(wrapperId);
-            if (!wrapper) {
-                return;
-            }
-
-            stylePlaceWrapper(wrapper);
-            wrapper.innerHTML = '';
-
-            var places = await google.maps.importLibrary('places');
-            var autocomplete = new places.PlaceAutocompleteElement({
-                includedRegionCodes: ['gr'],
-            });
-
-            autocomplete.id = wrapperId.replace('_wrapper', '_js');
-            autocomplete.placeholder = placeholder;
-            stylePlaceAutocompleteElement(autocomplete);
-            wrapper.appendChild(autocomplete);
-
-            autocomplete.addEventListener('gmp-select', async function(event) {
-                var placePrediction = event.placePrediction;
-                if (!placePrediction) {
-                    return;
+            var pickupAuto = new google.maps.places.Autocomplete(pickupInput, greeceOptions);
+            pickupAuto.addListener('place_changed', function() {
+                var place = pickupAuto.getPlace();
+                var val = place.formatted_address || pickupInput.value;
+                pickupInput.value = val;
+                var hiddenPickup = document.querySelector('input[name="pickup_location"]');
+                if (hiddenPickup) {
+                    hiddenPickup.value = val;
                 }
-
-                var place = placePrediction.toPlace();
-                await place.fetchFields({ fields: ['formattedAddress'] });
-                var address = place.formattedAddress || '';
-
-                document.querySelectorAll('input[type="hidden"]').forEach(function(input) {
-                    if (input.name && input.name.includes(hiddenFieldPart)) {
-                        input.value = address;
-                    }
-                });
             });
         }
 
-        async function initPlaces() {
-            await setupPlaceAutocomplete('pickup_location_wrapper', 'pickup_location', 'Start typing location...');
-            await setupPlaceAutocomplete('pickup_destination_wrapper', 'pickup_destination', 'Start typing destination...');
-        }
+        var destWrapper = document.getElementById('pickup_destination_wrapper');
+        if (destWrapper) {
+            destWrapper.innerHTML = '';
+            var destInput = document.createElement('input');
+            destInput.type = 'text';
+            destInput.id = 'pickup_destination_js';
+            destInput.placeholder = 'Start typing destination...';
+            destInput.autocomplete = 'off';
+            destInput.style.cssText = inputStyle;
+            destWrapper.appendChild(destInput);
 
-        initPlaces().catch(function(error) {
-            console.error('ViaR Places Autocomplete failed:', error);
-        });
-    })(<?php echo wp_json_encode($api_key); ?>);
+            var destAuto = new google.maps.places.Autocomplete(destInput, greeceOptions);
+            destAuto.addListener('place_changed', function() {
+                var place = destAuto.getPlace();
+                var val = place.formatted_address || destInput.value;
+                destInput.value = val;
+                var hiddenDest = document.querySelector('input[name="pickup_destination"]');
+                if (hiddenDest) {
+                    hiddenDest.value = val;
+                }
+            });
+        }
+    };
+
+    (function() {
+        var script = document.createElement('script');
+        script.src = <?php echo wp_json_encode($maps_url); ?>;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    })();
     </script>
     <?php
 }
