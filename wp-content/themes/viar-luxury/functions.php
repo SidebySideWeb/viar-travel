@@ -34,6 +34,7 @@ function viar_print_google_places_script(): void {
         [
             'key' => $api_key,
             'libraries' => 'places',
+            'v' => 'weekly',
             'callback' => 'initPlaces',
             'loading' => 'async',
         ],
@@ -42,9 +43,9 @@ function viar_print_google_places_script(): void {
     ?>
     <script>
     window.initPlaces = function() {
-        var greeceOptions = {
-            types: ['geocode'],
-            componentRestrictions: { country: 'gr' }
+        var request = {
+            componentRestrictions: { country: 'gr' },
+            types: ['geocode']
         };
 
         var pickupWrapper = document.getElementById('pickup_location_wrapper');
@@ -54,14 +55,15 @@ function viar_print_google_places_script(): void {
             pickupInput.id = 'pickup_location_js';
             pickupInput.placeholder = 'Start typing location...';
             pickupInput.autocomplete = 'off';
-            pickupInput.className = 'ff-el-form-control';
+            pickupInput.style.cssText = 'width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box; background:#fff;';
             pickupWrapper.appendChild(pickupInput);
 
-            var pickupAuto = new google.maps.places.Autocomplete(pickupInput, greeceOptions);
+            var pickupAuto = new google.maps.places.Autocomplete(pickupInput, request);
             pickupAuto.addListener('place_changed', function() {
+                var place = pickupAuto.getPlace();
                 document.querySelectorAll('input[type="hidden"]').forEach(function(el) {
                     if (el.name && el.name.includes('pickup_location')) {
-                        el.value = pickupInput.value;
+                        el.value = place.formatted_address || pickupInput.value;
                     }
                 });
             });
@@ -74,14 +76,15 @@ function viar_print_google_places_script(): void {
             destInput.id = 'pickup_destination_js';
             destInput.placeholder = 'Start typing destination...';
             destInput.autocomplete = 'off';
-            destInput.className = 'ff-el-form-control';
+            destInput.style.cssText = 'width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box; background:#fff;';
             destWrapper.appendChild(destInput);
 
-            var destAuto = new google.maps.places.Autocomplete(destInput, greeceOptions);
+            var destAuto = new google.maps.places.Autocomplete(destInput, request);
             destAuto.addListener('place_changed', function() {
+                var place = destAuto.getPlace();
                 document.querySelectorAll('input[type="hidden"]').forEach(function(el) {
                     if (el.name && el.name.includes('pickup_destination')) {
-                        el.value = destInput.value;
+                        el.value = place.formatted_address || destInput.value;
                     }
                 });
             });
