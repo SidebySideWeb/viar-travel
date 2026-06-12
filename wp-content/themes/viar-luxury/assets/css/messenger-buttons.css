@@ -40,14 +40,17 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 0.5rem;
-  overflow: hidden;
+  background: rgba(197, 160, 89, 0.12);
 }
 
-.viar-messenger-btn__icon img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
+.viar-messenger-btn__icon .viar-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.viar-messenger-btn:hover .viar-messenger-btn__icon .viar-icon,
+.viar-messenger-btn:focus-visible .viar-messenger-btn__icon .viar-icon {
+  color: #00234b;
 }
 
 .viar-messenger-btn__label {

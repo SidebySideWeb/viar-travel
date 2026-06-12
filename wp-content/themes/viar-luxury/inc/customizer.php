@@ -73,6 +73,7 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
     $fields = [
         'viar_footer_phone' => ['Concierge Phone', '+30 000 000 0000'],
         'viar_footer_email' => ['Concierge Email', 'concierge@viartravel.com'],
+        'viar_footer_address' => ['Office Address', 'Athens, Greece'],
         'viar_footer_copyright' => ['Copyright Text', '© 2024 ViaR Travel Solutions. All rights reserved.'],
         'viar_footer_tagline' => ['Footer Tagline', 'Quiet luxury, perfectly realized.'],
     ];

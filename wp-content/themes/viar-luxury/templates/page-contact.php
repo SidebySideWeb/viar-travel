@@ -8,6 +8,12 @@
  */
 
 get_header();
+
+$contact_phone = get_theme_mod('viar_footer_phone', '+30 000 000 0000');
+$contact_email = get_theme_mod('viar_footer_email', 'concierge@viartravel.com');
+$contact_address = get_theme_mod('viar_footer_address', 'Athens, Greece');
+$contact_phone_href = viar_phone_href($contact_phone);
+
 if (viar_has_editor_sections()) {
     viar_render_editor_sections_page();
     get_footer();
@@ -78,8 +84,8 @@ if (viar_has_editor_sections()) {
 
                 <!-- Phone -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-[#C5A059]/10 flex items-center justify-center mx-auto mb-6">
-                        <span class="material-symbols-outlined text-3xl text-[#C5A059]">call</span>
+                    <div class="viar-contact-card__icon">
+                        <?php viar_render_icon('phone', ['size' => 'xl', 'color' => 'gold', 'label' => __('Phone', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
                         Phone
@@ -88,16 +94,24 @@ if (viar_has_editor_sections()) {
                         Call us Monday - Friday<br>
                         9:00 AM - 6:00 PM (EET)
                     </p>
-                    <a href="tel:+302101234567"
-                       class="font-['Manrope'] text-lg font-semibold text-[#C5A059] hover:text-[#00234B] transition-colors">
-                        +30 210 123 4567
-                    </a>
+                    <?php if ($contact_phone !== '') : ?>
+                        <?php if ($contact_phone_href !== '') : ?>
+                            <a href="<?php echo esc_url($contact_phone_href); ?>"
+                               class="font-['Manrope'] text-lg font-semibold text-[#C5A059] hover:text-[#00234B] transition-colors">
+                                <?php echo esc_html($contact_phone); ?>
+                            </a>
+                        <?php else : ?>
+                            <p class="font-['Manrope'] text-lg font-semibold text-[#C5A059]">
+                                <?php echo esc_html($contact_phone); ?>
+                            </p>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Email -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-[#C5A059]/10 flex items-center justify-center mx-auto mb-6">
-                        <span class="material-symbols-outlined text-3xl text-[#C5A059]">mail</span>
+                    <div class="viar-contact-card__icon">
+                        <?php viar_render_icon('email', ['size' => 'xl', 'color' => 'gold', 'label' => __('Email', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
                         Email
@@ -106,16 +120,18 @@ if (viar_has_editor_sections()) {
                         Send us an email anytime<br>
                         We'll respond within 24 hours
                     </p>
-                    <a href="mailto:info@viar.gr"
-                       class="font-['Manrope'] text-lg font-semibold text-[#C5A059] hover:text-[#00234B] transition-colors">
-                        info@viar.gr
-                    </a>
+                    <?php if ($contact_email !== '') : ?>
+                        <a href="mailto:<?php echo esc_attr($contact_email); ?>"
+                           class="font-['Manrope'] text-lg font-semibold text-[#C5A059] hover:text-[#00234B] transition-colors">
+                            <?php echo esc_html($contact_email); ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Office -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-[#C5A059]/10 flex items-center justify-center mx-auto mb-6">
-                        <span class="material-symbols-outlined text-3xl text-[#C5A059]">location_on</span>
+                    <div class="viar-contact-card__icon">
+                        <?php viar_render_icon('address', ['size' => 'xl', 'color' => 'gold', 'label' => __('Office', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
                         Office
@@ -124,9 +140,11 @@ if (viar_has_editor_sections()) {
                         Visit us at our Athens office<br>
                         By appointment only
                     </p>
-                    <p class="font-['Manrope'] text-lg font-semibold text-[#C5A059]">
-                        Athens, Greece
-                    </p>
+                    <?php if ($contact_address !== '') : ?>
+                        <p class="font-['Manrope'] text-lg font-semibold text-[#C5A059]">
+                            <?php echo esc_html($contact_address); ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
 
             </div>

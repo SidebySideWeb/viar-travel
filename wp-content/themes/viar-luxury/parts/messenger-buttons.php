@@ -20,13 +20,12 @@ if ($context !== '') {
     $wrapper_class .= ' viar-messenger-buttons--' . sanitize_html_class($context);
 }
 
-$icon_base = get_template_directory_uri() . '/assets/images/icons/';
 ?>
 <div class="<?php echo esc_attr($wrapper_class); ?>">
     <?php if ($whatsapp_url !== '') : ?>
         <a class="viar-messenger-btn viar-messenger-btn--whatsapp" href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">
-            <span class="viar-messenger-btn__icon" aria-hidden="true">
-                <img src="<?php echo esc_url($icon_base . 'whatsapp.png'); ?>" alt="" width="44" height="44" decoding="async" loading="lazy">
+            <span class="viar-messenger-btn__icon">
+                <?php viar_render_icon('whatsapp', ['size' => 'md', 'color' => 'gold']); ?>
             </span>
             <span class="viar-messenger-btn__label"><?php esc_html_e('Find us in WhatsApp', 'viar-luxury'); ?></span>
         </a>
@@ -34,8 +33,8 @@ $icon_base = get_template_directory_uri() . '/assets/images/icons/';
 
     <?php if ($viber_url !== '') : ?>
         <a class="viar-messenger-btn viar-messenger-btn--viber" href="<?php echo esc_url($viber_url); ?>" target="_blank" rel="noopener noreferrer">
-            <span class="viar-messenger-btn__icon" aria-hidden="true">
-                <img src="<?php echo esc_url($icon_base . 'viber.png'); ?>" alt="" width="44" height="44" decoding="async" loading="lazy">
+            <span class="viar-messenger-btn__icon">
+                <?php viar_render_icon('viber', ['size' => 'md', 'color' => 'gold']); ?>
             </span>
             <span class="viar-messenger-btn__label"><?php esc_html_e('Find us in Viber', 'viar-luxury'); ?></span>
         </a>

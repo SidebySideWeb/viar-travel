@@ -3,6 +3,8 @@
 $logo_subtitle = viar_get_logo_subtitle();
 $footer_phone = get_theme_mod('viar_footer_phone', '+30 000 000 0000');
 $footer_email = get_theme_mod('viar_footer_email', 'concierge@viartravel.com');
+$footer_address = get_theme_mod('viar_footer_address', 'Athens, Greece');
+$footer_phone_href = viar_phone_href($footer_phone);
 $footer_copyright = get_theme_mod('viar_footer_copyright', '© 2024 ViaR Travel Solutions. All rights reserved.');
 $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly realized.');
 ?>
@@ -18,14 +20,30 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
       </div>
       <?php viar_render_messenger_buttons(['context' => 'footer']); ?>
       <p class="viar-logo-subtitle font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($logo_subtitle); ?></p>
-      <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400">
+      <div class="viar-contact-details">
+        <?php if ($footer_address !== '') : ?>
+          <p class="viar-contact-item">
+            <?php viar_render_icon('address', ['size' => 'sm', 'color' => 'muted']); ?>
+            <span><?php echo esc_html($footer_address); ?></span>
+          </p>
+        <?php endif; ?>
         <?php if ($footer_phone !== '') : ?>
-          <?php echo esc_html($footer_phone); ?><br>
+          <p class="viar-contact-item">
+            <?php viar_render_icon('phone', ['size' => 'sm', 'color' => 'muted']); ?>
+            <?php if ($footer_phone_href !== '') : ?>
+              <a href="<?php echo esc_url($footer_phone_href); ?>"><?php echo esc_html($footer_phone); ?></a>
+            <?php else : ?>
+              <span><?php echo esc_html($footer_phone); ?></span>
+            <?php endif; ?>
+          </p>
         <?php endif; ?>
         <?php if ($footer_email !== '') : ?>
-          <a class="hover:text-[#C5A059] transition-colors" href="mailto:<?php echo esc_attr($footer_email); ?>"><?php echo esc_html($footer_email); ?></a>
+          <p class="viar-contact-item">
+            <?php viar_render_icon('email', ['size' => 'sm', 'color' => 'muted']); ?>
+            <a href="mailto:<?php echo esc_attr($footer_email); ?>"><?php echo esc_html($footer_email); ?></a>
+          </p>
         <?php endif; ?>
-      </p>
+      </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-8">
       <div class="flex flex-col gap-4">

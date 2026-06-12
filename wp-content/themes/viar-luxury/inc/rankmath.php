@@ -9,6 +9,8 @@ function viar_rankmath_schema_data(array $data, $jsonld): array {
     $subtitle = viar_get_logo_subtitle();
     $logo_url = viar_get_custom_logo_url();
 
+    $footer_address = get_theme_mod('viar_footer_address', 'Athens, Greece');
+
     $organization = [
         '@type' => 'TravelAgency',
         'name' => get_bloginfo('name'),
@@ -18,6 +20,13 @@ function viar_rankmath_schema_data(array $data, $jsonld): array {
         'telephone' => get_theme_mod('viar_footer_phone', '+30 000 000 0000'),
         'email' => get_theme_mod('viar_footer_email', 'concierge@viartravel.com'),
     ];
+
+    if (is_string($footer_address) && trim($footer_address) !== '') {
+        $organization['address'] = [
+            '@type' => 'PostalAddress',
+            'addressLocality' => trim($footer_address),
+        ];
+    }
 
     if ($logo_url !== '') {
         $organization['logo'] = [
