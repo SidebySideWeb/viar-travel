@@ -36,16 +36,26 @@ function viar_max_upload_bytes(): int {
 }
 
 /**
- * Raise PHP upload limits when the host allows runtime changes.
+ * Raise PHP upload and image-processing limits when the host allows runtime changes.
  */
 function viar_raise_upload_limits(): void {
-    $upload_limit = '12M';
-    $post_limit = '13M';
-
-    @ini_set('upload_max_filesize', $upload_limit);
-    @ini_set('post_max_size', $post_limit);
+    @ini_set('upload_max_filesize', '12M');
+    @ini_set('post_max_size', '13M');
+    @ini_set('memory_limit', '512M');
+    @ini_set('max_execution_time', '120');
+    @ini_set('max_input_time', '120');
 }
 add_action('init', 'viar_raise_upload_limits', 0);
+
+/**
+ * Extra headroom during media library uploads (thumbnail generation).
+ */
+function viar_raise_image_upload_limits(): void {
+    @ini_set('memory_limit', '512M');
+    @ini_set('max_execution_time', '120');
+}
+add_action('wp_ajax_upload-attachment', 'viar_raise_image_upload_limits', 0);
+add_action('wp_ajax_async-upload', 'viar_raise_image_upload_limits', 0);
 
 /**
  * Align WordPress upload limit with viar_max_upload_bytes().

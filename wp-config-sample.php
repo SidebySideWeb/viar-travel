@@ -95,6 +95,11 @@ define( 'VIAR_GOOGLE_MAPS_API_KEY', 'your-google-maps-api-key' );
 /** Optional fallback if .user.ini is not applied by the host (Local uses .user.ini in site root). */
 @ini_set( 'upload_max_filesize', '12M' );
 @ini_set( 'post_max_size', '13M' );
+@ini_set( 'memory_limit', '512M' );
+
+/** WordPress memory for image processing in admin. */
+define( 'WP_MEMORY_LIMIT', '256M' );
+define( 'WP_MAX_MEMORY_LIMIT', '512M' );
 
 /* That's all, stop editing! Happy publishing. */
 
