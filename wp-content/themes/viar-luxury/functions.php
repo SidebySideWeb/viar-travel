@@ -30,74 +30,78 @@ function viar_print_google_places_script(): void {
         return;
     }
 
-    $maps_url = add_query_arg(
-        [
-            'key' => $api_key,
-            'libraries' => 'places',
-            'v' => 'weekly',
-            'callback' => 'initPlaces',
-            'loading' => 'async',
-        ],
-        'https://maps.googleapis.com/maps/api/js'
-    );
     ?>
     <script>
-    window.initPlaces = function() {
-        var request = {
-            componentRestrictions: { country: 'gr' },
-            types: ['geocode']
-        };
+    (function(apiKey) {
+        (function(g) {
+            var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__', m = document, b = window;
+            b = b[c] || (b[c] = {});
+            var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams,
+                u = function() {
+                    return h || (h = new Promise(function(resolve, reject) {
+                        a = m.createElement('script');
+                        e.set('libraries', [].concat(Array.from(r)).join(''));
+                        for (k in g) {
+                            e.set(k.replace(/[A-Z]/g, function(t) { return '_' + t[0].toLowerCase(); }), g[k]);
+                        }
+                        e.set('callback', c + '.maps.' + q);
+                        a.src = 'https://maps.' + c + 'apis.com/maps/api/js?' + e;
+                        d[q] = resolve;
+                        a.onerror = function() { reject(new Error(p + ' could not load.')); };
+                        a.nonce = m.querySelector('script[nonce]')?.nonce || '';
+                        m.head.append(a);
+                    }));
+                };
+            d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = function(f) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                r.add(f);
+                return u().then(function() { return d[l].apply(d, [f].concat(args)); });
+            };
+        })({ key: apiKey, v: 'weekly' });
 
-        var pickupWrapper = document.getElementById('pickup_location_wrapper');
-        if (pickupWrapper) {
-            var pickupInput = document.createElement('input');
-            pickupInput.type = 'text';
-            pickupInput.id = 'pickup_location_js';
-            pickupInput.placeholder = 'Start typing location...';
-            pickupInput.autocomplete = 'off';
-            pickupInput.style.cssText = 'width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box; background:#fff;';
-            pickupWrapper.appendChild(pickupInput);
+        async function setupPlaceAutocomplete(wrapperId, hiddenFieldPart, placeholder) {
+            var wrapper = document.getElementById(wrapperId);
+            if (!wrapper) {
+                return;
+            }
 
-            var pickupAuto = new google.maps.places.Autocomplete(pickupInput, request);
-            pickupAuto.addListener('place_changed', function() {
-                var place = pickupAuto.getPlace();
-                document.querySelectorAll('input[type="hidden"]').forEach(function(el) {
-                    if (el.name && el.name.includes('pickup_location')) {
-                        el.value = place.formatted_address || pickupInput.value;
+            var places = await google.maps.importLibrary('places');
+            var autocomplete = new places.PlaceAutocompleteElement({
+                includedRegionCodes: ['gr'],
+            });
+
+            autocomplete.id = wrapperId.replace('_wrapper', '_js');
+            autocomplete.placeholder = placeholder;
+            autocomplete.style.width = '100%';
+            wrapper.appendChild(autocomplete);
+
+            autocomplete.addEventListener('gmp-select', async function(event) {
+                var placePrediction = event.placePrediction;
+                if (!placePrediction) {
+                    return;
+                }
+
+                var place = placePrediction.toPlace();
+                await place.fetchFields({ fields: ['formattedAddress'] });
+                var address = place.formattedAddress || '';
+
+                document.querySelectorAll('input[type="hidden"]').forEach(function(input) {
+                    if (input.name && input.name.includes(hiddenFieldPart)) {
+                        input.value = address;
                     }
                 });
             });
         }
 
-        var destWrapper = document.getElementById('pickup_destination_wrapper');
-        if (destWrapper) {
-            var destInput = document.createElement('input');
-            destInput.type = 'text';
-            destInput.id = 'pickup_destination_js';
-            destInput.placeholder = 'Start typing destination...';
-            destInput.autocomplete = 'off';
-            destInput.style.cssText = 'width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box; background:#fff;';
-            destWrapper.appendChild(destInput);
-
-            var destAuto = new google.maps.places.Autocomplete(destInput, request);
-            destAuto.addListener('place_changed', function() {
-                var place = destAuto.getPlace();
-                document.querySelectorAll('input[type="hidden"]').forEach(function(el) {
-                    if (el.name && el.name.includes('pickup_destination')) {
-                        el.value = place.formatted_address || destInput.value;
-                    }
-                });
-            });
+        async function initPlaces() {
+            await setupPlaceAutocomplete('pickup_location_wrapper', 'pickup_location', 'Start typing location...');
+            await setupPlaceAutocomplete('pickup_destination_wrapper', 'pickup_destination', 'Start typing destination...');
         }
-    };
 
-    (function() {
-        var script = document.createElement('script');
-        script.src = <?php echo wp_json_encode($maps_url); ?>;
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
-    })();
+        initPlaces().catch(function(error) {
+            console.error('ViaR Places Autocomplete failed:', error);
+        });
+    })(<?php echo wp_json_encode($api_key); ?>);
     </script>
     <?php
 }

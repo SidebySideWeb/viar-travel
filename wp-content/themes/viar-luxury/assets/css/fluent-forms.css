@@ -22,6 +22,15 @@
   box-sizing: border-box;
 }
 
+/* Google Places API (New) autocomplete element */
+.viar-fluent-form gmp-place-autocomplete,
+#pickup_location_wrapper gmp-place-autocomplete,
+#pickup_destination_wrapper gmp-place-autocomplete {
+  width: 100%;
+  display: block;
+  color-scheme: light;
+}
+
 /* Field spacing */
 .viar-fluent-form .ff-el-group {
   margin-bottom: 1.5rem !important;
