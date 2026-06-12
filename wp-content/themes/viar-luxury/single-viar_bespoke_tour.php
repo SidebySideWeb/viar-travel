@@ -12,7 +12,6 @@ while (have_posts()) :
     the_post();
 
     $post_id = get_the_ID();
-    $inquiry_url = home_url('/inquiry');
 
     $collection_label = viar_field_value('viar_tour_collection_label', 'Signature Collection', $post_id);
     $hero_image = viar_image_url('viar_tour_hero_image', '', $post_id);
@@ -48,7 +47,7 @@ while (have_posts()) :
         $post_id
     );
     $cta_label = viar_field_value('viar_tour_cta_label', 'Inquire About This Journey', $post_id);
-    $cta_url = viar_field_value('viar_tour_cta_url', $inquiry_url, $post_id);
+    $cta_url = viar_tour_inquiry_cta_url($post_id);
     $brochure_url = viar_file_url('viar_tour_brochure', '', $post_id);
     $cta_bg_image = viar_image_url('viar_tour_cta_bg_image', '', $post_id);
     $desktop_experience_layouts = [
@@ -275,6 +274,8 @@ while (have_posts()) :
                 </div>
             </div>
         </section>
+
+        <?php get_template_part('parts/tour-booking-form'); ?>
 
         <?php viar_render_editor_content(); ?>
     </main>

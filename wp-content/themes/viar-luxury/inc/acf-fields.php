@@ -598,7 +598,7 @@ function viar_register_acf_fields(): void {
                 'label' => 'CTA Button URL',
                 'name' => 'viar_tour_cta_url',
                 'type' => 'url',
-                'instructions' => 'Defaults to the site Inquiry page.',
+                'instructions' => 'Leave empty to scroll to the tour booking form on this page. Tours that still point to /inquiry are treated as empty.',
             ],
             [
                 'key' => 'field_viar_tour_brochure',
