@@ -92,6 +92,10 @@ define( 'WP_DEBUG', false );
 /** Google Maps API key for ViaR VIP transfer form Places Autocomplete. */
 define( 'VIAR_GOOGLE_MAPS_API_KEY', 'your-google-maps-api-key' );
 
+/** Optional fallback if .user.ini is not applied by the host (Local uses .user.ini in site root). */
+@ini_set( 'upload_max_filesize', '12M' );
+@ini_set( 'post_max_size', '13M' );
+
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
