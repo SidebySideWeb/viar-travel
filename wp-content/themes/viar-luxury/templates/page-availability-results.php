@@ -40,9 +40,9 @@ if (viar_has_editor_sections()) {
             </a>
 </nav>
 <div class="px-8 mt-auto">
-<button class="w-full py-4 bg-[#C5A059] text-[#00234B] font-cta text-label-caps uppercase tracking-widest hover:opacity-90 transition-opacity">
+<a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>" class="block w-full py-4 text-center bg-[#C5A059] text-[#00234B] font-cta text-label-caps uppercase tracking-widest hover:opacity-90 transition-opacity">
                 Request New Transfer
-            </button>
+            </a>
 </div>
 </aside>
 <!-- Main Content -->

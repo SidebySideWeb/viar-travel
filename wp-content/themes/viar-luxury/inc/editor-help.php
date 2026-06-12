@@ -14,10 +14,10 @@ function viar_editor_help_message(string $post_type): string {
     }
 
     if ($post_type === 'viar_fleet') {
-        return 'ViaR Editor Guide: Use Fleet Card Image for VIP listing cards, Fleet Hero Image for the single fleet page, and BookingPress Shortcode for the booking form.';
+        return 'ViaR Editor Guide: Use Fleet Card Image for VIP listing cards and Fleet Hero Image for the single fleet page. Transfer requests use the Fluent Form on the VIP Transfers page.';
     }
 
-    return 'ViaR Editor Guide: Use Tour Card Image for listings, then fill Hero & Introduction, At a Glance, Experience 1–3 (title, description, image), quote, and Inquiry CTA for the tour detail page. BookingPress shortcode is optional.';
+    return 'ViaR Editor Guide: Use Tour Card Image for listings, then fill Hero & Introduction, At a Glance, Experience 1–3 (title, description, image), quote, and Inquiry CTA for the tour detail page.';
 }
 
 /**

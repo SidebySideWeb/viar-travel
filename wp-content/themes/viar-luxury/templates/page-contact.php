@@ -199,7 +199,7 @@ if (viar_has_editor_sections()) {
                    class="px-10 py-5 bg-[#C5A059] text-[#00234B] font-['Manrope'] text-sm font-medium uppercase tracking-[0.05em] hover:bg-white transition-all">
                     Explore Tours
                 </a>
-                <a href="<?php echo esc_url(home_url('/vip-transfers')); ?>"
+                <a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>"
                    class="px-10 py-5 border-2 border-white text-white font-['Manrope'] text-sm font-medium uppercase tracking-[0.05em] hover:bg-white hover:text-[#00234B] transition-all">
                     VIP Transfers
                 </a>

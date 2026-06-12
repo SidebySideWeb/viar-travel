@@ -24,7 +24,7 @@ function viar_luxury_enqueue_assets(): void {
     wp_enqueue_style('viar-luxury-main', get_template_directory_uri() . '/assets/css/style.css', [], $version);
     wp_enqueue_style('viar-luxury-layout', get_template_directory_uri() . '/assets/css/layout.css', ['viar-luxury-main'], $version);
     wp_enqueue_style('viar-luxury-forms', get_template_directory_uri() . '/assets/css/forms.css', ['viar-luxury-main', 'viar-luxury-layout'], $version);
-    wp_enqueue_style('viar-luxury-bookingpress', get_template_directory_uri() . '/assets/css/bookingpress.css', ['viar-luxury-main', 'viar-luxury-forms'], $version);
+    wp_enqueue_style('viar-luxury-fluent-forms', get_template_directory_uri() . '/assets/css/fluent-forms.css', ['viar-luxury-forms'], $version);
     wp_enqueue_style('viar-luxury-icons', get_template_directory_uri() . '/assets/css/icons.css', ['viar-luxury-main'], $version);
     wp_enqueue_style('viar-luxury-messenger-buttons', get_template_directory_uri() . '/assets/css/messenger-buttons.css', ['viar-luxury-icons'], $version);
 

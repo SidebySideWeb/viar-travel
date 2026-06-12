@@ -44,9 +44,9 @@ if (viar_has_editor_sections()) {
             </a>
 </nav>
 <div class="mt-auto px-8 space-y-4">
-<button class="w-full bg-[#C5A059] text-[#00234B] font-cta text-[11px] uppercase py-3 tracking-widest hover:opacity-90 transition-opacity">
+<a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>" class="block w-full text-center bg-[#C5A059] text-[#00234B] font-cta text-[11px] uppercase py-3 tracking-widest hover:opacity-90 transition-opacity">
                 Request New Transfer
-            </button>
+            </a>
 <div class="pt-6 space-y-2">
 <a class="flex items-center gap-2 text-slate-400 font-label-caps text-[10px] hover:text-[#C5A059] transition-colors" href="#">
 <span class="material-symbols-outlined text-sm" data-icon="support_agent">support_agent</span>
@@ -126,9 +126,9 @@ if (viar_has_editor_sections()) {
 <span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
 <p class="font-label-caps text-[10px]">Guaranteed Executive Class Vehicles</p>
 </div>
-<button class="w-full md:w-auto bg-[#C5A059] text-[#00234B] font-cta text-sm uppercase px-12 py-5 tracking-widest hover:opacity-90 active:scale-95 transition-all">
+<a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>" class="inline-block w-full md:w-auto text-center bg-[#C5A059] text-[#00234B] font-cta text-sm uppercase px-12 py-5 tracking-widest hover:opacity-90 active:scale-95 transition-all">
                         Check Availability
-                    </button>
+                    </a>
 </div>
 </div>
 <!-- Contextual Information -->

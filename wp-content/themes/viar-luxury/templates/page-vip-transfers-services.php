@@ -15,6 +15,7 @@ if (viar_has_editor_sections()) {
 }
 
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-bc1dabf815b0.jpg');
+$viar_vip_form_href = viar_vip_transfer_form_href();
 ?>
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <!-- Hero Section -->
@@ -30,9 +31,9 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 <p class="font-body-lg text-body-lg opacity-90 mb-10 leading-relaxed">
                     Elevate your journey with our bespoke transport solutions. From armored executive protection to private airside greetings, we manage every detail with absolute discretion.
                 </p>
-<button class="bg-[#C5A059] text-primary px-10 py-5 font-cta text-cta uppercase tracking-widest hover:bg-[#b08d48] transition-all">
+<a href="<?php echo viar_esc_vip_transfer_href($viar_vip_form_href); ?>" class="inline-block bg-[#C5A059] text-primary px-10 py-5 font-cta text-cta uppercase tracking-widest hover:bg-[#b08d48] transition-all">
                     Inquire for Logistics
-                </button>
+                </a>
 </div>
 </div>
 </header>
@@ -45,10 +46,10 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 <p class="font-body-md text-body-md text-on-surface-variant mb-12 max-w-sm">
                     We believe that luxury is found in the things you don't have to think about. Our logistical experts ensure your arrival is as effortless as your destination.
                 </p>
-<div class="flex items-center gap-4 group cursor-pointer">
+<a href="#vip-fleet" class="flex items-center gap-4 group">
 <span class="w-12 h-[1px] bg-secondary group-hover:w-20 transition-all duration-500"></span>
 <span class="font-label-caps text-label-caps text-secondary uppercase">View Full Fleet</span>
-</div>
+</a>
 </div>
 <!-- Services Bento Grid -->
 <div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12 min-w-0">
@@ -95,7 +96,7 @@ $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri(
 </div>
 </div>
 </section>
-<section class="py-[120px] bg-white border-t border-[#F2F0ED]">
+<section id="vip-fleet" class="py-[120px] bg-white border-t border-[#F2F0ED] scroll-mt-28">
 <div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
 <div class="mb-14">
 <span class="font-label-caps text-label-caps text-[#C5A059] mb-3 block">Fleet Booking</span>
@@ -114,16 +115,18 @@ if ($fleet_query->have_posts()) :
         $fleet_excerpt = get_the_excerpt();
         $fleet_label = viar_field_value('viar_fleet_card_label', 'VIP Fleet', get_the_ID());
         ?>
-        <a href="<?php echo esc_url(get_permalink()); ?>" class="group block border border-[#00234B]/10 hover:border-[#C5A059] transition-colors p-6">
-            <?php $fleet_card_image = viar_image_url('viar_fleet_card_image', '', get_the_ID()); ?>
-            <?php if ($fleet_card_image !== '') : ?>
-                <img src="<?php echo esc_url($fleet_card_image); ?>" class="w-full h-56 object-cover mb-5" alt="<?php echo esc_attr(get_the_title()); ?>">
-            <?php endif; ?>
-            <p class="font-label-caps text-[10px] text-[#C5A059] mb-2"><?php echo esc_html($fleet_label); ?></p>
-            <h3 class="font-headline-h2 text-2xl text-[#00234B] mb-2"><?php the_title(); ?></h3>
-            <p class="font-body-md text-[#00234B]/70 mb-4"><?php echo esc_html($fleet_excerpt); ?></p>
-            <span class="font-cta text-cta uppercase tracking-[0.08em] text-[#C5A059]">Book This Fleet</span>
-        </a>
+        <article class="group border border-[#00234B]/10 hover:border-[#C5A059] transition-colors p-6">
+            <a href="<?php echo esc_url(get_permalink()); ?>" class="block">
+                <?php $fleet_card_image = viar_image_url('viar_fleet_card_image', '', get_the_ID()); ?>
+                <?php if ($fleet_card_image !== '') : ?>
+                    <img src="<?php echo esc_url($fleet_card_image); ?>" class="w-full h-56 object-cover mb-5" alt="<?php echo esc_attr(get_the_title()); ?>">
+                <?php endif; ?>
+                <p class="font-label-caps text-[10px] text-[#C5A059] mb-2"><?php echo esc_html($fleet_label); ?></p>
+                <h3 class="font-headline-h2 text-2xl text-[#00234B] mb-2"><?php the_title(); ?></h3>
+                <p class="font-body-md text-[#00234B]/70 mb-4"><?php echo esc_html($fleet_excerpt); ?></p>
+            </a>
+            <a href="<?php echo viar_esc_vip_transfer_href($viar_vip_form_href); ?>" class="font-cta text-cta uppercase tracking-[0.08em] text-[#C5A059] hover:text-[#00234B] transition-colors">Book This Fleet</a>
+        </article>
         <?php
     endwhile;
     wp_reset_postdata();
@@ -136,6 +139,7 @@ endif;
 </div>
 </div>
 </section>
+<?php get_template_part('parts/vip-transfer-form'); ?>
 <!-- Content / Stats Section -->
 <section class="bg-[#F2F0ED] py-[120px]">
 <div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
@@ -169,9 +173,9 @@ endif;
                 Connect with our dedicated logistics desk to arrange your global transfers, security details, and concierge needs. One point of contact for every mile of your journey.
             </p>
 <div class="flex flex-col sm:flex-row justify-center gap-6">
-<button class="bg-[#C5A059] text-primary px-12 py-5 font-cta text-cta uppercase tracking-[0.2em] hover:bg-[#b08d48] transition-all">
+<a href="<?php echo viar_esc_vip_transfer_href($viar_vip_form_href); ?>" class="inline-block bg-[#C5A059] text-primary px-12 py-5 font-cta text-cta uppercase tracking-[0.2em] hover:bg-[#b08d48] transition-all">
                     Inquire for Logistics
-                </button>
+                </a>
 <button class="border border-[#C5A059] text-[#C5A059] px-12 py-5 font-cta text-cta uppercase tracking-[0.2em] hover:bg-[#C5A059]/5 transition-all">
                     Download Fleet PDF
                 </button>

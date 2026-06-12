@@ -52,7 +52,7 @@ if (viar_has_editor_sections()) {
 </div>
 </nav>
 <div class="px-8 mt-auto space-y-4">
-<button class="w-full border border-[#C5A059] text-[#00234B] font-cta text-cta py-3 hover:bg-[#C5A059]/5 transition-colors">Request New Transfer</button>
+<a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>" class="block w-full text-center border border-[#C5A059] text-[#00234B] font-cta text-cta py-3 hover:bg-[#C5A059]/5 transition-colors">Request New Transfer</a>
 <div class="flex gap-4 pt-6">
 <a class="flex items-center gap-2 font-label-caps text-[10px] text-slate-400 hover:text-[#C5A059]" href="#">
 <span class="material-symbols-outlined text-sm">support_agent</span> Support

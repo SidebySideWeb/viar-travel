@@ -12,9 +12,7 @@
   margin-bottom: 1.5rem;
 }
 
-.wpforms-submit-container + .viar-messenger-buttons,
-.bookingpress-main-container ~ .viar-messenger-buttons,
-.bookingpress-form-wrapper ~ .viar-messenger-buttons {
+.wpforms-submit-container + .viar-messenger-buttons {
   margin-top: 2.5rem;
 }
 

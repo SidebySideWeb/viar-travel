@@ -48,9 +48,9 @@ $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Check Availabili
             </a>
 </nav>
 <div class="mt-auto px-8 space-y-4">
-<button class="w-full bg-[#C5A059] text-[#00234B] font-cta text-[11px] uppercase py-3 tracking-widest hover:opacity-90 transition-opacity">
+<a href="<?php echo esc_url(viar_vip_transfer_form_url()); ?>" class="block w-full text-center bg-[#C5A059] text-[#00234B] font-cta text-[11px] uppercase py-3 tracking-widest hover:opacity-90 transition-opacity">
                 Request New Transfer
-            </button>
+            </a>
 <div class="pt-6 space-y-2">
 <a class="flex items-center gap-2 text-slate-400 font-label-caps text-[10px] hover:text-[#C5A059] transition-colors" href="#">
 <span class="material-symbols-outlined text-sm" data-icon="support_agent">support_agent</span>
@@ -177,7 +177,7 @@ $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Check Availabili
 </div>
 </main>
 <!-- Footer Section -->
-<section class="max-w-6xl mx-auto px-6 py-16"><div class="bg-white/90 border border-[#C5A059]/30 p-8"><?php echo do_shortcode('[bookingpress_form service_id="1"]'); ?><?php viar_render_messenger_buttons(['context' => 'form']); ?></div></section>
+<?php get_template_part('parts/vip-transfer-form'); ?>
 <?php viar_render_editor_content(); ?>
 </main>
 <?php get_footer(); ?>

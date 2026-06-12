@@ -51,8 +51,6 @@ while (have_posts()) :
     $cta_url = viar_field_value('viar_tour_cta_url', $inquiry_url, $post_id);
     $brochure_url = viar_file_url('viar_tour_brochure', '', $post_id);
     $cta_bg_image = viar_image_url('viar_tour_cta_bg_image', '', $post_id);
-    $booking_shortcode = viar_field_value('viar_tour_booking_shortcode', '', $post_id);
-
     $desktop_experience_layouts = [
         ['col' => 'col-span-12 md:col-span-8', 'aspect' => 'aspect-[16/9]'],
         ['col' => 'col-span-12 md:col-span-4 md:mt-24', 'aspect' => 'aspect-[3/4]'],
@@ -277,14 +275,6 @@ while (have_posts()) :
                 </div>
             </div>
         </section>
-
-        <?php if ($booking_shortcode !== '') : ?>
-            <section class="max-w-[1440px] mx-auto px-8 pb-24 md:px-12">
-                <div class="bg-white/90 border border-[#C5A059]/30 p-8">
-                    <?php echo do_shortcode($booking_shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                </div>
-            </section>
-        <?php endif; ?>
 
         <?php viar_render_editor_content(); ?>
     </main>

@@ -137,6 +137,20 @@ function viar_wpforms_messenger_buttons($form_data, string $button): void {
         return;
     }
 
+    $form_id = isset($form_data['id']) ? (int) $form_data['id'] : 0;
+    if (in_array($form_id, viar_messenger_excluded_wpform_ids(), true)) {
+        return;
+    }
+
     viar_render_messenger_buttons(['context' => 'form']);
+}
+
+/**
+ * WPForms IDs that should not show messenger buttons.
+ *
+ * @return int[]
+ */
+function viar_messenger_excluded_wpform_ids(): array {
+    return apply_filters('viar_messenger_excluded_wpform_ids', [15]);
 }
 add_action('wpforms_display_submit_after', 'viar_wpforms_messenger_buttons', 20, 2);

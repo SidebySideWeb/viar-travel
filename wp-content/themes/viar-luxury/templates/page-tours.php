@@ -159,8 +159,6 @@ $tour_query = new WP_Query($tour_query_args);
 <a href="<?php echo esc_url($viar_hero_cta_url); ?>" class="bg-[#00234B] text-white px-12 py-5 font-cta text-cta uppercase tracking-widest hover:bg-[#003a7a] transition-all duration-300 inline-block"><?php echo esc_html($viar_hero_cta_label); ?></a>
 </div>
 </section>
-<!-- Footer Navigation Shell -->
-<section class="max-w-6xl mx-auto px-6 py-16"><div class="bg-white/90 border border-[#C5A059]/30 p-8"><?php echo do_shortcode('[bookingpress_form service_id="2"]'); ?><?php viar_render_messenger_buttons(['context' => 'form']); ?></div></section>
 <?php viar_render_editor_content(); ?>
 </main>
 <?php get_footer(); ?>

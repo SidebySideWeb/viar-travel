@@ -304,13 +304,6 @@ function viar_register_acf_fields(): void {
                 'name' => 'viar_fleet_image',
                 'type' => 'url',
             ],
-            [
-                'key' => 'field_viar_fleet_booking_shortcode',
-                'label' => 'BookingPress Shortcode',
-                'name' => 'viar_fleet_booking_shortcode',
-                'type' => 'text',
-                'instructions' => 'Example: [bookingpress_form service_id=\"1\"]',
-            ],
         ],
         'location' => [
             [
@@ -324,7 +317,7 @@ function viar_register_acf_fields(): void {
         'style' => 'default',
         'position' => 'normal',
         'show_in_rest' => 1,
-        'description' => 'Fleet booking page content and BookingPress shortcode for this template.',
+        'description' => 'Fleet booking page content. Transfer requests use the Fluent Form on the VIP Transfers page.',
     ]);
 
     acf_add_local_field_group([
@@ -356,13 +349,6 @@ function viar_register_acf_fields(): void {
                 'preview_size' => 'medium',
                 'library' => 'all',
             ],
-            [
-                'key' => 'field_viar_fleet_booking_shortcode_post',
-                'label' => 'BookingPress Shortcode',
-                'name' => 'viar_fleet_booking_shortcode',
-                'type' => 'text',
-                'instructions' => 'Example: [bookingpress_form service_id="1"]',
-            ],
         ],
         'location' => [
             [
@@ -376,7 +362,7 @@ function viar_register_acf_fields(): void {
         'style' => 'default',
         'position' => 'normal',
         'show_in_rest' => 1,
-        'description' => 'Fleet Card Image is used on VIP Transfers listing cards. Fleet Hero Image is used on the single fleet page. BookingPress Shortcode controls the booking form.',
+        'description' => 'Fleet Card Image is used on VIP Transfers listing cards. Fleet Hero Image is used on the single fleet page. Transfer requests use the Fluent Form on the VIP Transfers page.',
     ]);
 
     acf_add_local_field_group([
@@ -632,19 +618,6 @@ function viar_register_acf_fields(): void {
                 'preview_size' => 'medium',
                 'library' => 'all',
                 'instructions' => 'Optional subtle background for the desktop CTA panel.',
-            ],
-            [
-                'key' => 'field_viar_tour_tab_booking',
-                'label' => 'Booking',
-                'name' => '',
-                'type' => 'tab',
-            ],
-            [
-                'key' => 'field_viar_tour_booking_shortcode',
-                'label' => 'BookingPress Shortcode',
-                'name' => 'viar_tour_booking_shortcode',
-                'type' => 'text',
-                'instructions' => 'Optional. Example: [bookingpress_form service_id="2"]',
             ],
         ],
         'location' => [

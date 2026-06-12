@@ -23,7 +23,6 @@ $fleet_image = viar_field_value(
     'viar_fleet_image',
     esc_url(get_template_directory_uri() . '/assets/images/remote-a8dae0725b5f.jpg')
 );
-$fleet_shortcode = viar_field_value('viar_fleet_booking_shortcode', '[bookingpress_form service_id="1"]');
 ?>
 <main class="site-main">
     <section class="max-w-[1440px] mx-auto px-12 py-20">
@@ -37,9 +36,8 @@ $fleet_shortcode = viar_field_value('viar_fleet_booking_shortcode', '[bookingpre
                 <span class="font-label-caps text-label-caps text-[#C5A059] mb-4 block"><?php echo esc_html($fleet_subtitle); ?></span>
                 <h1 class="font-headline-h1 text-headline-h1 text-[#00234B] mb-6"><?php echo esc_html($fleet_title); ?></h1>
                 <p class="font-body-lg text-body-lg text-[#00234B]/70 mb-10"><?php echo esc_html($fleet_description); ?></p>
-                <div class="bg-white border border-[#C5A059]/30 p-8">
-                    <?php echo do_shortcode($fleet_shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    <?php viar_render_messenger_buttons(['context' => 'form']); ?>
+                <div class="bg-[#F9F9F9] p-8 md:p-12 border border-[#e2e2e2]">
+                    <?php viar_render_vip_transfer_form(); ?>
                 </div>
             </div>
         </div>

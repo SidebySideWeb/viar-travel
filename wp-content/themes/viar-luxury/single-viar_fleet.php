@@ -17,7 +17,6 @@ while (have_posts()) :
     the_post();
     $fleet_subtitle = viar_field_value('viar_fleet_card_label', 'VIP Fleet', get_the_ID());
     $fleet_description = get_the_excerpt() ?: 'Reserve this fleet option with our concierge team and finalize your transfer details instantly.';
-    $fleet_shortcode = viar_field_value('viar_fleet_booking_shortcode', '[bookingpress_form service_id="1"]', get_the_ID());
     $fleet_hero_image = viar_image_url('viar_fleet_hero_image', '', get_the_ID());
     ?>
     <main class="site-main">
@@ -34,9 +33,8 @@ while (have_posts()) :
                     <span class="font-label-caps text-label-caps text-[#C5A059] mb-4 block"><?php echo esc_html($fleet_subtitle); ?></span>
                     <h1 class="font-headline-h1 text-headline-h1 text-[#00234B] mb-6"><?php the_title(); ?></h1>
                     <p class="font-body-lg text-body-lg text-[#00234B]/70 mb-10"><?php echo esc_html($fleet_description); ?></p>
-                    <div class="bg-white border border-[#C5A059]/30 p-8">
-                        <?php echo do_shortcode($fleet_shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                        <?php viar_render_messenger_buttons(['context' => 'form']); ?>
+                    <div class="bg-[#F9F9F9] p-8 md:p-10 border border-[#e2e2e2]">
+                        <?php viar_render_vip_transfer_form(); ?>
                     </div>
                 </div>
             </div>

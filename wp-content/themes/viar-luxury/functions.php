@@ -9,7 +9,7 @@ require_once get_template_directory() . '/inc/setup.php';
 require_once get_template_directory() . '/inc/compatibility.php';
 require_once get_template_directory() . '/inc/enqueue.php';
 require_once get_template_directory() . '/inc/auto-pages.php';
-require_once get_template_directory() . '/inc/bookingpress.php';
+require_once get_template_directory() . '/inc/fluent-forms.php';
 require_once get_template_directory() . '/inc/rankmath.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/performance.php';
