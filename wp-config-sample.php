@@ -89,7 +89,8 @@ define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
 
-
+/** Google Maps API key for ViaR VIP transfer form Places Autocomplete. */
+define( 'VIAR_GOOGLE_MAPS_API_KEY', 'your-google-maps-api-key' );
 
 /* That's all, stop editing! Happy publishing. */
 

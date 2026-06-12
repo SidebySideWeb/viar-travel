@@ -76,9 +76,13 @@ function viar_render_vip_transfer_form(): void {
  * Google Maps API key for Places Autocomplete on transfer forms.
  */
 function viar_google_maps_api_key(): string {
-    $key = get_theme_mod('viar_google_maps_api_key', 'AIzaSyDMBzfNN4kpPh6lTw9KKy5GoF-zzOlwwfg');
+    if (!defined('VIAR_GOOGLE_MAPS_API_KEY')) {
+        return (string) apply_filters('viar_google_maps_api_key', '');
+    }
 
-    return (string) apply_filters('viar_google_maps_api_key', is_string($key) ? $key : '');
+    $key = VIAR_GOOGLE_MAPS_API_KEY;
+
+    return (string) apply_filters('viar_google_maps_api_key', is_string($key) ? trim($key) : '');
 }
 
 /**
