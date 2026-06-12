@@ -108,10 +108,9 @@
   }
 }
 
-/* Labels */
-.viar-fluent-form .ff-el-input--label label,
-.viar-fluent-form .ff-el-group > label,
-.viar-fluent-form label.ff-el-form-check-label {
+/* Labels — exclude checkbox / T&C consent labels (styled below) */
+.viar-fluent-form .ff-el-input--label label:not(.ff-el-form-check-label):not(.ff_tc_label),
+.viar-fluent-form .ff-el-group > label:not(.ff-el-form-check-label):not(.ff_tc_label) {
   display: block !important;
   font-family: Manrope, sans-serif !important;
   font-size: 12px !important;
@@ -188,7 +187,7 @@
   margin-bottom: 0.75rem !important;
 }
 
-.viar-fluent-form .ff-el-form-check-label {
+.viar-fluent-form .ff-el-form-check-label:not(.ff_tc_label) {
   display: flex !important;
   align-items: flex-start !important;
   gap: 0.5rem !important;
@@ -200,12 +199,58 @@
   cursor: pointer !important;
 }
 
+/* Terms & Conditions — Fluent Forms uses table-row / table-cell layout */
+.viar-fluent-form .ff-el-tc {
+  display: table !important;
+  width: 100% !important;
+  border: none !important;
+}
+
+.viar-fluent-form .ff-el-tc label.ff_tc_label {
+  display: table-row !important;
+  font-family: Manrope, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  color: var(--viar-muted) !important;
+  margin-bottom: 0 !important;
+  line-height: 1.6 !important;
+  cursor: pointer !important;
+}
+
+.viar-fluent-form .ff-el-tc label.ff_tc_label > span,
+.viar-fluent-form .ff-el-tc label.ff_tc_label > .ff_t_c {
+  display: table-cell !important;
+  vertical-align: top !important;
+}
+
+.viar-fluent-form .ff-el-tc label.ff_tc_label > span.ff_tc_checkbox {
+  width: 20px !important;
+  padding-top: 8px !important;
+}
+
+.viar-fluent-form .ff-el-tc .ff_t_c {
+  margin: 0 !important;
+  padding: 0 0.5rem 0 0 !important;
+}
+
+.viar-fluent-form .ff-el-tc .ff_t_c a {
+  color: var(--viar-navy) !important;
+  text-decoration: underline !important;
+}
+
 .viar-fluent-form input[type="checkbox"],
 .viar-fluent-form input[type="radio"] {
   width: auto !important;
   min-height: auto !important;
   margin-top: 0.2rem !important;
   accent-color: var(--viar-gold) !important;
+}
+
+.viar-fluent-form .ff-el-tc .ff_tc_checkbox input[type="checkbox"] {
+  margin-top: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 /* Section breaks & descriptions */
