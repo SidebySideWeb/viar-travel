@@ -15,7 +15,7 @@
 <?php wp_body_open(); ?>
 <header class="viar-header fixed top-0 left-0 right-0 z-50 bg-[#FDFCF8]/90 backdrop-blur border-b border-[#C5A059]/20">
   <div class="relative max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-y-2">
-    <div class="viar-logo text-[#00234B] shrink-0">
+    <div class="viar-logo viar-logo--header text-[#00234B] shrink-0">
       <?php if (function_exists('the_custom_logo') && has_custom_logo()) : ?>
         <?php the_custom_logo(); ?>
       <?php else : ?>
