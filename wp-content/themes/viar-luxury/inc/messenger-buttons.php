@@ -6,6 +6,18 @@
  */
 
 /**
+ * Allow viber:// links in sanitized URLs.
+ *
+ * @param string[] $protocols Allowed URL protocols.
+ * @return string[]
+ */
+function viar_allow_viber_protocol(array $protocols): array {
+    $protocols[] = 'viber';
+    return $protocols;
+}
+add_filter('kses_allowed_protocols', 'viar_allow_viber_protocol');
+
+/**
  * Sanitize a phone number to digits only.
  */
 function viar_messenger_phone_digits(string $phone): string {
@@ -59,7 +71,11 @@ function viar_get_viber_url(): string {
         return '';
     }
 
-    if (preg_match('/^viber:\/\//i', $contact) || preg_match('/^https?:\/\//i', $contact)) {
+    if (preg_match('/^viber:\/\//i', $contact)) {
+        return trim($contact);
+    }
+
+    if (preg_match('/^https?:\/\//i', $contact)) {
         return esc_url($contact);
     }
 
@@ -68,7 +84,18 @@ function viar_get_viber_url(): string {
         return '';
     }
 
-    return 'viber://chat?number=%2B' . $digits;
+    return 'viber://chat?number=+' . $digits;
+}
+
+/**
+ * Escape messenger hrefs without breaking viber:// deep links.
+ */
+function viar_esc_messenger_href(string $url): string {
+    if (preg_match('/^viber:\/\//i', $url)) {
+        return esc_attr($url);
+    }
+
+    return esc_url($url);
 }
 
 /**

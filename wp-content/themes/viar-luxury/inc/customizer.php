@@ -60,12 +60,12 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
     ]);
 
     $wp_customize->add_setting('viar_viber_number', [
-        'default' => '',
+        'default' => '+306988065241',
         'sanitize_callback' => 'sanitize_text_field',
     ]);
     $wp_customize->add_control('viar_viber_number', [
         'label' => __('Viber Number or Link', 'viar-luxury'),
-        'description' => __('Phone number (e.g. +30 210 123 4567) or full Viber link. Leave empty to use the Concierge Phone.', 'viar-luxury'),
+        'description' => __('Phone number (e.g. +30 698 806 5241) or full link such as viber://chat?number=+306988065241. Used in the footer and under forms.', 'viar-luxury'),
         'section' => 'viar_footer_content',
         'type' => 'text',
     ]);

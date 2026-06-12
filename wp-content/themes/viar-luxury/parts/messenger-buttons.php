@@ -23,7 +23,7 @@ if ($context !== '') {
 ?>
 <div class="<?php echo esc_attr($wrapper_class); ?>">
     <?php if ($whatsapp_url !== '') : ?>
-        <a class="viar-messenger-btn viar-messenger-btn--whatsapp" href="<?php echo esc_url($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">
+        <a class="viar-messenger-btn viar-messenger-btn--whatsapp" href="<?php echo viar_esc_messenger_href($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">
             <span class="viar-messenger-btn__icon">
                 <?php viar_render_icon('whatsapp', ['size' => 'md', 'color' => 'gold']); ?>
             </span>
@@ -32,7 +32,7 @@ if ($context !== '') {
     <?php endif; ?>
 
     <?php if ($viber_url !== '') : ?>
-        <a class="viar-messenger-btn viar-messenger-btn--viber" href="<?php echo esc_url($viber_url); ?>" target="_blank" rel="noopener noreferrer">
+        <a class="viar-messenger-btn viar-messenger-btn--viber" href="<?php echo viar_esc_messenger_href($viber_url); ?>" target="_blank" rel="noopener noreferrer">
             <span class="viar-messenger-btn__icon">
                 <?php viar_render_icon('viber', ['size' => 'md', 'color' => 'gold']); ?>
             </span>
