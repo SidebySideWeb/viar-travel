@@ -48,6 +48,28 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
         'type' => 'textarea',
     ]);
 
+    $wp_customize->add_setting('viar_whatsapp_number', [
+        'default' => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('viar_whatsapp_number', [
+        'label' => __('WhatsApp Number', 'viar-luxury'),
+        'description' => __('Used for WhatsApp buttons in the footer and under forms. Leave empty to use the Concierge Phone.', 'viar-luxury'),
+        'section' => 'viar_footer_content',
+        'type' => 'text',
+    ]);
+
+    $wp_customize->add_setting('viar_viber_number', [
+        'default' => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('viar_viber_number', [
+        'label' => __('Viber Number or Link', 'viar-luxury'),
+        'description' => __('Phone number (e.g. +30 210 123 4567) or full Viber link. Leave empty to use the Concierge Phone.', 'viar-luxury'),
+        'section' => 'viar_footer_content',
+        'type' => 'text',
+    ]);
+
     $fields = [
         'viar_footer_phone' => ['Concierge Phone', '+30 000 000 0000'],
         'viar_footer_email' => ['Concierge Email', 'concierge@viartravel.com'],

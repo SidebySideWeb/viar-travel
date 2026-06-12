@@ -160,7 +160,7 @@ $tour_query = new WP_Query($tour_query_args);
 </div>
 </section>
 <!-- Footer Navigation Shell -->
-<section class="max-w-6xl mx-auto px-6 py-16"><div class="bg-white/90 border border-[#C5A059]/30 p-8"><?php echo do_shortcode('[bookingpress_form service_id="2"]'); ?></div></section>
+<section class="max-w-6xl mx-auto px-6 py-16"><div class="bg-white/90 border border-[#C5A059]/30 p-8"><?php echo do_shortcode('[bookingpress_form service_id="2"]'); ?><?php viar_render_messenger_buttons(['context' => 'form']); ?></div></section>
 <?php viar_render_editor_content(); ?>
 </main>
 <?php get_footer(); ?>

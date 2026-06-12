@@ -39,6 +39,7 @@ $fleet_shortcode = viar_field_value('viar_fleet_booking_shortcode', '[bookingpre
                 <p class="font-body-lg text-body-lg text-[#00234B]/70 mb-10"><?php echo esc_html($fleet_description); ?></p>
                 <div class="bg-white border border-[#C5A059]/30 p-8">
                     <?php echo do_shortcode($fleet_shortcode); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <?php viar_render_messenger_buttons(['context' => 'form']); ?>
                 </div>
             </div>
         </div>

@@ -16,6 +16,7 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
           <a href="<?php echo esc_url(home_url('/')); ?>" class="font-['Cormorant_Garamond'] text-2xl tracking-[0.08em] text-[#00234B] dark:text-white">VIAR</a>
         <?php endif; ?>
       </div>
+      <?php viar_render_messenger_buttons(['context' => 'footer']); ?>
       <p class="viar-logo-subtitle font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($logo_subtitle); ?></p>
       <p class="font-sans text-sm text-[#00234B]/60 dark:text-slate-400">
         <?php if ($footer_phone !== '') : ?>

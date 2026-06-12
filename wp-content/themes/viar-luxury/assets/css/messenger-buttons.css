@@ -1,0 +1,70 @@
+/* WhatsApp & Viber contact buttons */
+
+.viar-messenger-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.viar-messenger-buttons--footer {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.wpforms-submit-container + .viar-messenger-buttons {
+  margin-top: 1rem;
+}
+
+.viar-messenger-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  text-decoration: none;
+  color: #74777f;
+  transition: color 0.2s ease;
+}
+
+.viar-messenger-btn:hover,
+.viar-messenger-btn:focus-visible {
+  color: #00234b;
+  outline: none;
+}
+
+.viar-messenger-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  background: #1a1c1c;
+  color: #fff;
+}
+
+.viar-messenger-btn__icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
+}
+
+.viar-messenger-btn__label {
+  font-family: Manrope, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.viar-messenger-buttons--footer .viar-messenger-btn__label {
+  font-size: 0.875rem;
+}
+
+.dark .viar-messenger-btn {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.dark .viar-messenger-btn:hover,
+.dark .viar-messenger-btn:focus-visible {
+  color: #fff;
+}

@@ -20,3 +20,4 @@ require_once get_template_directory() . '/inc/media.php';
 require_once get_template_directory() . '/inc/content-types.php';
 require_once get_template_directory() . '/inc/editor-help.php';
 require_once get_template_directory() . '/inc/wpforms.php';
+require_once get_template_directory() . '/inc/messenger-buttons.php';
