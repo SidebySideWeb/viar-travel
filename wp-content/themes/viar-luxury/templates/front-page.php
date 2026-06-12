@@ -19,6 +19,8 @@ $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Begin Your Journ
 $viar_hero_cta_url = viar_field_value('viar_hero_cta_url', home_url('/inquiry'));
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-2018f584e2ab.jpg');
 $viar_hero_has_video = viar_home_hero_has_video();
+$viar_hero_vimeo_id = viar_get_home_hero_vimeo_id();
+$viar_hero_mobile_video = $viar_hero_vimeo_id !== '';
 $viar_home_tours_label = viar_field_value('viar_home_tours_label', 'WORLDWIDE CURATION');
 $viar_home_tours_title = viar_field_value('viar_home_tours_title', 'EXPLORE OUR TRIPS');
 $viar_home_zigzag_row1_label = viar_field_value('viar_home_zigzag_row1_label', 'Personalized Vision');
@@ -56,7 +58,7 @@ $home_tours_query = new WP_Query([
 ?>
 <main class="site-main">
 <!-- Section 1: Hero -->
-<section class="viar-hero-flush relative h-screen w-full flex items-center justify-center overflow-hidden">
+<section class="viar-hero-flush viar-home-hero relative h-screen w-full flex items-center justify-center overflow-hidden<?php echo $viar_hero_mobile_video ? ' viar-home-hero--mobile-video' : ''; ?>">
 <?php
 viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 ?>
@@ -66,12 +68,23 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 <p class="font-body-lg text-body-lg mb-12 max-w-xl mx-auto opacity-90"><?php echo esc_html($viar_hero_description); ?></p>
 <a href="<?php echo esc_url($viar_hero_cta_url); ?>" class="px-10 py-5 bg-[#C5A059] text-[#00234B] font-cta text-cta uppercase tracking-widest hover:bg-white transition-colors duration-500 inline-block"><?php echo esc_html($viar_hero_cta_label); ?></a>
 </div>
+<?php elseif ($viar_hero_has_video) : ?>
+<div class="viar-home-hero__mobile-content relative z-10 text-center text-white px-6 md:hidden">
+<h1 class="font-display text-display mb-6 max-w-4xl mx-auto"><?php echo esc_html($viar_hero_title); ?></h1>
+<p class="font-body-lg text-body-lg mb-10 max-w-xl mx-auto opacity-90"><?php echo esc_html($viar_hero_description); ?></p>
+<?php if ($viar_hero_mobile_video) : ?>
+    <?php viar_render_hero_mobile_play_button(); ?>
+<?php endif; ?>
+</div>
 <?php endif; ?>
 <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
 <span class="text-xs font-label-caps tracking-widest uppercase">Scroll</span>
 <span class="material-symbols-outlined animate-bounce">expand_more</span>
 </div>
 </section>
+<?php if ($viar_hero_mobile_video) : ?>
+    <?php viar_render_hero_video_modal($viar_hero_vimeo_id); ?>
+<?php endif; ?>
 <!-- Section 2: Explore Our Trips (Carousel) -->
 <section class="py-[120px] bg-white">
 <div class="max-w-[1440px] mx-auto px-6 md:px-12">

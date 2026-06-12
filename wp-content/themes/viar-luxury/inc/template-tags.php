@@ -108,6 +108,28 @@ function viar_vimeo_background_embed_url(string $video_id): string {
 }
 
 /**
+ * Vimeo player URL for the mobile popup modal.
+ */
+function viar_vimeo_modal_embed_url(string $video_id): string {
+    return add_query_arg(
+        [
+            'autoplay' => '1',
+            'title' => '0',
+            'byline' => '0',
+            'portrait' => '0',
+        ],
+        'https://player.vimeo.com/video/' . rawurlencode($video_id)
+    );
+}
+
+/**
+ * Parsed Vimeo ID for the homepage hero popup player.
+ */
+function viar_get_home_hero_vimeo_id(?int $post_id = null): string {
+    return viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id));
+}
+
+/**
  * Render a full-bleed hero background with optional MP4/Vimeo video and image fallback.
  */
 function viar_render_hero_background(
@@ -117,21 +139,22 @@ function viar_render_hero_background(
     ?int $post_id = null
 ): void {
     $mp4_url = viar_get_home_hero_mp4_url($post_id);
-    $vimeo_id = $mp4_url === '' ? viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id)) : '';
-    $has_video = $mp4_url !== '' || $vimeo_id !== '';
+    $vimeo_id = viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id));
+    $desktop_vimeo_id = $mp4_url === '' ? $vimeo_id : '';
+    $desktop_hides_image = $mp4_url !== '' || $desktop_vimeo_id !== '';
+    $image_classes = trim($image_class . ($desktop_hides_image ? ' viar-hero-bg-image--mobile-only' : ''));
     ?>
-    <div class="absolute inset-0 z-0">
-        <?php if ($image_url !== '' && $mp4_url === '') : ?>
+    <div class="absolute inset-0 z-0 viar-hero-background">
+        <?php if ($image_url !== '') : ?>
             <img
-                class="<?php echo esc_attr($image_class); ?>"
+                class="<?php echo esc_attr($image_classes); ?>"
                 alt="<?php echo esc_attr($image_alt); ?>"
                 src="<?php echo esc_url($image_url); ?>"
-                <?php echo $has_video ? 'aria-hidden="true"' : ''; ?>
             >
         <?php endif; ?>
         <?php if ($mp4_url !== '') : ?>
             <video
-                class="viar-hero-video__native absolute inset-0 h-full w-full object-cover"
+                class="viar-hero-video__native viar-hero-media--desktop absolute inset-0 h-full w-full object-cover"
                 autoplay
                 muted
                 loop
@@ -143,17 +166,79 @@ function viar_render_hero_background(
             >
                 <source src="<?php echo esc_url($mp4_url); ?>" type="video/mp4">
             </video>
-        <?php elseif ($vimeo_id !== '') : ?>
-            <div class="viar-hero-video absolute inset-0 overflow-hidden">
+        <?php elseif ($desktop_vimeo_id !== '') : ?>
+            <div class="viar-hero-video viar-hero-media--desktop absolute inset-0 overflow-hidden">
                 <iframe
                     class="viar-hero-video__iframe"
-                    src="<?php echo esc_url(viar_vimeo_background_embed_url($vimeo_id)); ?>"
+                    src="<?php echo esc_url(viar_vimeo_background_embed_url($desktop_vimeo_id)); ?>"
                     title="<?php esc_attr_e('Homepage hero video', 'viar-luxury'); ?>"
                     allow="autoplay; fullscreen; picture-in-picture"
                 ></iframe>
             </div>
         <?php endif; ?>
         <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
+    </div>
+    <?php
+}
+
+/**
+ * Mobile hero play button that opens the Vimeo popup.
+ */
+function viar_render_hero_mobile_play_button(): void {
+    ?>
+    <button
+        type="button"
+        class="viar-hero-play-btn group"
+        data-viar-video-open
+        aria-label="<?php esc_attr_e('Play video', 'viar-luxury'); ?>"
+    >
+        <span class="viar-hero-play-btn__ring" aria-hidden="true"></span>
+        <span class="viar-hero-play-btn__ring viar-hero-play-btn__ring--delayed" aria-hidden="true"></span>
+        <span class="material-symbols-outlined viar-hero-play-btn__icon" aria-hidden="true">play_arrow</span>
+    </button>
+    <?php
+}
+
+/**
+ * Vimeo popup modal for the mobile homepage hero.
+ */
+function viar_render_hero_video_modal(string $vimeo_id): void {
+    if ($vimeo_id === '') {
+        return;
+    }
+    ?>
+    <div
+        id="viar-hero-video-modal"
+        class="viar-hero-video-modal"
+        hidden
+        aria-hidden="true"
+    >
+        <div class="viar-hero-video-modal__backdrop" data-viar-video-close></div>
+        <div
+            class="viar-hero-video-modal__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label="<?php esc_attr_e('Promotional video', 'viar-luxury'); ?>"
+        >
+            <button
+                type="button"
+                class="viar-hero-video-modal__close"
+                data-viar-video-close
+                aria-label="<?php esc_attr_e('Close video', 'viar-luxury'); ?>"
+            >
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+            <div class="viar-hero-video-modal__frame">
+                <iframe
+                    class="viar-hero-video-modal__iframe"
+                    data-viar-vimeo-iframe
+                    data-src="<?php echo esc_url(viar_vimeo_modal_embed_url($vimeo_id)); ?>"
+                    title="<?php esc_attr_e('ViaR promotional video', 'viar-luxury'); ?>"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+            </div>
+        </div>
     </div>
     <?php
 }

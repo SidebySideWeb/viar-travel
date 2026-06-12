@@ -4,7 +4,7 @@
 
 1. Go to `Appearance → Customize → ViaR Homepage Hero`.
 2. **Recommended:** paste a direct MP4 link into **Hero MP4 Video URL** (from Media Library or CDN).
-3. **Or** paste a Vimeo URL into **Hero Vimeo Video URL** (used only if MP4 is empty).
+3. **Also set** a Vimeo URL in **Hero Vimeo Video URL** for the **mobile play button popup** (desktop uses MP4 when set).
 4. Click **Publish**.
 5. Refresh the homepage.
 

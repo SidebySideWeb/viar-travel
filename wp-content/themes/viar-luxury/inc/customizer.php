@@ -28,7 +28,7 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
     ]);
     $wp_customize->add_control('viar_home_hero_vimeo_url', [
         'label' => __('Hero Vimeo Video URL (fallback)', 'viar-luxury'),
-        'description' => __('Used only when no MP4 URL is set. Paste a Vimeo link (e.g. https://vimeo.com/123456789).', 'viar-luxury'),
+        'description' => __('Used for the mobile play-button popup. On desktop, used as background video only when no MP4 URL is set.', 'viar-luxury'),
         'section' => 'viar_homepage_hero',
         'type' => 'url',
     ]);
