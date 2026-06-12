@@ -59,11 +59,41 @@ function viar_print_google_places_script(): void {
             };
         })({ key: apiKey, v: 'weekly' });
 
+        function stylePlaceAutocompleteElement(element) {
+            element.classList.add('viar-place-autocomplete');
+            element.style.setProperty('width', '100%');
+            element.style.setProperty('max-width', '100%');
+            element.style.setProperty('display', 'block');
+            element.style.setProperty('box-sizing', 'border-box');
+            element.style.setProperty('margin', '0');
+            element.style.setProperty('color-scheme', 'light');
+            element.style.setProperty('background-color', '#fff');
+            element.style.setProperty('border', '1px solid #74777f');
+            element.style.setProperty('border-radius', '0');
+            element.style.setProperty('color', '#1a1c1c');
+            element.style.setProperty('font-family', 'Manrope, sans-serif');
+            element.style.setProperty('font-size', '16px');
+            element.style.setProperty('line-height', '1.6');
+            element.style.setProperty('min-height', '48px');
+        }
+
+        function stylePlaceWrapper(wrapper) {
+            wrapper.style.setProperty('width', '100%');
+            wrapper.style.setProperty('max-width', '100%');
+            wrapper.style.setProperty('display', 'block');
+            wrapper.style.setProperty('margin', '0');
+            wrapper.style.setProperty('padding', '0');
+            wrapper.style.setProperty('box-sizing', 'border-box');
+        }
+
         async function setupPlaceAutocomplete(wrapperId, hiddenFieldPart, placeholder) {
             var wrapper = document.getElementById(wrapperId);
             if (!wrapper) {
                 return;
             }
+
+            stylePlaceWrapper(wrapper);
+            wrapper.innerHTML = '';
 
             var places = await google.maps.importLibrary('places');
             var autocomplete = new places.PlaceAutocompleteElement({
@@ -72,7 +102,7 @@ function viar_print_google_places_script(): void {
 
             autocomplete.id = wrapperId.replace('_wrapper', '_js');
             autocomplete.placeholder = placeholder;
-            autocomplete.style.width = '100%';
+            stylePlaceAutocompleteElement(autocomplete);
             wrapper.appendChild(autocomplete);
 
             autocomplete.addEventListener('gmp-select', async function(event) {
