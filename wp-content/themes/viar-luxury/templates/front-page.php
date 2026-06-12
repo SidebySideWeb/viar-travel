@@ -18,8 +18,7 @@ $viar_hero_description = viar_field_value('viar_hero_description', 'Curation for
 $viar_hero_cta_label = viar_field_value('viar_hero_cta_label', 'Begin Your Journey');
 $viar_hero_cta_url = viar_field_value('viar_hero_cta_url', home_url('/inquiry'));
 $viar_hero_image = viar_image_url('viar_hero_image', get_template_directory_uri() . '/assets/images/remote-2018f584e2ab.jpg');
-$viar_hero_vimeo_url = viar_get_home_hero_vimeo_url();
-$viar_hero_has_video = viar_parse_vimeo_id($viar_hero_vimeo_url) !== '';
+$viar_hero_has_video = viar_home_hero_has_video();
 $viar_home_tours_label = viar_field_value('viar_home_tours_label', 'WORLDWIDE CURATION');
 $viar_home_tours_title = viar_field_value('viar_home_tours_title', 'EXPLORE OUR TRIPS');
 $viar_home_zigzag_row1_label = viar_field_value('viar_home_zigzag_row1_label', 'Personalized Vision');
@@ -59,11 +58,7 @@ $home_tours_query = new WP_Query([
 <!-- Section 1: Hero -->
 <section class="viar-hero-flush relative h-screen w-full flex items-center justify-center overflow-hidden">
 <?php
-viar_render_hero_background(
-    $viar_hero_image,
-    $viar_hero_vimeo_url,
-    'ViaR Travel homepage hero'
-);
+viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 ?>
 <?php if (!$viar_hero_has_video) : ?>
 <div class="relative z-10 text-center text-white px-6">

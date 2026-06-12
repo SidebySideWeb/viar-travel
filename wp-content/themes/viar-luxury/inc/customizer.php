@@ -11,13 +11,24 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
         'priority' => 155,
     ]);
 
+    $wp_customize->add_setting('viar_home_hero_mp4_url', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control('viar_home_hero_mp4_url', [
+        'label' => __('Hero MP4 Video URL (recommended)', 'viar-luxury'),
+        'description' => __('Direct link to an MP4 file (Media Library or CDN). Fastest option. Hero Image is used as the poster while the video loads.', 'viar-luxury'),
+        'section' => 'viar_homepage_hero',
+        'type' => 'url',
+    ]);
+
     $wp_customize->add_setting('viar_home_hero_vimeo_url', [
         'default' => '',
         'sanitize_callback' => 'esc_url_raw',
     ]);
     $wp_customize->add_control('viar_home_hero_vimeo_url', [
-        'label' => __('Hero Vimeo Video URL', 'viar-luxury'),
-        'description' => __('Paste a Vimeo link (e.g. https://vimeo.com/123456789). Leave empty to use the hero image only.', 'viar-luxury'),
+        'label' => __('Hero Vimeo Video URL (fallback)', 'viar-luxury'),
+        'description' => __('Used only when no MP4 URL is set. Paste a Vimeo link (e.g. https://vimeo.com/123456789).', 'viar-luxury'),
         'section' => 'viar_homepage_hero',
         'type' => 'url',
     ]);

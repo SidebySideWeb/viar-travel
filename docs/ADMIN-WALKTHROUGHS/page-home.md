@@ -1,11 +1,14 @@
 # Walkthrough — Home page
 
-## Option A (easiest): Customizer — Hero Vimeo video
+## Option A (easiest): Customizer — Hero background video
 
 1. Go to `Appearance → Customize → ViaR Homepage Hero`.
-2. Paste your Vimeo URL into **Hero Vimeo Video URL**.
-3. Click **Publish**.
-4. Refresh the homepage.
+2. **Recommended:** paste a direct MP4 link into **Hero MP4 Video URL** (from Media Library or CDN).
+3. **Or** paste a Vimeo URL into **Hero Vimeo Video URL** (used only if MP4 is empty).
+4. Click **Publish**.
+5. Refresh the homepage.
+
+> MP4 loads faster than Vimeo. Use a short loop (10–20s), 720p, H.264, ideally under 8 MB.
 
 ## Option B: Home page ACF fields (designed homepage layout)
 

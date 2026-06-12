@@ -20,9 +20,19 @@ add_action('init', 'viar_cleanup_wp_head');
  * Add resource hints for critical third-party font hosts.
  */
 function viar_resource_hints(array $urls, string $relation_type): array {
-    if ('preconnect' === $relation_type) {
-        $urls[] = 'https://fonts.googleapis.com';
-        $urls[] = 'https://fonts.gstatic.com';
+    if ('preconnect' !== $relation_type || !is_front_page()) {
+        return $urls;
+    }
+
+    $urls[] = 'https://fonts.googleapis.com';
+    $urls[] = 'https://fonts.gstatic.com';
+
+    if (
+        viar_get_home_hero_mp4_url() === ''
+        && viar_parse_vimeo_id(viar_get_home_hero_vimeo_url()) !== ''
+    ) {
+        $urls[] = 'https://player.vimeo.com';
+        $urls[] = 'https://i.vimeocdn.com';
     }
 
     return array_unique($urls);

@@ -56,6 +56,18 @@ function viar_parse_vimeo_id(string $input): string {
 }
 
 /**
+ * Homepage hero MP4 URL (Customizer overrides the Home page ACF field).
+ */
+function viar_get_home_hero_mp4_url(?int $post_id = null): string {
+    $customizer_url = get_theme_mod('viar_home_hero_mp4_url', '');
+    if (is_string($customizer_url) && trim($customizer_url) !== '') {
+        return esc_url(trim($customizer_url));
+    }
+
+    return esc_url(viar_field_value('viar_hero_mp4_url', '', $post_id));
+}
+
+/**
  * Homepage hero Vimeo URL (Customizer overrides the Home page ACF field).
  */
 function viar_get_home_hero_vimeo_url(?int $post_id = null): string {
@@ -65,6 +77,14 @@ function viar_get_home_hero_vimeo_url(?int $post_id = null): string {
     }
 
     return viar_field_value('viar_hero_vimeo_url', '', $post_id);
+}
+
+/**
+ * Whether the homepage hero uses a background video (MP4 or Vimeo).
+ */
+function viar_home_hero_has_video(?int $post_id = null): bool {
+    return viar_get_home_hero_mp4_url($post_id) !== ''
+        || viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id)) !== '';
 }
 
 /**
@@ -88,33 +108,48 @@ function viar_vimeo_background_embed_url(string $video_id): string {
 }
 
 /**
- * Render a full-bleed hero background with optional Vimeo video and image fallback.
+ * Render a full-bleed hero background with optional MP4/Vimeo video and image fallback.
  */
 function viar_render_hero_background(
     string $image_url,
-    string $vimeo_input = '',
     string $image_alt = '',
-    string $image_class = 'w-full h-full object-cover grayscale-[20%]'
+    string $image_class = 'w-full h-full object-cover grayscale-[20%]',
+    ?int $post_id = null
 ): void {
-    $vimeo_id = viar_parse_vimeo_id($vimeo_input);
+    $mp4_url = viar_get_home_hero_mp4_url($post_id);
+    $vimeo_id = $mp4_url === '' ? viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id)) : '';
+    $has_video = $mp4_url !== '' || $vimeo_id !== '';
     ?>
     <div class="absolute inset-0 z-0">
-        <?php if ($image_url !== '') : ?>
+        <?php if ($image_url !== '' && $mp4_url === '') : ?>
             <img
                 class="<?php echo esc_attr($image_class); ?>"
                 alt="<?php echo esc_attr($image_alt); ?>"
                 src="<?php echo esc_url($image_url); ?>"
-                <?php echo $vimeo_id !== '' ? 'aria-hidden="true"' : ''; ?>
+                <?php echo $has_video ? 'aria-hidden="true"' : ''; ?>
             >
         <?php endif; ?>
-        <?php if ($vimeo_id !== '') : ?>
+        <?php if ($mp4_url !== '') : ?>
+            <video
+                class="viar-hero-video__native absolute inset-0 h-full w-full object-cover"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                <?php if ($image_url !== '') : ?>
+                    poster="<?php echo esc_url($image_url); ?>"
+                <?php endif; ?>
+            >
+                <source src="<?php echo esc_url($mp4_url); ?>" type="video/mp4">
+            </video>
+        <?php elseif ($vimeo_id !== '') : ?>
             <div class="viar-hero-video absolute inset-0 overflow-hidden">
                 <iframe
                     class="viar-hero-video__iframe"
                     src="<?php echo esc_url(viar_vimeo_background_embed_url($vimeo_id)); ?>"
                     title="<?php esc_attr_e('Homepage hero video', 'viar-luxury'); ?>"
                     allow="autoplay; fullscreen; picture-in-picture"
-                    loading="lazy"
                 ></iframe>
             </div>
         <?php endif; ?>
