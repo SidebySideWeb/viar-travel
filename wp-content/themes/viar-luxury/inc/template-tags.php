@@ -308,6 +308,42 @@ function viar_image_url(string $field_key, string $fallback = '', ?int $post_id 
 }
 
 /**
+ * Image URL from ACF/meta only — no featured image or theme fallback.
+ */
+function viar_field_image_url(string $field_key, ?int $post_id = null): string {
+    $post_id = $post_id ?: get_the_ID();
+
+    if (function_exists('get_field')) {
+        $value = get_field($field_key, $post_id);
+        if (is_array($value) && !empty($value['url'])) {
+            return (string) $value['url'];
+        }
+        if (is_numeric($value)) {
+            $src = wp_get_attachment_image_url((int) $value, 'full');
+            if (is_string($src) && $src !== '') {
+                return $src;
+            }
+        }
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+    }
+
+    $meta_value = get_post_meta($post_id, $field_key, true);
+    if (is_numeric($meta_value)) {
+        $src = wp_get_attachment_image_url((int) $meta_value, 'full');
+        if (is_string($src) && $src !== '') {
+            return $src;
+        }
+    }
+    if (is_string($meta_value) && trim($meta_value) !== '') {
+        return $meta_value;
+    }
+
+    return '';
+}
+
+/**
  * Render optional Gutenberg/block content from page editor.
  */
 function viar_render_editor_content(): void {

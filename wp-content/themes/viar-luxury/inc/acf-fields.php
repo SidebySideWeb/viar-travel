@@ -805,14 +805,12 @@ function viar_register_acf_fields(): void {
                 'label' => 'Narrative 1 — Highlight 1',
                 'name' => 'viar_about_narrative_1_bullet_1',
                 'type' => 'text',
-                'default_value' => 'PRIVATE ESTATES',
             ],
             [
                 'key' => 'field_viar_about_narrative_1_bullet_2',
                 'label' => 'Narrative 1 — Highlight 2',
                 'name' => 'viar_about_narrative_1_bullet_2',
                 'type' => 'text',
-                'default_value' => 'OFF-MARKET CHARTERS',
             ],
             [
                 'key' => 'field_viar_about_narrative_1_image',
@@ -842,7 +840,6 @@ function viar_register_acf_fields(): void {
                 'label' => 'Narrative 2 — CTA Label',
                 'name' => 'viar_about_narrative_2_cta_label',
                 'type' => 'text',
-                'default_value' => 'DISCOVER OUR PROCESS',
             ],
             [
                 'key' => 'field_viar_about_narrative_2_cta_url',
@@ -878,14 +875,12 @@ function viar_register_acf_fields(): void {
                 'label' => 'Narrative 3 — Highlight 1',
                 'name' => 'viar_about_narrative_3_bullet_1',
                 'type' => 'text',
-                'default_value' => 'LOCAL PARTNERSHIPS',
             ],
             [
                 'key' => 'field_viar_about_narrative_3_bullet_2',
                 'label' => 'Narrative 3 — Highlight 2',
                 'name' => 'viar_about_narrative_3_bullet_2',
                 'type' => 'text',
-                'default_value' => 'CULTURAL STEWARDSHIP',
             ],
             [
                 'key' => 'field_viar_about_narrative_3_image',
