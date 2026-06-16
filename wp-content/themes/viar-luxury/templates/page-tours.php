@@ -74,7 +74,7 @@ $tour_query = new WP_Query($tour_query_args);
 <div class="flex min-w-0 flex-col gap-2">
 <span id="viar-filter-region-label" class="font-label-caps text-label-caps text-[#00234B]">Region</span>
 <span class="relative block w-full">
-          <select name="region" aria-labelledby="viar-filter-region-label" class="w-full appearance-none border border-[#00234B]/20 bg-white py-2.5 pl-3 pr-9 text-xs text-[#00234B]">
+          <select name="region" aria-labelledby="viar-filter-region-label" class="viar-filter-select w-full border border-[#00234B]/20 bg-white py-2.5 pl-3 pr-10 text-xs text-[#00234B]">
               <option value="">All Regions</option>
               <?php foreach ($regions as $region) : ?>
                   <option value="<?php echo esc_attr($region->slug); ?>" <?php selected($selected_region, $region->slug); ?>>
@@ -82,13 +82,13 @@ $tour_query = new WP_Query($tour_query_args);
                   </option>
               <?php endforeach; ?>
           </select>
-          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#00234B]/60">▼</span>
+          <span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[20px] leading-none text-[#00234B]/60" aria-hidden="true">expand_more</span>
           </span>
       </div>
 <div class="flex min-w-0 flex-col gap-2">
 <span id="viar-filter-experience-label" class="font-label-caps text-label-caps text-[#00234B]">Experience Type</span>
 <span class="relative block w-full">
-          <select name="experience" aria-labelledby="viar-filter-experience-label" class="w-full appearance-none border border-[#00234B]/20 bg-white py-2.5 pl-3 pr-9 text-xs text-[#00234B]">
+          <select name="experience" aria-labelledby="viar-filter-experience-label" class="viar-filter-select w-full border border-[#00234B]/20 bg-white py-2.5 pl-3 pr-10 text-xs text-[#00234B]">
               <option value="">All Types</option>
               <?php foreach ($experience_types as $experience_type) : ?>
                   <option value="<?php echo esc_attr($experience_type->slug); ?>" <?php selected($selected_experience, $experience_type->slug); ?>>
@@ -96,7 +96,7 @@ $tour_query = new WP_Query($tour_query_args);
                   </option>
               <?php endforeach; ?>
           </select>
-          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#00234B]/60">▼</span>
+          <span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[20px] leading-none text-[#00234B]/60" aria-hidden="true">expand_more</span>
           </span>
       </div>
 </div>

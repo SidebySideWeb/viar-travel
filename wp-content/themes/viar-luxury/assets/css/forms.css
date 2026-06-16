@@ -60,6 +60,19 @@
   resize: vertical;
 }
 
+/* Tour filter selects — hide native arrow; chevron rendered in template */
+.viar-filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  background-color: #fff;
+}
+
+.viar-filter-select::-ms-expand {
+  display: none;
+}
+
 .site-main form button,
 .site-main form input[type="submit"],
 .site-main form .button,
