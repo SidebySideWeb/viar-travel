@@ -10,7 +10,30 @@
  */
 function viar_editor_help_message(string $post_type): string {
     if ($post_type === 'page') {
-        return 'ViaR Editor Guide: Use ViaR Hero Content. Hero Image controls the main hero visual; Card / Secondary Image controls supporting section visuals where the template supports them. Keep the page editor empty to use the designed layout.';
+        $post_id = isset($_GET['post']) ? absint($_GET['post']) : 0;
+        if ($post_id === 0 && isset($_GET['post_type']) && $_GET['post_type'] === 'page') {
+            $post_id = 0;
+        }
+
+        if ($post_id > 0) {
+            $template = get_page_template_slug($post_id);
+            if ($template === 'templates/page-about.php') {
+                return 'ViaR Editor Guide: Use ViaR About Page Content for every section on this page (hero, philosophy, narratives, consultants, and final CTA). Keep the page editor empty to use the designed layout.';
+            }
+            if ((int) get_option('page_on_front') === $post_id) {
+                return 'ViaR Editor Guide: Use ViaR Homepage Content for the hero, tours carousel, zigzag rows, standards, and testimonials. Keep the page editor empty to use the designed layout.';
+            }
+            if (in_array($template, [
+                'templates/page-tours.php',
+                'templates/page-inquiry.php',
+                'templates/page-transfers.php',
+                'templates/page-vip-transfers-services.php',
+            ], true)) {
+                return 'ViaR Editor Guide: Use ViaR Page Hero Content for the hero section. Keep the page editor empty to use the designed layout.';
+            }
+        }
+
+        return 'ViaR Editor Guide: Designed page templates show their own ACF field groups below. Keep the page editor empty to use the theme layout.';
     }
 
     if ($post_type === 'viar_fleet') {
