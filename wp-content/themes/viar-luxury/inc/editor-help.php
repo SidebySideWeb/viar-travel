@@ -27,9 +27,11 @@ function viar_editor_help_message(string $post_type): string {
                 'templates/page-tours.php',
                 'templates/page-inquiry.php',
                 'templates/page-transfers.php',
-                'templates/page-vip-transfers-services.php',
             ], true)) {
                 return 'ViaR Editor Guide: Use ViaR Page Hero Content for the hero section. Keep the page editor empty to use the designed layout.';
+            }
+            if ($template === 'templates/page-vip-transfers-services.php') {
+                return 'ViaR Editor Guide: Use ViaR VIP Transfers Page Content for every section on this page (hero, services, fleet header, form intro, stats, CTA, and map). Fleet vehicles are managed separately under Fleets. Keep the page editor empty to use the designed layout.';
             }
         }
 
