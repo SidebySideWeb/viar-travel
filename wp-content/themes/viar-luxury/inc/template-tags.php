@@ -310,7 +310,7 @@ function viar_image_url(string $field_key, string $fallback = '', ?int $post_id 
 /**
  * Image URL from ACF/meta only — no featured image or theme fallback.
  */
-function viar_field_image_url(string $field_key, ?int $post_id = null): string {
+function viar_field_image_url(string $field_key, ?int $post_id = null, string $fallback = ''): string {
     $post_id = $post_id ?: get_the_ID();
 
     if (function_exists('get_field')) {
@@ -340,7 +340,7 @@ function viar_field_image_url(string $field_key, ?int $post_id = null): string {
         return $meta_value;
     }
 
-    return '';
+    return $fallback;
 }
 
 /**

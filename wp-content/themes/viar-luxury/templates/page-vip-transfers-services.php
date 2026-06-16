@@ -15,67 +15,105 @@ if (viar_has_editor_sections()) {
 }
 
 $page_id = get_queried_object_id() ?: get_the_ID();
+$theme_uri = get_template_directory_uri();
 $form_href = viar_vip_transfer_form_href();
 
-$hero_eyebrow = viar_field_value('viar_vip_hero_eyebrow', '', $page_id);
-$hero_title = viar_field_value('viar_vip_hero_title', '', $page_id);
-$hero_description = viar_field_value('viar_vip_hero_description', '', $page_id);
-$hero_image = viar_field_image_url('viar_vip_hero_image', $page_id);
-$hero_cta_label = viar_field_value('viar_vip_hero_cta_label', '', $page_id);
+$hero_eyebrow = viar_field_value('viar_vip_hero_eyebrow', 'Precision in Motion', $page_id);
+$hero_title = viar_field_value('viar_vip_hero_title', 'Seamless Logistics for the Discerning Traveler', $page_id);
+$hero_description = viar_field_value(
+    'viar_vip_hero_description',
+    'Elevate your journey with our bespoke transport solutions. From armored executive protection to private airside greetings, we manage every detail with absolute discretion.',
+    $page_id
+);
+$hero_image = viar_field_image_url('viar_vip_hero_image', $page_id, $theme_uri . '/assets/images/remote-bc1dabf815b0.jpg');
+$hero_cta_label = viar_field_value('viar_vip_hero_cta_label', 'Inquire for Logistics', $page_id);
 $hero_cta_url = viar_field_value('viar_vip_hero_cta_url', '', $page_id);
 $hero_cta_href = $hero_cta_url !== '' ? $hero_cta_url : $form_href;
 
-$services_title = viar_field_value('viar_vip_services_title', '', $page_id);
-$services_description = viar_field_value('viar_vip_services_description', '', $page_id);
-$services_link_label = viar_field_value('viar_vip_services_link_label', '', $page_id);
-$services_link_url = viar_field_value('viar_vip_services_link_url', '', $page_id);
+$services_title = viar_field_value('viar_vip_services_title', 'Our Signature Services', $page_id);
+$services_description = viar_field_value(
+    'viar_vip_services_description',
+    'We believe that luxury is found in the things you don\'t have to think about. Our logistical experts ensure your arrival is as effortless as your destination.',
+    $page_id
+);
+$services_link_label = viar_field_value('viar_vip_services_link_label', 'View Full Fleet', $page_id);
+$services_link_url = viar_field_value('viar_vip_services_link_url', '#vip-fleet', $page_id);
+
+$service_defaults = [
+    [
+        'title' => 'Private Airport Transfers',
+        'body'  => 'Airside assistance and direct tarmac pickup in over 150 global hubs. Expedited customs clearance and porter services included.',
+        'image' => $theme_uri . '/assets/images/remote-36673107cc96.jpg',
+    ],
+    [
+        'title' => 'Travel Concierge',
+        'body'  => 'Beyond the ride. We handle restaurant reservations, local security, and last-minute itinerary adjustments around the clock.',
+        'image' => $theme_uri . '/assets/images/remote-539c1667511c.jpg',
+    ],
+    [
+        'title' => 'Executive Protection',
+        'body'  => 'Specialized security personnel and armored vehicle options for high-profile clients visiting complex urban environments.',
+        'image' => $theme_uri . '/assets/images/remote-508800e2d306.jpg',
+    ],
+    [
+        'title' => 'Inter-City Couriers',
+        'body'  => 'Seamless transport of high-value items or sensitive documents between European capitals via private ground or air assets.',
+        'image' => $theme_uri . '/assets/images/remote-186711d44c3c.jpg',
+    ],
+];
 
 $services = [];
 for ($i = 1; $i <= 4; $i++) {
+    $defaults = $service_defaults[$i - 1];
     $services[] = [
-        'title' => viar_field_value("viar_vip_service_{$i}_title", '', $page_id),
-        'body'  => viar_field_value("viar_vip_service_{$i}_body", '', $page_id),
-        'image' => viar_field_image_url("viar_vip_service_{$i}_image", $page_id),
+        'title' => viar_field_value("viar_vip_service_{$i}_title", $defaults['title'], $page_id),
+        'body'  => viar_field_value("viar_vip_service_{$i}_body", $defaults['body'], $page_id),
+        'image' => viar_field_image_url("viar_vip_service_{$i}_image", $page_id, $defaults['image']),
     ];
 }
-$services = array_values(array_filter($services, static function (array $service): bool {
-    return $service['title'] !== '' || $service['body'] !== '' || $service['image'] !== '';
-}));
 
-$fleet_eyebrow = viar_field_value('viar_vip_fleet_eyebrow', '', $page_id);
-$fleet_title = viar_field_value('viar_vip_fleet_title', '', $page_id);
-$fleet_book_label = viar_field_value('viar_vip_fleet_book_label', '', $page_id);
+$fleet_eyebrow = viar_field_value('viar_vip_fleet_eyebrow', 'Fleet Booking', $page_id);
+$fleet_title = viar_field_value('viar_vip_fleet_title', 'Select Your Vehicle', $page_id);
+$fleet_book_label = viar_field_value('viar_vip_fleet_book_label', 'Book This Fleet', $page_id);
 
-$form_eyebrow = viar_field_value('viar_vip_form_eyebrow', '', $page_id);
-$form_title = viar_field_value('viar_vip_form_title', '', $page_id);
-$form_description = viar_field_value('viar_vip_form_description', '', $page_id);
+$form_eyebrow = viar_field_value('viar_vip_form_eyebrow', __('Request a Transfer', 'viar-luxury'), $page_id);
+$form_title = viar_field_value('viar_vip_form_title', __('Book Your VIP Transfer', 'viar-luxury'), $page_id);
+$form_description = viar_field_value(
+    'viar_vip_form_description',
+    __('Share your route, timing, and preferences. Our logistics team will confirm availability and send a tailored offer.', 'viar-luxury'),
+    $page_id
+);
 
-$stats_title = viar_field_value('viar_vip_stats_title', '', $page_id);
-$stats = array_values(array_filter([
+$stats_title = viar_field_value('viar_vip_stats_title', 'Travel is an art. Logistics is the frame that protects it.', $page_id);
+$stats = [
     [
-        'value' => viar_field_value('viar_vip_stat_1_value', '', $page_id),
-        'label' => viar_field_value('viar_vip_stat_1_label', '', $page_id),
+        'value' => viar_field_value('viar_vip_stat_1_value', '99.8%', $page_id),
+        'label' => viar_field_value('viar_vip_stat_1_label', 'Punctuality Rate', $page_id),
     ],
     [
-        'value' => viar_field_value('viar_vip_stat_2_value', '', $page_id),
-        'label' => viar_field_value('viar_vip_stat_2_label', '', $page_id),
+        'value' => viar_field_value('viar_vip_stat_2_value', '150+', $page_id),
+        'label' => viar_field_value('viar_vip_stat_2_label', 'Global Hubs', $page_id),
     ],
     [
-        'value' => viar_field_value('viar_vip_stat_3_value', '', $page_id),
-        'label' => viar_field_value('viar_vip_stat_3_label', '', $page_id),
+        'value' => viar_field_value('viar_vip_stat_3_value', '24/7', $page_id),
+        'label' => viar_field_value('viar_vip_stat_3_label', 'Support Desk', $page_id),
     ],
-], static fn(array $stat): bool => $stat['value'] !== '' || $stat['label'] !== ''));
+];
 
-$cta_title = viar_field_value('viar_vip_cta_title', '', $page_id);
-$cta_description = viar_field_value('viar_vip_cta_description', '', $page_id);
-$cta_primary_label = viar_field_value('viar_vip_cta_primary_label', '', $page_id);
+$cta_title = viar_field_value('viar_vip_cta_title', 'Your Journey, Perfected.', $page_id);
+$cta_description = viar_field_value(
+    'viar_vip_cta_description',
+    'Connect with our dedicated logistics desk to arrange your global transfers, security details, and concierge needs. One point of contact for every mile of your journey.',
+    $page_id
+);
+$cta_primary_label = viar_field_value('viar_vip_cta_primary_label', 'Inquire for Logistics', $page_id);
 $cta_primary_url = viar_field_value('viar_vip_cta_primary_url', '', $page_id);
 $cta_primary_href = $cta_primary_url !== '' ? $cta_primary_url : $form_href;
-$cta_secondary_label = viar_field_value('viar_vip_cta_secondary_label', '', $page_id);
+$cta_secondary_label = viar_field_value('viar_vip_cta_secondary_label', 'Download Fleet PDF', $page_id);
 $cta_secondary_url = viar_field_value('viar_vip_cta_secondary_url', '', $page_id);
 
-$map_image = viar_field_image_url('viar_vip_map_image', $page_id);
-$map_label = viar_field_value('viar_vip_map_label', '', $page_id);
+$map_image = viar_field_image_url('viar_vip_map_image', $page_id, $theme_uri . '/assets/images/remote-90ce2d5059f6.jpg');
+$map_label = viar_field_value('viar_vip_map_label', 'Global Operations Network', $page_id);
 
 $has_hero = $hero_eyebrow !== '' || $hero_title !== '' || $hero_description !== '' || $hero_image !== '' || $hero_cta_label !== '';
 $has_services_intro = $services_title !== '' || $services_description !== '' || ($services_link_label !== '' && $services_link_url !== '');
@@ -183,7 +221,7 @@ $has_map = $map_image !== '' || $map_label !== '';
             while ($fleet_query->have_posts()) :
                 $fleet_query->the_post();
                 $fleet_excerpt = get_the_excerpt();
-                $fleet_label = viar_field_value('viar_fleet_card_label', '', get_the_ID());
+                $fleet_label = viar_field_value('viar_fleet_card_label', 'VIP Fleet', get_the_ID());
                 $fleet_card_image = viar_field_image_url('viar_fleet_card_image', get_the_ID());
                 ?>
                 <article class="group border border-[#00234B]/10 hover:border-[#C5A059] transition-colors p-6">
