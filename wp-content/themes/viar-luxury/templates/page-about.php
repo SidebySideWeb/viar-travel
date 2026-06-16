@@ -116,75 +116,83 @@ $cta_url = viar_field_value('viar_about_cta_url', home_url('/contact'));
     </section>
 
     <!-- Narrative Content: Asymmetric Layout -->
-    <section class="py-[120px] max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-12 gap-y-16 md:gap-y-32 gap-x-6 md:gap-x-12 min-w-0">
-        <!-- Part 1 -->
-        <div class="col-span-12 md:col-span-6 order-2 md:order-1 min-w-0">
-            <div class="h-[500px] md:h-[700px] overflow-hidden">
-                <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_1_image); ?>">
-            </div>
-        </div>
-        <div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-1 md:order-2 min-w-0">
-            <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_1_title); ?></h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_1_body); ?></p>
-            <?php if ($narrative_1_bullet_1 !== '' || $narrative_1_bullet_2 !== '') : ?>
-                <div class="border-t border-[#F2F0ED] pt-8">
-                    <?php if ($narrative_1_bullet_1 !== '') : ?>
-                        <div class="flex items-center space-x-4 mb-4">
-                            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
-                            <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_1_bullet_1); ?></span>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($narrative_1_bullet_2 !== '') : ?>
-                        <div class="flex items-center space-x-4">
-                            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
-                            <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_1_bullet_2); ?></span>
+    <section class="py-[120px]">
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
+            <!-- Row 1: image left, text right -->
+            <div class="grid grid-cols-12 gap-y-16 md:gap-y-0 gap-x-6 md:gap-x-12 items-center mb-16 md:mb-32 min-w-0">
+                <div class="col-span-12 md:col-span-6 order-2 md:order-1 min-w-0">
+                    <div class="h-[500px] md:h-[700px] overflow-hidden">
+                        <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_1_image); ?>">
+                    </div>
+                </div>
+                <div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-1 md:order-2 min-w-0">
+                    <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_1_title); ?></h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_1_body); ?></p>
+                    <?php if ($narrative_1_bullet_1 !== '' || $narrative_1_bullet_2 !== '') : ?>
+                        <div class="border-t border-[#F2F0ED] pt-8">
+                            <?php if ($narrative_1_bullet_1 !== '') : ?>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                    <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_1_bullet_1); ?></span>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($narrative_1_bullet_2 !== '') : ?>
+                                <div class="flex items-center space-x-4">
+                                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                    <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_1_bullet_2); ?></span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Part 2 -->
-        <div class="col-span-12 md:col-span-5 flex flex-col justify-center order-3 min-w-0">
-            <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_2_title); ?></h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_2_body); ?></p>
-            <?php if ($narrative_2_cta_label !== '' && $narrative_2_cta_url !== '') : ?>
-                <a class="font-cta text-cta text-secondary border-b border-secondary pb-1 inline-block max-w-full break-words hover:opacity-70 transition-opacity" href="<?php echo esc_url($narrative_2_cta_url); ?>">
-                    <?php echo esc_html($narrative_2_cta_label); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-        <div class="col-span-12 md:col-span-6 md:col-start-7 order-4 min-w-0">
-            <div class="h-[500px] overflow-hidden">
-                <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_2_image); ?>">
             </div>
-        </div>
 
-        <!-- Part 3 -->
-        <div class="col-span-12 md:col-span-6 order-6 md:order-5 min-w-0">
-            <div class="h-[500px] md:h-[700px] overflow-hidden">
-                <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_3_image); ?>">
-            </div>
-        </div>
-        <div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-5 md:order-6 min-w-0">
-            <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_3_title); ?></h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_3_body); ?></p>
-            <?php if ($narrative_3_bullet_1 !== '' || $narrative_3_bullet_2 !== '') : ?>
-                <div class="border-t border-[#F2F0ED] pt-8">
-                    <?php if ($narrative_3_bullet_1 !== '') : ?>
-                        <div class="flex items-center space-x-4 mb-4">
-                            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
-                            <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_3_bullet_1); ?></span>
-                        </div>
+            <!-- Row 2: text left, image right -->
+            <div class="grid grid-cols-12 gap-y-16 md:gap-y-0 gap-x-6 md:gap-x-12 items-center mb-16 md:mb-32 min-w-0">
+                <div class="col-span-12 md:col-span-5 flex flex-col justify-center order-1 min-w-0">
+                    <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_2_title); ?></h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_2_body); ?></p>
+                    <?php if ($narrative_2_cta_label !== '' && $narrative_2_cta_url !== '') : ?>
+                        <a class="font-cta text-cta text-secondary border-b border-secondary pb-1 inline-block max-w-full break-words hover:opacity-70 transition-opacity" href="<?php echo esc_url($narrative_2_cta_url); ?>">
+                            <?php echo esc_html($narrative_2_cta_label); ?>
+                        </a>
                     <?php endif; ?>
-                    <?php if ($narrative_3_bullet_2 !== '') : ?>
-                        <div class="flex items-center space-x-4">
-                            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
-                            <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_3_bullet_2); ?></span>
+                </div>
+                <div class="col-span-12 md:col-span-6 md:col-start-7 order-2 min-w-0">
+                    <div class="h-[500px] overflow-hidden">
+                        <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_2_image); ?>">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: image left, text right -->
+            <div class="grid grid-cols-12 gap-y-16 md:gap-y-0 gap-x-6 md:gap-x-12 items-center min-w-0">
+                <div class="col-span-12 md:col-span-6 order-2 md:order-1 min-w-0">
+                    <div class="h-[500px] md:h-[700px] overflow-hidden">
+                        <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($narrative_3_image); ?>">
+                    </div>
+                </div>
+                <div class="col-span-12 md:col-span-5 md:col-start-8 flex flex-col justify-center order-1 md:order-2 min-w-0">
+                    <h2 class="font-headline-h2 text-headline-h2 text-primary mb-6"><?php echo esc_html($narrative_3_title); ?></h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-8"><?php echo esc_html($narrative_3_body); ?></p>
+                    <?php if ($narrative_3_bullet_1 !== '' || $narrative_3_bullet_2 !== '') : ?>
+                        <div class="border-t border-[#F2F0ED] pt-8">
+                            <?php if ($narrative_3_bullet_1 !== '') : ?>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                    <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_3_bullet_1); ?></span>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($narrative_3_bullet_2 !== '') : ?>
+                                <div class="flex items-center space-x-4">
+                                    <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                    <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($narrative_3_bullet_2); ?></span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
     </section>
 
