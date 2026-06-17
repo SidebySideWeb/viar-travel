@@ -15,7 +15,7 @@ if (viar_has_editor_sections()) {
 
 ?>
 <main class="site-main">
-<div class="viar-content-below-header flex min-h-screen">
+<div class="flex min-h-screen">
 <!-- Sidebar Navigation -->
 <aside class="fixed left-0 top-0 h-full w-72 border-r border-[#00234B]/10 bg-[#F2F0ED] flex flex-col pt-24 pb-12 z-40">
 <div class="px-8 mb-10">

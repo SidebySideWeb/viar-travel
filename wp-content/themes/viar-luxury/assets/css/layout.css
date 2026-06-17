@@ -1,39 +1,21 @@
-<?php
 /**
- * Fixed header layout — critical rules also inlined in wp_head (see header-layout.php).
+ * Fixed header: spacer reserves space; heroes opt in to pull up.
  */
 :root {
   --viar-header-height: 6.5rem;
-  --viar-header-clearance: 1rem;
-  --viar-hero-flush-pull: 1;
 }
 
-/* In-flow spacer reserves room for the fixed header (primary offset). */
 .viar-header-spacer {
   display: block;
-  width: 100%;
   height: var(--viar-header-height);
-  min-height: var(--viar-header-height);
-  flex-shrink: 0;
   pointer-events: none;
 }
 
-.viar-site-content {
-  padding-top: 0;
-}
-
-/* Full-bleed heroes: opt in to overlapping the spacer / header zone. */
 .viar-hero-flush {
-  margin-top: calc(-1 * var(--viar-header-height) * var(--viar-hero-flush-pull));
+  margin-top: calc(-1 * var(--viar-header-height));
   padding-top: var(--viar-header-height);
 }
 
-/* Home, VIP Transfers, Contact: 50px cinematic pull only. */
 .viar-hero-flush--soft {
   margin-top: -50px;
-}
-
-/* Text-led intros: small gap after the spacer. */
-.viar-content-below-header {
-  padding-top: var(--viar-header-clearance);
 }

@@ -34,6 +34,5 @@
     ?>
   </div>
 </header>
-<div class="viar-header-spacer" aria-hidden="true" style="height:6.5rem;min-height:6.5rem"></div>
-<script id="viar-header-height-sync">!function(){var h=document.querySelector(".viar-header");if(!h){return;}var px=h.offsetHeight+"px";document.documentElement.style.setProperty("--viar-header-height",px);var s=document.querySelector(".viar-header-spacer");if(s){s.style.height=px;s.style.minHeight=px;}}();</script>
+<div class="viar-header-spacer" aria-hidden="true"></div>
 <div id="viar-site-content" class="viar-site-content min-w-0 max-w-full overflow-x-hidden">

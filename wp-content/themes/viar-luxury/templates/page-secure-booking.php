@@ -15,7 +15,7 @@ if (viar_has_editor_sections()) {
 
 ?>
 <main class="site-main">
-<main class="viar-content-below-header pb-32">
+<main class="pb-32">
 <div class="max-w-[1440px] mx-auto px-12">
 <div class="grid grid-cols-12 gap-gutter">
 <!-- Content Left: Header & Branding -->

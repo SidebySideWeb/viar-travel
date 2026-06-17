@@ -59,7 +59,7 @@ if (viar_has_editor_sections()) {
 <main class="ml-72 min-h-screen bg-[#F2F0ED]">
 <!-- TopAppBar -->
 <!-- Page Content -->
-<div class="viar-content-below-header px-12 pb-24 max-w-[1440px] mx-auto">
+<div class="px-12 pb-24 max-w-[1440px] mx-auto">
 <header class="mb-16">
 <span class="font-label-caps text-[#C5A059] mb-4 block">Executive Overview</span>
 <h2 class="font-headline-h1 text-[#00234B]">Active Bookings</h2>

@@ -60,7 +60,7 @@ if (viar_has_editor_sections()) {
 </div>
 </aside>
 <!-- Main Content Canvas -->
-<main class="viar-content-below-header md:ml-72 pb-24 px-8 md:px-16 min-h-screen">
+<main class="md:ml-72 pb-24 px-8 md:px-16 min-h-screen">
 <div class="max-w-5xl mx-auto">
 <!-- Header Section -->
 <div class="mb-16">

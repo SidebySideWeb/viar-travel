@@ -59,7 +59,7 @@ $tour_query = new WP_Query($tour_query_args);
 ?>
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <!-- Hero Header Section -->
-<header class="viar-content-below-header pb-[80px] bg-white">
+<header class="pb-[80px] bg-white">
 <div class="max-w-[1440px] mx-auto px-6 md:px-12">
 <div class="max-w-3xl">
 <h1 class="font-headline-h1 text-headline-h1 text-[#00234B] mb-6"><?php echo esc_html($viar_hero_title); ?></h1>

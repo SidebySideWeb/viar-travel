@@ -89,7 +89,7 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || ($cta_label !== '' &&
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
     <?php if ($has_hero) : ?>
     <!-- Hero Section: Narrative Intro -->
-    <section class="viar-content-below-header px-6 md:px-12 pb-16 md:pb-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center min-w-0">
+    <section class="px-6 md:px-12 pb-16 md:pb-32 max-w-[1440px] mx-auto grid grid-cols-12 gap-gutter items-center min-w-0">
         <?php if ($hero_eyebrow !== '' || $hero_title !== '' || $hero_description !== '') : ?>
         <div class="col-span-12 md:col-span-5 mb-16 md:mb-0 min-w-0">
             <?php if ($hero_eyebrow !== '') : ?>
