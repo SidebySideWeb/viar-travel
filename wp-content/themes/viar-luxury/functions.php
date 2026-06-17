@@ -148,9 +148,12 @@ function viar_print_google_places_script(): void {
 }
 add_action('wp_footer', 'viar_print_google_places_script', 5);
 
-// Only load Silktide CSS for non-admins.
-function add_silktide_css(): void {
-    if (is_admin() || current_user_can('administrator')) {
+/**
+ * Load Silktide CSS for non-admins only.
+ * Priority 99 ensures the current user is fully loaded before the check.
+ */
+function add_silktide_assets(): void {
+    if ( is_user_logged_in() && current_user_can('administrator') ) {
         return;
     }
     ?>
@@ -170,14 +173,4 @@ function add_silktide_css(): void {
     </style>
     <?php
 }
-add_action('wp_head', 'add_silktide_css', 1);
-
-// Output a JS variable so GTM knows if user is admin.
-function add_admin_flag(): void {
-    if (is_user_logged_in() && current_user_can('administrator')) {
-        echo '<script>window.isWordPressAdmin = true;</script>';
-    } else {
-        echo '<script>window.isWordPressAdmin = false;</script>';
-    }
-}
-add_action('wp_head', 'add_admin_flag', 1);
+add_action('wp_head', 'add_silktide_assets', 99);
