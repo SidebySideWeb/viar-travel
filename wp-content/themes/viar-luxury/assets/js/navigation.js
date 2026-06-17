@@ -3,7 +3,15 @@ function viarSyncHeaderHeight() {
   if (!header) {
     return;
   }
-  document.documentElement.style.setProperty('--viar-header-height', `${header.offsetHeight}px`);
+
+  const height = `${header.offsetHeight}px`;
+  document.documentElement.style.setProperty('--viar-header-height', height);
+
+  const spacer = document.querySelector('.viar-header-spacer');
+  if (spacer) {
+    spacer.style.height = height;
+    spacer.style.minHeight = height;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
