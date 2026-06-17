@@ -24,6 +24,31 @@ function viar_header_spacer_is_fixed(): bool {
 }
 
 /**
+ * Standard layout for default pages (privacy policy, terms, etc.).
+ */
+function viar_render_simple_page(): void {
+    if (!have_posts()) {
+        return;
+    }
+
+    while (have_posts()) {
+        the_post();
+        ?>
+        <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
+            <article <?php post_class('mx-auto w-full max-w-3xl px-6 py-16 md:px-12 md:py-24'); ?>>
+                <header class="mb-10 border-b border-[#C5A059]/20 pb-8">
+                    <h1 class="font-headline-h1 text-headline-h1 text-primary-container"><?php the_title(); ?></h1>
+                </header>
+                <div class="entry-content prose prose-slate max-w-none text-on-surface-variant">
+                    <?php the_content(); ?>
+                </div>
+            </article>
+        </main>
+        <?php
+    }
+}
+
+/**
  * Default brand subtitle shown under the site logo (footer + schema).
  */
 function viar_logo_subtitle_default(): string {
