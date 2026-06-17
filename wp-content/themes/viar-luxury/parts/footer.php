@@ -76,9 +76,15 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
       </div>
     </div>
   </div>
-  <div class="max-w-[1440px] mx-auto px-6 md:px-12 mt-24 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-t border-[#00234B]/5 pt-8">
+  <div class="max-w-[1440px] mx-auto px-6 md:px-12 mt-24 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-t border-[#00234B]/5 pt-8">
     <span class="font-sans text-[10px] text-[#00234B]/40 uppercase tracking-widest"><?php echo esc_html($footer_copyright); ?></span>
-    <span class="font-serif italic text-sm text-primary"><?php echo esc_html($footer_tagline); ?></span>
+    <div class="flex flex-col items-start sm:items-end gap-2">
+      <span class="font-serif italic text-sm text-primary"><?php echo esc_html($footer_tagline); ?></span>
+      <p class="font-sans text-[10px] text-[#00234B]/40 tracking-wide">
+        Design &amp; Develop by
+        <a href="https://ftiaxesite.gr" class="text-[#00234B]/60 hover:text-[#C5A059] underline-offset-4 hover:underline transition-all duration-300" target="_blank" rel="noopener noreferrer">ftiaxesite.gr</a>
+      </p>
+    </div>
   </div>
 </footer>
 <?php wp_footer(); ?>
