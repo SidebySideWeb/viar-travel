@@ -97,6 +97,29 @@ function viar_tour_booking_form_href(?int $post_id = null): string {
 }
 
 /**
+ * Fluent Forms shortcode for the contact page form.
+ */
+function viar_contact_form_shortcode(): string {
+    $form_id = (int) apply_filters('viar_contact_fluentform_id', 1);
+
+    return '[fluentform id="' . $form_id . '"]';
+}
+
+/**
+ * Render the contact page Fluent Form.
+ */
+function viar_render_contact_form(): void {
+    if (!shortcode_exists('fluentform')) {
+        echo '<p class="font-body-md text-[#00234B]/70">' . esc_html__('The contact form is temporarily unavailable. Please email us directly.', 'viar-luxury') . '</p>';
+        return;
+    }
+
+    echo '<div class="viar-fluent-form">';
+    echo do_shortcode(viar_contact_form_shortcode()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    echo '</div>';
+}
+
+/**
  * Fluent Forms shortcode for the bespoke tour booking form.
  */
 function viar_tour_booking_form_shortcode(): string {

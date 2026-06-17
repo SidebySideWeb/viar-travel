@@ -15,6 +15,7 @@ function viar_fluent_form_page_templates(): array {
         'templates/page-vip-transfers-services.php',
         'templates/page-transfers.php',
         'templates/page-fleet-booking.php',
+        'templates/page-contact.php',
     ];
 }
 

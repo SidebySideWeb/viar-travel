@@ -2,7 +2,7 @@
 /**
  * Template Name: ViaR Contact
  *
- * Contact page with WPForms integration
+ * Contact page with Fluent Forms integration
  *
  * @package ViaR_Luxury
  */
@@ -59,9 +59,9 @@ if (viar_has_editor_sections()) {
                 </p>
             </div>
 
-            <!-- WPForms Contact Form -->
+            <!-- Contact Form -->
             <div class="bg-[#F9F9F9] p-8 md:p-12 border border-[#e2e2e2]">
-                <?php echo do_shortcode('[wpforms id="15" title="false"]'); ?>
+                <?php viar_render_contact_form(); ?>
             </div>
 
         </div>

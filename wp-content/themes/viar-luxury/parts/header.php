@@ -34,4 +34,5 @@
     ?>
   </div>
 </header>
+<script>!function(){var h=document.querySelector(".viar-header");h&&document.documentElement.style.setProperty("--viar-header-height",h.offsetHeight+"px")}();</script>
 <div id="viar-site-content" class="viar-site-content min-w-0 max-w-full overflow-x-hidden">
