@@ -39,7 +39,7 @@ function viar_render_simple_page(): void {
                 <header class="mb-10 border-b border-[#C5A059]/20 pb-8">
                     <h1 class="font-headline-h1 text-headline-h1 text-primary-container"><?php the_title(); ?></h1>
                 </header>
-                <div class="entry-content prose prose-slate max-w-none text-on-surface-variant">
+                <div class="entry-content viar-entry-content prose prose-slate max-w-none font-body-lg text-body-lg text-on-surface-variant">
                     <?php the_content(); ?>
                 </div>
             </article>

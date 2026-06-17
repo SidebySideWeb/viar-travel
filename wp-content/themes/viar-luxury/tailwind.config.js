@@ -92,12 +92,32 @@ module.exports = {
                         "headline-h2-mobile": ["28px", {"lineHeight": "1.3", "fontWeight": "400"}],
                         "headline-h1-mobile": ["36px", {"lineHeight": "1.2", "fontWeight": "400"}],
                         "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}]
+                    },
+                    typography: {
+                        DEFAULT: {
+                            css: {
+                                color: '#43474e',
+                                maxWidth: 'none',
+                                h1: { color: '#00234b' },
+                                h2: { color: '#00234b' },
+                                h3: { color: '#00234b' },
+                                h4: { color: '#00234b' },
+                                strong: { color: '#00234b' },
+                                a: {
+                                    color: '#775a19',
+                                    textDecoration: 'underline',
+                                    textUnderlineOffset: '0.2em',
+                                    '&:hover': { color: '#C5A059' },
+                                },
+                            },
+                        },
                     }
                 },
             },
         },
   plugins: [
     require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
     require('@tailwindcss/container-queries'),
     require('@tailwindcss/line-clamp')
   ]
