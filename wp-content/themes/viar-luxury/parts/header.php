@@ -34,5 +34,5 @@
     ?>
   </div>
 </header>
-<div class="viar-header-spacer" aria-hidden="true" style="height:6.5rem"></div>
+<div class="viar-header-spacer<?php echo viar_header_spacer_is_fixed() ? ' viar-header-spacer--fixed' : ''; ?>" aria-hidden="true" style="<?php echo esc_attr(viar_get_header_spacer_style()); ?>"></div>
 <div id="viar-site-content" class="viar-site-content min-w-0 max-w-full overflow-x-hidden">

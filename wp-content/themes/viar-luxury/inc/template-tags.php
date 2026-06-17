@@ -6,6 +6,24 @@
  */
 
 /**
+ * Inline style for the fixed-header spacer on the current view.
+ */
+function viar_get_header_spacer_style(): string {
+    if (is_page_template('templates/page-about.php')) {
+        return 'height:150px';
+    }
+
+    return 'height:6.5rem';
+}
+
+/**
+ * Whether the header spacer uses a fixed height (not synced to header offset).
+ */
+function viar_header_spacer_is_fixed(): bool {
+    return is_page_template('templates/page-about.php');
+}
+
+/**
  * Default brand subtitle shown under the site logo (footer + schema).
  */
 function viar_logo_subtitle_default(): string {

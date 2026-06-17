@@ -8,7 +8,7 @@ function viarSyncHeaderHeight() {
   document.documentElement.style.setProperty('--viar-header-height', height);
 
   const spacer = document.querySelector('.viar-header-spacer');
-  if (spacer) {
+  if (spacer && !spacer.classList.contains('viar-header-spacer--fixed')) {
     spacer.style.height = height;
   }
 }

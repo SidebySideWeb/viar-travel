@@ -11,7 +11,10 @@
   pointer-events: none;
 }
 
-.viar-hero-flush {
+.viar-header-spacer--fixed {
+  height: 150px;
+}
+
   margin-top: calc(-1 * var(--viar-header-height));
   padding-top: var(--viar-header-height);
 }
