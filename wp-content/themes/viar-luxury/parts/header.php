@@ -34,5 +34,5 @@
     ?>
   </div>
 </header>
-<div class="viar-header-spacer" aria-hidden="true"></div>
+<div class="viar-header-spacer" aria-hidden="true" style="height:6.5rem"></div>
 <div id="viar-site-content" class="viar-site-content min-w-0 max-w-full overflow-x-hidden">
