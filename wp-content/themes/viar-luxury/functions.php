@@ -174,11 +174,7 @@ add_action('wp_head', 'add_silktide_css', 1);
 
 // Output a JS variable so GTM knows if user is admin.
 function add_admin_flag(): void {
-    if (is_admin()) {
-        return;
-    }
-
-    if (current_user_can('administrator')) {
+    if (is_user_logged_in() && current_user_can('administrator')) {
         echo '<script>window.isWordPressAdmin = true;</script>';
     } else {
         echo '<script>window.isWordPressAdmin = false;</script>';
