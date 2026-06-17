@@ -147,3 +147,41 @@ function viar_print_google_places_script(): void {
     <?php
 }
 add_action('wp_footer', 'viar_print_google_places_script', 5);
+
+// Only load Silktide CSS for non-admins.
+function add_silktide_css(): void {
+    if (is_admin() || current_user_can('administrator')) {
+        return;
+    }
+    ?>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/silktide/consent-manager@v2.0.0/silktide-consent-manager.css" integrity="sha384-IO1E/jCrQXyH5rwcI0SXP7OXw47JFqQNDQcKhbFvqnL2IunBxxwE2Ne5XyAmCqKs" crossorigin="anonymous">
+    <style>
+    #stcm-wrapper {
+      --primaryColor: #C5A059;
+      --backgroundColor: #ffffff;
+      --textColor: #4b494b;
+      --iconColor: #FFFFFF;
+      --iconBackgroundColor: #C5A059;
+      --backdropBackgroundColor: #00000033;
+      --fontFamily: Helvetica Neue, Segoe UI, Arial, sans-serif;
+      --boxShadow: -5px 5px 10px 0px #00000012, 0px 0px 50px 0px #0000001a;
+    }
+    </style>
+    <?php
+}
+add_action('wp_head', 'add_silktide_css', 1);
+
+// Output a JS variable so GTM knows if user is admin.
+function add_admin_flag(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    if (current_user_can('administrator')) {
+        echo '<script>window.isWordPressAdmin = true;</script>';
+    } else {
+        echo '<script>window.isWordPressAdmin = false;</script>';
+    }
+}
+add_action('wp_head', 'add_admin_flag', 1);
