@@ -13,11 +13,25 @@ function viarSyncHeaderHeight() {
   }
 }
 
+function viarObserveHeaderHeight() {
+  const header = document.querySelector('.viar-header');
+  if (!header || typeof ResizeObserver === 'undefined') {
+    return;
+  }
+
+  new ResizeObserver(viarSyncHeaderHeight).observe(header);
+}
+
 viarSyncHeaderHeight();
 
 document.addEventListener('DOMContentLoaded', () => {
   viarSyncHeaderHeight();
+  viarObserveHeaderHeight();
   window.addEventListener('resize', viarSyncHeaderHeight);
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(viarSyncHeaderHeight);
+  }
 
   const btn = document.querySelector('.viar-nav-toggle');
   const menu = document.getElementById('primary-menu') || document.querySelector('.menu');
