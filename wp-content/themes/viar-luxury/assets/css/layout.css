@@ -4,23 +4,29 @@
 :root {
   /* Default until navigation.js measures the live header (logo + padding ≈ 6.5rem). */
   --viar-header-height: 6.5rem;
-  --viar-header-clearance: 2.5rem;
-  /* Pull heroes up by this fraction of header height (cinematic, but not full overlap). */
-  --viar-hero-flush-pull: 0.5;
+  /* Extra breathing room below the header on text-led pages (≈ Tailwind p-4). */
+  --viar-header-clearance: 1rem;
+  /* Full-bleed heroes only: pull up into the header zone (1 = full cinematic). */
+  --viar-hero-flush-pull: 1;
 }
 
-/* Site shell: no extra gap below fixed header. */
+/* All page content starts below the fixed header — no overlap by default. */
 .viar-site-content {
-  padding-top: 0;
+  padding-top: var(--viar-header-height);
 }
 
-/* Full-bleed heroes: image starts near viewport top; header overlays top strip only. */
+/* Full-bleed heroes: opt in to header overlay on image/video only. */
 .viar-hero-flush {
   margin-top: calc(-1 * var(--viar-header-height) * var(--viar-hero-flush-pull));
   padding-top: var(--viar-header-height);
 }
 
-/* Standard page intro (title blocks, no full-bleed image). */
+/* Home, VIP Transfers, Contact: lighter pull (50px) instead of full header overlap. */
+.viar-hero-flush--soft {
+  margin-top: -50px;
+}
+
+/* Text-led intros: optional extra gap after the header (no second header offset). */
 .viar-content-below-header {
-  padding-top: calc(var(--viar-header-height) + var(--viar-header-clearance)) !important;
+  padding-top: var(--viar-header-clearance);
 }

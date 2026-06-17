@@ -58,7 +58,7 @@ $home_tours_query = new WP_Query([
 ?>
 <main class="site-main">
 <!-- Section 1: Hero -->
-<section class="viar-hero-flush viar-home-hero relative h-screen w-full flex items-center justify-center overflow-hidden<?php echo $viar_hero_mobile_video ? ' viar-home-hero--mobile-video' : ''; ?>">
+<section class="viar-hero-flush viar-hero-flush--soft viar-home-hero relative h-screen w-full flex items-center justify-center overflow-hidden<?php echo $viar_hero_mobile_video ? ' viar-home-hero--mobile-video' : ''; ?>">
 <?php
 viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 ?>

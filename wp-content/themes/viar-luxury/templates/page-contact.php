@@ -25,7 +25,7 @@ if (viar_has_editor_sections()) {
 <main id="primary" class="site-main">
 
     <!-- SECTION 1: HERO SECTION -->
-    <section class="viar-hero-flush relative h-[60vh] flex items-center justify-center overflow-hidden">
+    <section class="viar-hero-flush viar-hero-flush--soft relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">
             <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/contact-hero.jpg"
                  class="w-full h-full object-cover grayscale-[20%]"

@@ -123,7 +123,7 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !=
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <?php if ($has_hero) : ?>
 <!-- Hero Section -->
-<header class="viar-hero-flush relative w-full h-[921px] flex items-center overflow-hidden">
+<header class="viar-hero-flush viar-hero-flush--soft relative w-full h-[921px] flex items-center overflow-hidden">
     <?php if ($hero_image !== '') : ?>
     <div class="absolute inset-0 z-0">
         <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($hero_image); ?>">
