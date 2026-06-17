@@ -15,6 +15,15 @@ function viar_gtm_container_id(): string {
 }
 
 /**
+ * GA4 measurement ID for GTM tags. Override with the `viar_ga4_measurement_id` filter.
+ */
+function viar_ga4_measurement_id(): string {
+    $id = apply_filters('viar_ga4_measurement_id', 'G-X87X5KQ5Z7');
+
+    return is_string($id) ? trim($id) : '';
+}
+
+/**
  * Whether GTM should load on the current request.
  */
 function viar_should_load_gtm(): bool {
@@ -34,9 +43,10 @@ function viar_gtm_head_snippet(): void {
     }
 
     $container_id = viar_gtm_container_id();
+    $ga4_id = viar_ga4_measurement_id();
     ?>
 <!-- Google Tag Manager -->
-<script>window.dataLayer=window.dataLayer||[];(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+<script>window.dataLayer=window.dataLayer||[];<?php if ($ga4_id !== '') : ?>window.dataLayer.push({ga4_measurement_id:<?php echo wp_json_encode($ga4_id); ?>});<?php endif; ?>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
