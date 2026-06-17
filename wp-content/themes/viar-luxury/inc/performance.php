@@ -17,15 +17,20 @@ function viar_cleanup_wp_head(): void {
 add_action('init', 'viar_cleanup_wp_head');
 
 /**
- * Add resource hints for critical third-party font hosts.
+ * Add resource hints for critical third-party hosts.
  */
 function viar_resource_hints(array $urls, string $relation_type): array {
     if ('preconnect' !== $relation_type || !is_front_page()) {
         return $urls;
     }
 
-    $urls[] = 'https://fonts.googleapis.com';
-    $urls[] = 'https://fonts.gstatic.com';
+    if (viar_uses_google_fonts()) {
+        $urls[] = 'https://fonts.googleapis.com';
+        $urls[] = [
+            'href' => 'https://fonts.gstatic.com',
+            'crossorigin' => 'anonymous',
+        ];
+    }
 
     if (
         viar_get_home_hero_mp4_url() === ''
@@ -35,9 +40,59 @@ function viar_resource_hints(array $urls, string $relation_type): array {
         $urls[] = 'https://i.vimeocdn.com';
     }
 
-    return array_unique($urls);
+    return array_unique($urls, SORT_REGULAR);
 }
 add_filter('wp_resource_hints', 'viar_resource_hints', 10, 2);
+
+/**
+ * Load non-critical stylesheets without blocking first paint.
+ */
+function viar_async_style_loader_tag(string $html, string $handle, string $href, string $media): string {
+    if (!in_array($handle, viar_get_async_style_handles(), true)) {
+        return $html;
+    }
+
+    if (str_contains($html, "media='print'") || str_contains($html, 'media="print"')) {
+        return $html;
+    }
+
+    $async_html = preg_replace(
+        '/\smedia=[\'"][^\'"]+[\'"]/',
+        " media='print' onload=\"this.media='all'\"",
+        $html,
+        1
+    );
+
+    if (!is_string($async_html) || $async_html === $html) {
+        $async_html = str_replace(
+            "rel='stylesheet'",
+            "rel='stylesheet' media='print' onload=\"this.media='all'\"",
+            $html
+        );
+    }
+
+    return $async_html . '<noscript>' . $html . '</noscript>';
+}
+add_filter('style_loader_tag', 'viar_async_style_loader_tag', 10, 4);
+
+/**
+ * Drop jquery-migrate on the public site when plugins do not require it.
+ */
+function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {
+    if (is_admin()) {
+        return;
+    }
+
+    if (!isset($scripts->registered['jquery'])) {
+        return;
+    }
+
+    $scripts->registered['jquery']->deps = array_diff(
+        $scripts->registered['jquery']->deps,
+        ['jquery-migrate']
+    );
+}
+add_action('wp_default_scripts', 'viar_dequeue_jquery_migrate');
 
 /**
  * Add modern loading attributes to non-critical images in raw template HTML.

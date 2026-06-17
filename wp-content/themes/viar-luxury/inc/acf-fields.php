@@ -678,27 +678,6 @@ function viar_register_acf_fields(): void {
                 'name' => 'viar_vip_cta_secondary_url',
                 'type' => 'url',
             ],
-            [
-                'key' => 'field_viar_vip_tab_map',
-                'label' => 'Map',
-                'name' => '',
-                'type' => 'tab',
-            ],
-            [
-                'key' => 'field_viar_vip_map_image',
-                'label' => 'Map Image',
-                'name' => 'viar_vip_map_image',
-                'type' => 'image',
-                'return_format' => 'url',
-                'preview_size' => 'medium',
-                'library' => 'all',
-            ],
-            [
-                'key' => 'field_viar_vip_map_label',
-                'label' => 'Map Overlay Label',
-                'name' => 'viar_vip_map_label',
-                'type' => 'text',
-            ],
         ],
         'location' => [
             [

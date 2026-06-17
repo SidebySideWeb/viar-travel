@@ -112,9 +112,6 @@ $cta_primary_href = $cta_primary_url !== '' ? $cta_primary_url : $form_href;
 $cta_secondary_label = viar_field_value('viar_vip_cta_secondary_label', 'Download Fleet PDF', $page_id);
 $cta_secondary_url = viar_field_value('viar_vip_cta_secondary_url', '', $page_id);
 
-$map_image = viar_field_image_url('viar_vip_map_image', $page_id, $theme_uri . '/assets/images/remote-90ce2d5059f6.jpg');
-$map_label = viar_field_value('viar_vip_map_label', 'Global Operations Network', $page_id);
-
 $has_hero = $hero_eyebrow !== '' || $hero_title !== '' || $hero_description !== '' || $hero_image !== '' || $hero_cta_label !== '';
 $has_services_intro = $services_title !== '' || $services_description !== '' || ($services_link_label !== '' && $services_link_url !== '');
 $has_services_section = $has_services_intro || $services !== [];
@@ -122,7 +119,6 @@ $has_fleet_header = $fleet_eyebrow !== '' || $fleet_title !== '';
 $has_form_header = $form_eyebrow !== '' || $form_title !== '' || $form_description !== '';
 $has_stats = $stats_title !== '' || $stats !== [];
 $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !== '' || $cta_secondary_label !== '';
-$has_map = $map_image !== '' || $map_label !== '';
 ?>
 <main class="site-main w-full max-w-full min-w-0 overflow-x-clip">
 <?php if ($has_hero) : ?>
@@ -321,22 +317,6 @@ get_template_part('parts/vip-transfer-form', null, [
         </div>
         <?php endif; ?>
     </div>
-</section>
-<?php endif; ?>
-
-<?php if ($has_map) : ?>
-<!-- Map Section Hint -->
-<section class="relative h-[614px] w-full overflow-hidden grayscale opacity-50 hover:grayscale-0 transition-all duration-1000">
-    <?php if ($map_image !== '') : ?>
-        <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($map_image); ?>">
-    <?php endif; ?>
-    <?php if ($map_label !== '') : ?>
-    <div class="absolute inset-0 flex items-center justify-center">
-        <div class="bg-white px-8 py-4 shadow-xl">
-            <span class="font-label-caps text-label-caps text-primary"><?php echo esc_html($map_label); ?></span>
-        </div>
-    </div>
-    <?php endif; ?>
 </section>
 <?php endif; ?>
 </main>
