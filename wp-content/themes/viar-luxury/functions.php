@@ -13,6 +13,7 @@ require_once get_template_directory() . '/inc/auto-pages.php';
 require_once get_template_directory() . '/inc/fluent-forms.php';
 require_once get_template_directory() . '/inc/rankmath.php';
 require_once get_template_directory() . '/inc/security.php';
+require_once get_template_directory() . '/inc/gtm.php';
 require_once get_template_directory() . '/inc/performance.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/acf-fields.php';
