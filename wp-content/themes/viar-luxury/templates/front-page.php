@@ -62,6 +62,9 @@ $home_tours_query = new WP_Query([
 <?php
 viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 ?>
+<?php if (viar_home_hero_has_desktop_video()) : ?>
+    <?php viar_render_hero_desktop_sound_toggle(); ?>
+<?php endif; ?>
 <?php if (!$viar_hero_has_video) : ?>
 <div class="relative z-10 text-center text-white px-6">
 <h1 class="font-display text-display mb-8 max-w-4xl mx-auto"><?php echo esc_html($viar_hero_title); ?></h1>

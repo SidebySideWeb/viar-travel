@@ -131,12 +131,23 @@ function viar_home_hero_has_video(?int $post_id = null): bool {
 }
 
 /**
- * Background-mode Vimeo embed URL for full-bleed hero videos.
+ * Whether the homepage hero plays a desktop background video (MP4 or Vimeo).
+ */
+function viar_home_hero_has_desktop_video(?int $post_id = null): bool {
+    if (viar_get_home_hero_mp4_url($post_id) !== '') {
+        return true;
+    }
+
+    return viar_get_home_hero_mp4_url($post_id) === ''
+        && viar_get_home_hero_vimeo_id($post_id) !== '';
+}
+
+/**
+ * Vimeo embed URL for full-bleed desktop hero videos (muted autoplay; unmute via UI).
  */
 function viar_vimeo_background_embed_url(string $video_id): string {
     return add_query_arg(
         [
-            'background' => '1',
             'autoplay' => '1',
             'loop' => '1',
             'muted' => '1',
@@ -198,6 +209,7 @@ function viar_render_hero_background(
         <?php if ($mp4_url !== '') : ?>
             <video
                 class="viar-hero-video__native viar-hero-media--desktop absolute inset-0 h-full w-full object-cover"
+                data-viar-hero-native
                 autoplay
                 muted
                 loop
@@ -213,6 +225,7 @@ function viar_render_hero_background(
             <div class="viar-hero-video viar-hero-media--desktop absolute inset-0 overflow-hidden">
                 <iframe
                     class="viar-hero-video__iframe"
+                    data-viar-hero-vimeo
                     src="<?php echo esc_url(viar_vimeo_background_embed_url($desktop_vimeo_id)); ?>"
                     title="<?php esc_attr_e('Homepage hero video', 'viar-luxury'); ?>"
                     allow="autoplay; fullscreen; picture-in-picture"
@@ -221,6 +234,23 @@ function viar_render_hero_background(
         <?php endif; ?>
         <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
     </div>
+    <?php
+}
+
+/**
+ * Desktop sound toggle for autoplaying hero videos (browsers require a click to unmute).
+ */
+function viar_render_hero_desktop_sound_toggle(): void {
+    ?>
+    <button
+        type="button"
+        class="viar-hero-sound-btn hidden md:inline-flex"
+        data-viar-hero-unmute
+        aria-label="<?php esc_attr_e('Unmute video', 'viar-luxury'); ?>"
+        aria-pressed="false"
+    >
+        <span class="material-symbols-outlined" aria-hidden="true">volume_off</span>
+    </button>
     <?php
 }
 
