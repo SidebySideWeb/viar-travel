@@ -238,23 +238,6 @@ function viar_render_hero_background(
 }
 
 /**
- * Desktop sound toggle for autoplaying hero videos (browsers require a click to unmute).
- */
-function viar_render_hero_desktop_sound_toggle(): void {
-    ?>
-    <button
-        type="button"
-        class="viar-hero-sound-btn hidden md:inline-flex"
-        data-viar-hero-unmute
-        aria-label="<?php esc_attr_e('Unmute video', 'viar-luxury'); ?>"
-        aria-pressed="false"
-    >
-        <span class="material-symbols-outlined" aria-hidden="true">volume_off</span>
-    </button>
-    <?php
-}
-
-/**
  * Mobile hero play button that opens the Vimeo popup.
  */
 function viar_render_hero_mobile_play_button(): void {

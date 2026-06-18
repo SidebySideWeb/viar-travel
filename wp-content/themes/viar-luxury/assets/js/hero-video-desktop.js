@@ -1,48 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const button = document.querySelector('[data-viar-hero-unmute]');
-  if (!button) {
+  const video = document.querySelector('[data-viar-hero-native]');
+  const iframe = document.querySelector('[data-viar-hero-vimeo]');
+
+  if (!video && !iframe) {
     return;
   }
 
-  const video = document.querySelector('[data-viar-hero-native]');
-  const iframe = document.querySelector('[data-viar-hero-vimeo]');
-  const icon = button.querySelector('.material-symbols-outlined');
+  let soundEnabled = false;
   let vimeoPlayer = null;
 
-  const setSoundState = (isMuted) => {
-    button.setAttribute('aria-pressed', isMuted ? 'false' : 'true');
-    button.setAttribute(
-      'aria-label',
-      isMuted ? 'Unmute video' : 'Mute video'
-    );
+  const waitForVimeo = () =>
+    new Promise((resolve) => {
+      if (window.Vimeo) {
+        resolve();
+        return;
+      }
 
-    if (icon) {
-      icon.textContent = isMuted ? 'volume_off' : 'volume_up';
-    }
-  };
+      const started = Date.now();
+      const timer = window.setInterval(() => {
+        if (window.Vimeo || Date.now() - started > 5000) {
+          window.clearInterval(timer);
+          resolve();
+        }
+      }, 50);
+    });
 
-  const toggleNative = async () => {
-    if (!video) {
+  const enableSound = async () => {
+    if (soundEnabled) {
       return;
     }
 
-    video.muted = !video.muted;
+    soundEnabled = true;
+    removeListeners();
 
-    if (!video.muted) {
+    if (video) {
+      video.muted = false;
       video.volume = 1;
 
       try {
         await video.play();
       } catch (error) {
-        // Autoplay policies may block resumed playback after unmute.
+        // Browser may still block playback until a direct gesture.
       }
+
+      return;
     }
 
-    setSoundState(video.muted);
-  };
+    if (!iframe) {
+      return;
+    }
 
-  const toggleVimeo = async () => {
-    if (!iframe || !window.Vimeo) {
+    await waitForVimeo();
+
+    if (!window.Vimeo) {
       return;
     }
 
@@ -50,26 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
       vimeoPlayer = new window.Vimeo.Player(iframe);
     }
 
-    const isMuted = await vimeoPlayer.getMuted();
-    await vimeoPlayer.setMuted(!isMuted);
-
-    if (isMuted) {
-      await vimeoPlayer.setVolume(1);
-    }
-
-    setSoundState(!isMuted);
+    await vimeoPlayer.setMuted(false);
+    await vimeoPlayer.setVolume(1);
   };
 
-  button.addEventListener('click', () => {
-    if (video) {
-      toggleNative();
-      return;
-    }
+  const onInteraction = () => {
+    enableSound();
+  };
 
-    if (iframe) {
-      toggleVimeo();
-    }
+  const interactionEvents = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
+
+  const removeListeners = () => {
+    interactionEvents.forEach((eventName) => {
+      document.removeEventListener(eventName, onInteraction);
+    });
+    window.removeEventListener('scroll', onInteraction);
+  };
+
+  interactionEvents.forEach((eventName) => {
+    document.addEventListener(eventName, onInteraction, { passive: true });
   });
 
-  setSoundState(true);
+  window.addEventListener('scroll', onInteraction, { passive: true });
 });
