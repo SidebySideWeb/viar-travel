@@ -47,14 +47,14 @@ function viar_register_acf_fields(): void {
                 'label' => 'Hero MP4 Video URL (Homepage)',
                 'name' => 'viar_hero_mp4_url',
                 'type' => 'url',
-                'instructions' => 'Optional. Direct MP4 link (CDN recommended). Used instead of Vimeo when set. Hero Image is the poster while loading.',
+                'instructions' => 'Legacy field. The homepage hero always uses the hero image; this MP4 URL is no longer displayed.',
             ],
             [
                 'key' => 'field_viar_hero_vimeo_url',
                 'label' => 'Hero Vimeo Video (Homepage)',
                 'name' => 'viar_hero_vimeo_url',
                 'type' => 'url',
-                'instructions' => 'Optional fallback when no MP4 URL is set. Paste a Vimeo URL or video ID.',
+                'instructions' => 'Paste a Vimeo URL or video ID. Shows the play button on desktop and mobile; video opens in a popup.',
             ],
             [
                 'key' => 'field_viar_card_image',

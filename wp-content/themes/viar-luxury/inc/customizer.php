@@ -16,8 +16,8 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'esc_url_raw',
     ]);
     $wp_customize->add_control('viar_home_hero_mp4_url', [
-        'label' => __('Hero MP4 Video URL (recommended)', 'viar-luxury'),
-        'description' => __('Direct link to an MP4 file (Media Library or CDN). Fastest option. Hero Image is used as the poster while the video loads.', 'viar-luxury'),
+        'label' => __('Hero MP4 Video URL (legacy)', 'viar-luxury'),
+        'description' => __('No longer used on the homepage hero. The hero image and Vimeo play button are shown instead.', 'viar-luxury'),
         'section' => 'viar_homepage_hero',
         'type' => 'url',
     ]);
@@ -27,8 +27,8 @@ function viar_customize_register(WP_Customize_Manager $wp_customize): void {
         'sanitize_callback' => 'esc_url_raw',
     ]);
     $wp_customize->add_control('viar_home_hero_vimeo_url', [
-        'label' => __('Hero Vimeo Video URL (fallback)', 'viar-luxury'),
-        'description' => __('Used for the mobile play-button popup. On desktop, used as background video only when no MP4 URL is set.', 'viar-luxury'),
+        'label' => __('Hero Vimeo Video URL', 'viar-luxury'),
+        'description' => __('Opens in the play-button popup on desktop and mobile. The hero image is always shown as the background.', 'viar-luxury'),
         'section' => 'viar_homepage_hero',
         'type' => 'url',
     ]);

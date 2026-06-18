@@ -32,10 +32,7 @@ function viar_resource_hints(array $urls, string $relation_type): array {
         ];
     }
 
-    if (
-        viar_get_home_hero_mp4_url() === ''
-        && viar_parse_vimeo_id(viar_get_home_hero_vimeo_url()) !== ''
-    ) {
+    if (is_front_page() && viar_get_home_hero_vimeo_id() !== '') {
         $urls[] = 'https://player.vimeo.com';
         $urls[] = 'https://i.vimeocdn.com';
     }

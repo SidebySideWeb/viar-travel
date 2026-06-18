@@ -123,46 +123,14 @@ function viar_get_home_hero_vimeo_url(?int $post_id = null): string {
 }
 
 /**
- * Whether the homepage hero uses a background video (MP4 or Vimeo).
+ * Whether the homepage hero opens a Vimeo popup from the play button.
  */
-function viar_home_hero_has_video(?int $post_id = null): bool {
-    return viar_get_home_hero_mp4_url($post_id) !== ''
-        || viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id)) !== '';
+function viar_home_hero_has_popup_video(?int $post_id = null): bool {
+    return viar_get_home_hero_vimeo_id($post_id) !== '';
 }
 
 /**
- * Whether the homepage hero plays a desktop background video (MP4 or Vimeo).
- */
-function viar_home_hero_has_desktop_video(?int $post_id = null): bool {
-    if (viar_get_home_hero_mp4_url($post_id) !== '') {
-        return true;
-    }
-
-    return viar_get_home_hero_mp4_url($post_id) === ''
-        && viar_get_home_hero_vimeo_id($post_id) !== '';
-}
-
-/**
- * Vimeo embed URL for full-bleed desktop hero videos (muted autoplay; unmute via UI).
- */
-function viar_vimeo_background_embed_url(string $video_id): string {
-    return add_query_arg(
-        [
-            'autoplay' => '1',
-            'loop' => '1',
-            'muted' => '1',
-            'controls' => '0',
-            'title' => '0',
-            'byline' => '0',
-            'portrait' => '0',
-            'dnt' => '1',
-        ],
-        'https://player.vimeo.com/video/' . rawurlencode($video_id)
-    );
-}
-
-/**
- * Vimeo player URL for the mobile popup modal.
+ * Vimeo player URL for the hero popup modal.
  */
 function viar_vimeo_modal_embed_url(string $video_id): string {
     return add_query_arg(
@@ -184,7 +152,7 @@ function viar_get_home_hero_vimeo_id(?int $post_id = null): string {
 }
 
 /**
- * Render a full-bleed hero background with optional MP4/Vimeo video and image fallback.
+ * Render a full-bleed hero background image.
  */
 function viar_render_hero_background(
     string $image_url,
@@ -192,45 +160,14 @@ function viar_render_hero_background(
     string $image_class = 'w-full h-full object-cover grayscale-[20%]',
     ?int $post_id = null
 ): void {
-    $mp4_url = viar_get_home_hero_mp4_url($post_id);
-    $vimeo_id = viar_parse_vimeo_id(viar_get_home_hero_vimeo_url($post_id));
-    $desktop_vimeo_id = $mp4_url === '' ? $vimeo_id : '';
-    $desktop_hides_image = $mp4_url !== '' || $desktop_vimeo_id !== '';
-    $image_classes = trim($image_class . ($desktop_hides_image ? ' viar-hero-bg-image--mobile-only' : ''));
     ?>
     <div class="absolute inset-0 z-0 viar-hero-background">
         <?php if ($image_url !== '') : ?>
             <img
-                class="<?php echo esc_attr($image_classes); ?>"
+                class="<?php echo esc_attr($image_class); ?>"
                 alt="<?php echo esc_attr($image_alt); ?>"
                 src="<?php echo esc_url($image_url); ?>"
             >
-        <?php endif; ?>
-        <?php if ($mp4_url !== '') : ?>
-            <video
-                class="viar-hero-video__native viar-hero-media--desktop absolute inset-0 h-full w-full object-cover"
-                data-viar-hero-native
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="auto"
-                <?php if ($image_url !== '') : ?>
-                    poster="<?php echo esc_url($image_url); ?>"
-                <?php endif; ?>
-            >
-                <source src="<?php echo esc_url($mp4_url); ?>" type="video/mp4">
-            </video>
-        <?php elseif ($desktop_vimeo_id !== '') : ?>
-            <div class="viar-hero-video viar-hero-media--desktop absolute inset-0 overflow-hidden">
-                <iframe
-                    class="viar-hero-video__iframe"
-                    data-viar-hero-vimeo
-                    src="<?php echo esc_url(viar_vimeo_background_embed_url($desktop_vimeo_id)); ?>"
-                    title="<?php esc_attr_e('Homepage hero video', 'viar-luxury'); ?>"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                ></iframe>
-            </div>
         <?php endif; ?>
         <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
     </div>
@@ -238,9 +175,9 @@ function viar_render_hero_background(
 }
 
 /**
- * Mobile hero play button that opens the Vimeo popup.
+ * Hero play button that opens the Vimeo popup.
  */
-function viar_render_hero_mobile_play_button(): void {
+function viar_render_hero_play_button(): void {
     ?>
     <button
         type="button"
