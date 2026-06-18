@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const hero = document.querySelector('.viar-home-hero');
   const video = document.querySelector('[data-viar-hero-native]');
   const iframe = document.querySelector('[data-viar-hero-vimeo]');
 
-  if (!video && !iframe) {
+  if (!hero || (!video && !iframe)) {
     return;
   }
 
   let soundEnabled = false;
   let vimeoPlayer = null;
+  let heroVisible = true;
 
   const waitForVimeo = () =>
     new Promise((resolve) => {
@@ -25,13 +27,72 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 50);
     });
 
+  const getVimeoPlayer = async () => {
+    if (!iframe || !window.Vimeo) {
+      await waitForVimeo();
+    }
+
+    if (!iframe || !window.Vimeo) {
+      return null;
+    }
+
+    if (!vimeoPlayer) {
+      vimeoPlayer = new window.Vimeo.Player(iframe);
+    }
+
+    return vimeoPlayer;
+  };
+
+  const pausePlayback = async () => {
+    if (video) {
+      video.pause();
+      return;
+    }
+
+    const player = await getVimeoPlayer();
+    if (player) {
+      await player.pause();
+    }
+  };
+
+  const resumePlayback = async () => {
+    if (!heroVisible) {
+      return;
+    }
+
+    if (video) {
+      try {
+        await video.play();
+      } catch (error) {
+        // Autoplay policies may block resumed playback.
+      }
+      return;
+    }
+
+    const player = await getVimeoPlayer();
+    if (player) {
+      await player.play();
+    }
+  };
+
+  const setHeroVisibility = (isVisible) => {
+    heroVisible = isVisible;
+
+    if (isVisible) {
+      resumePlayback();
+      return;
+    }
+
+    pausePlayback();
+  };
+
   const enableSound = async () => {
     if (soundEnabled) {
       return;
     }
 
     soundEnabled = true;
-    removeListeners();
+    removeInteractionListeners();
 
     if (video) {
       video.muted = false;
@@ -46,22 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!iframe) {
+    const player = await getVimeoPlayer();
+    if (!player) {
       return;
     }
 
-    await waitForVimeo();
-
-    if (!window.Vimeo) {
-      return;
-    }
-
-    if (!vimeoPlayer) {
-      vimeoPlayer = new window.Vimeo.Player(iframe);
-    }
-
-    await vimeoPlayer.setMuted(false);
-    await vimeoPlayer.setVolume(1);
+    await player.setMuted(false);
+    await player.setVolume(1);
   };
 
   const onInteraction = () => {
@@ -70,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const interactionEvents = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
 
-  const removeListeners = () => {
+  const removeInteractionListeners = () => {
     interactionEvents.forEach((eventName) => {
       document.removeEventListener(eventName, onInteraction);
     });
@@ -82,4 +134,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.addEventListener('scroll', onInteraction, { passive: true });
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setHeroVisibility(entry.isIntersecting);
+        });
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(hero);
+  }
 });
