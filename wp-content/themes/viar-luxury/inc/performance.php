@@ -155,17 +155,42 @@ function viar_optimize_noncritical_scripts(): void {
         return;
     }
 
-    // Fluent Forms prints inline jQuery in the footer before registered script tags.
     foreach (['jquery', 'jquery-core', 'jquery-migrate'] as $handle) {
         if (!isset($scripts->registered[$handle])) {
             continue;
         }
 
-        $scripts->registered[$handle]->extra['group'] = 0;
         unset($scripts->registered[$handle]->extra['strategy']);
     }
 }
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
+
+/**
+ * Print jQuery before Fluent Forms footer callbacks (default priority 10).
+ *
+ * Fluent Forms DateTime fields echo inline jQuery handlers on wp_footer without
+ * waiting for wp_print_footer_scripts(), so footer-loaded jQuery is too late.
+ */
+function viar_ensure_jquery_before_fluent_forms(): void {
+    if (!viar_page_needs_jquery() || wp_script_is('jquery', 'done')) {
+        return;
+    }
+
+    wp_enqueue_script('jquery');
+
+    $scripts = wp_scripts();
+    foreach (['jquery-core', 'jquery-migrate', 'jquery'] as $handle) {
+        if (!isset($scripts->registered[$handle])) {
+            continue;
+        }
+
+        unset($scripts->registered[$handle]->extra['strategy']);
+    }
+
+    $scripts->do_item('jquery');
+}
+add_action('wp_head', 'viar_ensure_jquery_before_fluent_forms', 1);
+add_action('wp_footer', 'viar_ensure_jquery_before_fluent_forms', 5);
 
 /**
  * Drop jquery-migrate on the public site when plugins do not require it.
