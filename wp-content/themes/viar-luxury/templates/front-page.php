@@ -59,7 +59,7 @@ $home_tours_query = new WP_Query([
 <!-- Section 1: Hero -->
 <section class="viar-hero-flush viar-hero-flush--soft viar-home-hero relative h-screen w-full flex items-center justify-center overflow-hidden<?php echo $viar_hero_has_popup_video ? ' viar-home-hero--has-video' : ''; ?>">
 <?php
-viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
+viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-full h-full object-cover grayscale-[20%]', (int) get_queried_object_id(), 'viar_hero_image');
 ?>
 <?php if ($viar_hero_has_popup_video) : ?>
 <div class="viar-home-hero__content relative z-10 text-center text-white px-6">
@@ -110,9 +110,22 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
         <article class="w-[min(100%,28rem)] max-w-[450px] shrink-0 group cursor-pointer">
             <a href="<?php echo esc_url(get_permalink()); ?>" class="block">
                 <div class="aspect-[4/5] overflow-hidden mb-6">
-                    <?php $tour_card_image = viar_image_url('viar_tour_card_image', '', get_the_ID()); ?>
-                    <?php if ($tour_card_image !== '') : ?>
-                        <img src="<?php echo esc_url($tour_card_image); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<?php echo esc_attr(get_the_title()); ?>">
+                    <?php
+                    $tour_post_id = get_the_ID();
+                    $tour_card_image = viar_image_url('viar_tour_card_image', '', $tour_post_id);
+                    $tour_card_attachment_id = viar_image_attachment_id('viar_tour_card_image', $tour_post_id);
+                    ?>
+                    <?php if ($tour_card_image !== '' || $tour_card_attachment_id > 0) : ?>
+                        <?php
+                        viar_render_responsive_image([
+                            'attachment_id' => $tour_card_attachment_id,
+                            'url' => $tour_card_image,
+                            'size' => 'viar-card',
+                            'sizes' => '(max-width: 768px) 90vw, 450px',
+                            'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
+                            'alt' => get_the_title(),
+                        ]);
+                        ?>
                     <?php endif; ?>
                 </div>
                 <?php if ($card_meta !== '') : ?>
@@ -135,7 +148,16 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 <!-- Row 1 -->
 <div class="flex flex-col md:flex-row items-center gap-24 mb-32">
 <div class="w-full md:w-1/2">
-<img class="w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm" data-alt="A close-up, editorial detail of a high-end travel consultant's workspace, featuring a minimalist layout with a thick vellum itinerary, a gold fountain pen, and a crystal glass of water. The background is a soft-focus view of a lush garden. The lighting is diffused and natural, highlighting textures of paper and metal. The aesthetic is extremely quiet, professional, and sophisticated, emphasizing the human element of curation." src="<?php echo esc_url($viar_home_zigzag_row1_image); ?>"/>
+<?php
+viar_render_responsive_image([
+    'attachment_id' => viar_image_attachment_id('viar_home_zigzag_row1_image', (int) get_queried_object_id()),
+    'url' => $viar_home_zigzag_row1_image,
+    'size' => 'viar-content',
+    'sizes' => '(max-width: 768px) 100vw, 50vw',
+    'class' => 'w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm',
+    'alt' => '',
+]);
+?>
 </div>
 <div class="w-full md:w-1/2 space-y-8">
 <span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.3em]"><?php echo esc_html($viar_home_zigzag_row1_label); ?></span>
@@ -157,7 +179,16 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero');
 <a href="<?php echo esc_url($viar_home_zigzag_row2_cta_url); ?>" class="font-cta text-cta text-secondary border-b border-secondary pb-1 uppercase tracking-widest hover:text-primary transition-colors inline-block"><?php echo esc_html($viar_home_zigzag_row2_cta_label); ?></a>
 </div>
 <div class="w-full md:w-1/2">
-<img class="w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm" data-alt="A sophisticated lifestyle image of a couple enjoying a private dinner on a remote wooden pier at dusk. The water is calm and dark, reflecting the warm glow of subtle lanterns. The setting is minimalist and atmospheric, focusing on the high-quality table settings and the vast, open horizon. The overall mood is one of romantic serenity and extreme luxury, using a palette of deep navy and champagne gold." src="<?php echo esc_url($viar_home_zigzag_row2_image); ?>"/>
+<?php
+viar_render_responsive_image([
+    'attachment_id' => viar_image_attachment_id('viar_home_zigzag_row2_image', (int) get_queried_object_id()),
+    'url' => $viar_home_zigzag_row2_image,
+    'size' => 'viar-content',
+    'sizes' => '(max-width: 768px) 100vw, 50vw',
+    'class' => 'w-full h-[280px] sm:h-[400px] md:h-[600px] object-cover shadow-sm',
+    'alt' => '',
+]);
+?>
 </div>
 </div>
 </div>

@@ -185,6 +185,138 @@ function viar_get_image_dimensions(string $image_url): array {
 }
 
 /**
+ * Resolve a media-library attachment ID from an ACF/meta image field.
+ */
+function viar_image_attachment_id(string $field_key, ?int $post_id = null): int {
+    $post_id = $post_id ?: get_the_ID();
+
+    if (function_exists('get_field')) {
+        $value = get_field($field_key, $post_id);
+        if (is_array($value) && !empty($value['ID'])) {
+            return (int) $value['ID'];
+        }
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+    }
+
+    $meta_value = get_post_meta($post_id, $field_key, true);
+    if (is_numeric($meta_value)) {
+        return (int) $meta_value;
+    }
+
+    if (has_post_thumbnail($post_id)) {
+        return (int) get_post_thumbnail_id($post_id);
+    }
+
+    return 0;
+}
+
+/**
+ * Prefer a bundled WebP asset for theme fallback images when available.
+ */
+function viar_prefer_modern_image_url(string $url): string {
+    $theme_uri = get_template_directory_uri();
+    $theme_dir = get_template_directory();
+
+    if (!str_starts_with($url, $theme_uri)) {
+        return $url;
+    }
+
+    $relative_path = substr($url, strlen($theme_uri));
+    $source_path = $theme_dir . $relative_path;
+    $webp_path = preg_replace('/\.(jpe?g|png)$/i', '.webp', $source_path);
+
+    if (is_string($webp_path) && is_readable($webp_path)) {
+        return $theme_uri . substr($webp_path, strlen($theme_dir));
+    }
+
+    return $url;
+}
+
+/**
+ * Render a responsive image using WordPress srcset when possible.
+ *
+ * @param array{
+ *     attachment_id?: int,
+ *     url?: string,
+ *     size?: string,
+ *     class?: string,
+ *     alt?: string,
+ *     loading?: string,
+ *     fetchpriority?: string,
+ *     sizes?: string,
+ *     decoding?: string,
+ *     lcp?: bool
+ * } $args
+ */
+function viar_render_responsive_image(array $args): void {
+    $args = wp_parse_args($args, [
+        'attachment_id' => 0,
+        'url' => '',
+        'size' => 'large',
+        'class' => '',
+        'alt' => '',
+        'loading' => 'lazy',
+        'fetchpriority' => '',
+        'sizes' => '100vw',
+        'decoding' => 'async',
+        'lcp' => false,
+    ]);
+
+    $attributes = [
+        'class' => $args['class'],
+        'loading' => $args['loading'],
+        'decoding' => $args['decoding'],
+        'sizes' => $args['sizes'],
+    ];
+
+    if ($args['alt'] !== '') {
+        $attributes['alt'] = $args['alt'];
+    }
+
+    if ($args['fetchpriority'] !== '') {
+        $attributes['fetchpriority'] = $args['fetchpriority'];
+    }
+
+    if ($args['lcp']) {
+        $attributes['data-no-lazy'] = '1';
+    }
+
+    if ($args['attachment_id'] > 0) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by core.
+        echo wp_get_attachment_image((int) $args['attachment_id'], (string) $args['size'], false, $attributes);
+        return;
+    }
+
+    if ($args['url'] === '') {
+        return;
+    }
+
+    $image_url = viar_prefer_modern_image_url((string) $args['url']);
+    $dimensions = viar_get_image_dimensions((string) $args['url']);
+    ?>
+    <img
+        class="<?php echo esc_attr($args['class']); ?>"
+        alt="<?php echo esc_attr($args['alt']); ?>"
+        src="<?php echo esc_url($image_url); ?>"
+        loading="<?php echo esc_attr($args['loading']); ?>"
+        decoding="<?php echo esc_attr($args['decoding']); ?>"
+        <?php if ($args['fetchpriority'] !== '') : ?>
+            fetchpriority="<?php echo esc_attr($args['fetchpriority']); ?>"
+        <?php endif; ?>
+        <?php if ($args['lcp']) : ?>
+            data-no-lazy="1"
+        <?php endif; ?>
+        <?php if (!empty($dimensions)) : ?>
+            width="<?php echo esc_attr((string) $dimensions['width']); ?>"
+            height="<?php echo esc_attr((string) $dimensions['height']); ?>"
+        <?php endif; ?>
+    >
+    <?php
+}
+
+/**
  * Homepage hero image URL used for LCP preloading.
  */
 function viar_get_home_hero_image_url(): string {
@@ -194,8 +326,16 @@ function viar_get_home_hero_image_url(): string {
 
     $post_id = (int) get_queried_object_id();
     $fallback = get_template_directory_uri() . '/assets/images/remote-2018f584e2ab.jpg';
+    $attachment_id = viar_image_attachment_id('viar_hero_image', $post_id > 0 ? $post_id : null);
 
-    return viar_image_url('viar_hero_image', $fallback, $post_id > 0 ? $post_id : null);
+    if ($attachment_id > 0) {
+        $src = wp_get_attachment_image_url($attachment_id, 'viar-hero');
+        if (is_string($src) && $src !== '') {
+            return $src;
+        }
+    }
+
+    return viar_prefer_modern_image_url(viar_image_url('viar_hero_image', $fallback, $post_id > 0 ? $post_id : null));
 }
 
 /**
@@ -205,25 +345,31 @@ function viar_render_hero_background(
     string $image_url,
     string $image_alt = '',
     string $image_class = 'w-full h-full object-cover grayscale-[20%]',
-    ?int $post_id = null
+    ?int $post_id = null,
+    ?string $field_key = 'viar_hero_image'
 ): void {
-    $dimensions = viar_get_image_dimensions($image_url);
+    $post_id = $post_id ?: get_the_ID();
+    $attachment_id = $field_key ? viar_image_attachment_id($field_key, $post_id) : 0;
+
+    if ($attachment_id <= 0) {
+        $attachment_id = attachment_url_to_postid($image_url);
+    }
     ?>
     <div class="absolute inset-0 z-0 viar-hero-background">
-        <?php if ($image_url !== '') : ?>
-            <img
-                class="<?php echo esc_attr(trim($image_class . ' viar-lcp-image')); ?>"
-                alt="<?php echo esc_attr($image_alt); ?>"
-                src="<?php echo esc_url($image_url); ?>"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                data-no-lazy="1"
-                <?php if (!empty($dimensions)) : ?>
-                    width="<?php echo esc_attr((string) $dimensions['width']); ?>"
-                    height="<?php echo esc_attr((string) $dimensions['height']); ?>"
-                <?php endif; ?>
-            >
+        <?php if ($image_url !== '' || $attachment_id > 0) : ?>
+            <?php
+            viar_render_responsive_image([
+                'attachment_id' => $attachment_id,
+                'url' => $image_url,
+                'size' => 'viar-hero',
+                'sizes' => '100vw',
+                'class' => trim($image_class . ' viar-lcp-image'),
+                'alt' => $image_alt,
+                'loading' => 'eager',
+                'fetchpriority' => 'high',
+                'lcp' => true,
+            ]);
+            ?>
         <?php endif; ?>
         <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
     </div>

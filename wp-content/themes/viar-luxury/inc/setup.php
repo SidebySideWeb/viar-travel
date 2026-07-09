@@ -26,5 +26,9 @@ function viar_luxury_setup(): void {
         'legal' => __('Legal Menu', 'viar-luxury'),
         'footer' => __('Footer Menu', 'viar-luxury'),
     ]);
+
+    add_image_size('viar-hero', 1920, 1080, true);
+    add_image_size('viar-card', 900, 1125, true);
+    add_image_size('viar-content', 1200, 0, false);
 }
 add_action('after_setup_theme', 'viar_luxury_setup');

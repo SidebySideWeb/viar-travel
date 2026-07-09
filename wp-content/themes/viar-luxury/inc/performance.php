@@ -155,8 +155,15 @@ function viar_optimize_noncritical_scripts(): void {
         return;
     }
 
-    wp_script_add_data('jquery', 'strategy', 'defer');
-    wp_script_add_data('jquery-core', 'strategy', 'defer');
+    // Fluent Forms prints inline jQuery in the footer before registered script tags.
+    foreach (['jquery', 'jquery-core', 'jquery-migrate'] as $handle) {
+        if (!isset($scripts->registered[$handle])) {
+            continue;
+        }
+
+        $scripts->registered[$handle]->extra['group'] = 0;
+        unset($scripts->registered[$handle]->extra['strategy']);
+    }
 }
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 
