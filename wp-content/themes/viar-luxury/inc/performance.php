@@ -166,12 +166,49 @@ function viar_optimize_noncritical_scripts(): void {
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 
 /**
- * Print jQuery before Fluent Forms footer callbacks (default priority 10).
+ * Print Fluent Forms dependencies before its wp_footer callbacks (priority 10).
  *
- * Fluent Forms DateTime fields echo inline jQuery handlers on wp_footer without
- * waiting for wp_print_footer_scripts(), so footer-loaded jQuery is too late.
+ * Fluent Forms DateTime fields echo inline handlers that expect jQuery, flatpickr,
+ * and fluentFormVars, but those scripts normally print at wp_print_footer_scripts
+ * (priority 20) after the inline code has already run.
  */
-function viar_ensure_jquery_before_fluent_forms(): void {
+function viar_ensure_fluent_form_footer_scripts(): void {
+    if (!viar_page_needs_jquery()) {
+        return;
+    }
+
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('flatpickr');
+    wp_enqueue_script('fluent-form-submission');
+
+    $scripts = wp_scripts();
+    $handles = ['jquery-core', 'jquery-migrate', 'jquery', 'flatpickr', 'fluent-form-submission'];
+
+    foreach ($handles as $handle) {
+        if (!isset($scripts->registered[$handle])) {
+            continue;
+        }
+
+        unset($scripts->registered[$handle]->extra['strategy']);
+    }
+
+    if (!wp_script_is('jquery', 'done')) {
+        $scripts->do_item('jquery');
+    }
+
+    if (!wp_script_is('flatpickr', 'done')) {
+        $scripts->do_item('flatpickr');
+    }
+
+    if (!wp_script_is('fluent-form-submission', 'done')) {
+        $scripts->do_item('fluent-form-submission');
+    }
+}
+
+/**
+ * Load jQuery in the head on form pages so inline footer handlers can bind safely.
+ */
+function viar_ensure_jquery_in_head_for_forms(): void {
     if (!viar_page_needs_jquery() || wp_script_is('jquery', 'done')) {
         return;
     }
@@ -189,8 +226,9 @@ function viar_ensure_jquery_before_fluent_forms(): void {
 
     $scripts->do_item('jquery');
 }
-add_action('wp_head', 'viar_ensure_jquery_before_fluent_forms', 1);
-add_action('wp_footer', 'viar_ensure_jquery_before_fluent_forms', 5);
+
+add_action('wp_head', 'viar_ensure_jquery_in_head_for_forms', 1);
+add_action('wp_footer', 'viar_ensure_fluent_form_footer_scripts', 5);
 
 /**
  * Drop jquery-migrate on the public site when plugins do not require it.
