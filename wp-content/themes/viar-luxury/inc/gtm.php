@@ -46,11 +46,11 @@ function viar_gtm_head_snippet(): void {
     $ga4_id = viar_ga4_measurement_id();
     ?>
 <!-- Google Tag Manager -->
-<script>window.dataLayer=window.dataLayer||[];<?php if ($ga4_id !== '') : ?>window.dataLayer.push({ga4_measurement_id:<?php echo wp_json_encode($ga4_id); ?>});<?php endif; ?>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+<script>window.dataLayer=window.dataLayer||[];<?php if ($ga4_id !== '') : ?>window.dataLayer.push({ga4_measurement_id:<?php echo wp_json_encode($ga4_id); ?>});<?php endif; ?>(function(){var loaded=false;function loadGtm(){if(loaded){return;}loaded=true;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','<?php echo esc_js($container_id); ?>');</script>
+'https://www.googletagmanager.com/gtm'+'.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer',<?php echo wp_json_encode($container_id); ?>);}['pointerdown','keydown','scroll','touchstart'].forEach(function(type){window.addEventListener(type,loadGtm,{once:true,passive:true});});if('requestIdleCallback' in window){requestIdleCallback(loadGtm,{timeout:3000});}else{setTimeout(loadGtm,3000);}})();</script>
 <!-- End Google Tag Manager -->
     <?php
 }

@@ -22,7 +22,7 @@
   gap: 0.875rem;
   width: 100%;
   text-decoration: none;
-  color: #74777f;
+  color: #43474e;
   transition: color 0.2s ease;
 }
 
@@ -64,7 +64,7 @@
 }
 
 .dark .viar-messenger-btn {
-  color: rgba(255, 255, 255, 0.65);
+  color: #cbd5e1;
 }
 
 .dark .viar-messenger-btn:hover,

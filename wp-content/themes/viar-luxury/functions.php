@@ -157,8 +157,12 @@ function add_silktide_assets(): void {
         return;
     }
     ?>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/silktide/consent-manager@v2.0.0/silktide-consent-manager.css" integrity="sha384-IO1E/jCrQXyH5rwcI0SXP7OXw47JFqQNDQcKhbFvqnL2IunBxxwE2Ne5XyAmCqKs" crossorigin="anonymous">
+    <?php
+    $silktide_css = 'https://cdn.jsdelivr.net/gh/silktide/consent-manager@v2.0.0/silktide-consent-manager.css';
+    $silktide_integrity = 'sha384-IO1E/jCrQXyH5rwcI0SXP7OXw47JFqQNDQcKhbFvqnL2IunBxxwE2Ne5XyAmCqKs';
+    ?>
+    <link rel="stylesheet" href="<?php echo esc_url($silktide_css); ?>" integrity="<?php echo esc_attr($silktide_integrity); ?>" crossorigin="anonymous" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="<?php echo esc_url($silktide_css); ?>" integrity="<?php echo esc_attr($silktide_integrity); ?>" crossorigin="anonymous"></noscript>
     <style>
     #stcm-wrapper {
       --primaryColor: #C5A059;

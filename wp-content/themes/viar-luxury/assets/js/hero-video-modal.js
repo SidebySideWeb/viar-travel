@@ -9,12 +9,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const openButtons = document.querySelectorAll('[data-viar-video-open]');
   const closeTargets = modal.querySelectorAll('[data-viar-video-close]');
   let previousOverflow = '';
+  let vimeoHintsAdded = false;
+
+  const addVimeoResourceHints = () => {
+    if (vimeoHintsAdded) {
+      return;
+    }
+
+    vimeoHintsAdded = true;
+
+    ['https://player.vimeo.com', 'https://i.vimeocdn.com'].forEach((href) => {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = href;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    });
+  };
 
   const openModal = () => {
     if (!iframe || !embedSrc) {
       return;
     }
 
+    addVimeoResourceHints();
     iframe.src = embedSrc;
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
@@ -34,6 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   openButtons.forEach((button) => {
+    button.addEventListener('pointerenter', addVimeoResourceHints, { once: true });
+    button.addEventListener('focus', addVimeoResourceHints, { once: true });
     button.addEventListener('click', openModal);
   });
 

@@ -5,6 +5,10 @@
   --viar-header-height: 6.5rem;
 }
 
+.viar-header {
+  min-height: var(--viar-header-height);
+}
+
 .viar-header-spacer {
   display: block;
   height: var(--viar-header-height);
@@ -15,10 +19,24 @@
   height: 150px;
 }
 
+.viar-hero-flush {
   margin-top: calc(-1 * var(--viar-header-height));
   padding-top: var(--viar-header-height);
 }
 
 .viar-hero-flush--soft {
-  margin-top: -50px;
+  margin-top: calc(-1 * var(--viar-header-height) + 50px);
+  padding-top: calc(var(--viar-header-height) - 50px);
+}
+
+.viar-home-hero h1.font-display {
+  min-height: 2.2em;
+  text-wrap: balance;
+}
+
+.viar-hero-play-btn__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  overflow: hidden;
 }

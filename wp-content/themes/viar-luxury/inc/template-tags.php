@@ -13,7 +13,7 @@ function viar_get_header_spacer_style(): string {
         return 'height:150px';
     }
 
-    return 'height:6.5rem';
+    return '';
 }
 
 /**
@@ -21,6 +21,13 @@ function viar_get_header_spacer_style(): string {
  */
 function viar_header_spacer_is_fixed(): bool {
     return is_page_template('templates/page-about.php');
+}
+
+/**
+ * Whether the header spacer height should stay stable on first paint.
+ */
+function viar_header_spacer_is_static(): bool {
+    return is_front_page();
 }
 
 /**
@@ -152,6 +159,46 @@ function viar_get_home_hero_vimeo_id(?int $post_id = null): string {
 }
 
 /**
+ * Get intrinsic dimensions for a media URL when stored in the media library.
+ *
+ * @return array{width: int, height: int}
+ */
+function viar_get_image_dimensions(string $image_url): array {
+    if ($image_url === '') {
+        return [];
+    }
+
+    $attachment_id = attachment_url_to_postid($image_url);
+    if ($attachment_id <= 0) {
+        return [];
+    }
+
+    $metadata = wp_get_attachment_metadata($attachment_id);
+    if (!is_array($metadata) || empty($metadata['width']) || empty($metadata['height'])) {
+        return [];
+    }
+
+    return [
+        'width' => (int) $metadata['width'],
+        'height' => (int) $metadata['height'],
+    ];
+}
+
+/**
+ * Homepage hero image URL used for LCP preloading.
+ */
+function viar_get_home_hero_image_url(): string {
+    if (!is_front_page()) {
+        return '';
+    }
+
+    $post_id = (int) get_queried_object_id();
+    $fallback = get_template_directory_uri() . '/assets/images/remote-2018f584e2ab.jpg';
+
+    return viar_image_url('viar_hero_image', $fallback, $post_id > 0 ? $post_id : null);
+}
+
+/**
  * Render a full-bleed hero background image.
  */
 function viar_render_hero_background(
@@ -160,13 +207,22 @@ function viar_render_hero_background(
     string $image_class = 'w-full h-full object-cover grayscale-[20%]',
     ?int $post_id = null
 ): void {
+    $dimensions = viar_get_image_dimensions($image_url);
     ?>
     <div class="absolute inset-0 z-0 viar-hero-background">
         <?php if ($image_url !== '') : ?>
             <img
-                class="<?php echo esc_attr($image_class); ?>"
+                class="<?php echo esc_attr(trim($image_class . ' viar-lcp-image')); ?>"
                 alt="<?php echo esc_attr($image_alt); ?>"
                 src="<?php echo esc_url($image_url); ?>"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                data-no-lazy="1"
+                <?php if (!empty($dimensions)) : ?>
+                    width="<?php echo esc_attr((string) $dimensions['width']); ?>"
+                    height="<?php echo esc_attr((string) $dimensions['height']); ?>"
+                <?php endif; ?>
             >
         <?php endif; ?>
         <div class="absolute inset-0 bg-black/30 backdrop-brightness-90"></div>
@@ -228,7 +284,6 @@ function viar_render_hero_video_modal(string $vimeo_id): void {
                     data-src="<?php echo esc_url(viar_vimeo_modal_embed_url($vimeo_id)); ?>"
                     title="<?php esc_attr_e('ViaR promotional video', 'viar-luxury'); ?>"
                     allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen
                 ></iframe>
             </div>
         </div>

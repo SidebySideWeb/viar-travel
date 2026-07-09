@@ -20,26 +20,34 @@ add_action('init', 'viar_cleanup_wp_head');
  * Add resource hints for critical third-party hosts.
  */
 function viar_resource_hints(array $urls, string $relation_type): array {
-    if ('preconnect' !== $relation_type || !is_front_page()) {
+    if ('preconnect' !== $relation_type || !viar_typography_uses_gstatic_font_files()) {
         return $urls;
     }
 
-    if (viar_uses_google_fonts()) {
-        $urls[] = 'https://fonts.googleapis.com';
-        $urls[] = [
-            'href' => 'https://fonts.gstatic.com',
-            'crossorigin' => 'anonymous',
-        ];
-    }
-
-    if (is_front_page() && viar_get_home_hero_vimeo_id() !== '') {
-        $urls[] = 'https://player.vimeo.com';
-        $urls[] = 'https://i.vimeocdn.com';
-    }
+    $urls[] = [
+        'href' => 'https://fonts.gstatic.com',
+        'crossorigin' => 'anonymous',
+    ];
 
     return array_unique($urls, SORT_REGULAR);
 }
 add_filter('wp_resource_hints', 'viar_resource_hints', 10, 2);
+
+/**
+ * Drop stale font host hints WordPress or plugins may still inject.
+ */
+function viar_remove_unused_font_resource_hints(array $urls, string $relation_type): array {
+    if (!in_array($relation_type, ['preconnect', 'dns-prefetch'], true)) {
+        return $urls;
+    }
+
+    return array_values(array_filter($urls, static function ($url) {
+        $href = is_array($url) ? ($url['href'] ?? '') : $url;
+
+        return !is_string($href) || !str_contains($href, 'fonts.googleapis.com');
+    }));
+}
+add_filter('wp_resource_hints', 'viar_remove_unused_font_resource_hints', 99, 2);
 
 /**
  * Load non-critical stylesheets without blocking first paint.
@@ -73,6 +81,86 @@ function viar_async_style_loader_tag(string $html, string $handle, string $href,
 add_filter('style_loader_tag', 'viar_async_style_loader_tag', 10, 4);
 
 /**
+ * Style handles from plugins that can load without blocking first paint.
+ */
+function viar_add_plugin_async_style_handles(array $handles): array {
+    $handles[] = 'ht_ctc_main_css';
+
+    return $handles;
+}
+add_filter('viar_async_style_handles', 'viar_add_plugin_async_style_handles');
+
+/**
+ * Script handles that should not block HTML parsing.
+ *
+ * @return string[]
+ */
+function viar_get_defer_script_handles(): array {
+    $handles = [
+        'viar-luxury-navigation',
+        'viar-luxury-animations',
+        'viar-luxury-hero-video-modal',
+        'viar-gtm-events',
+        'breeze-lazy',
+        'breeze-prefetch',
+        'ht_ctc_app_js',
+        'ht_ctc_woo_js',
+        'ht_ctc_group_js',
+        'ht_ctc_share_js',
+    ];
+
+    return apply_filters('viar_defer_script_handles', $handles);
+}
+
+/**
+ * Whether the current view needs jQuery on the frontend.
+ */
+function viar_page_needs_jquery(): bool {
+    if (viar_page_uses_fluent_forms()) {
+        return true;
+    }
+
+    return (bool) apply_filters('viar_page_needs_jquery', false);
+}
+
+/**
+ * Apply defer strategy and move prefetch scripts out of the head.
+ */
+function viar_optimize_noncritical_scripts(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $scripts = wp_scripts();
+
+    foreach (viar_get_defer_script_handles() as $handle) {
+        wp_script_add_data($handle, 'strategy', 'defer');
+
+        if (isset($scripts->registered[$handle])) {
+            $scripts->registered[$handle]->extra['group'] = 1;
+        }
+    }
+
+    if (isset($scripts->registered['ht_ctc_app_js'])) {
+        $scripts->registered['ht_ctc_app_js']->deps = array_values(array_diff(
+            $scripts->registered['ht_ctc_app_js']->deps,
+            ['jquery']
+        ));
+    }
+
+    if (!viar_page_needs_jquery()) {
+        wp_dequeue_script('jquery');
+        wp_dequeue_script('jquery-core');
+        wp_dequeue_script('jquery-migrate');
+        return;
+    }
+
+    wp_script_add_data('jquery', 'strategy', 'defer');
+    wp_script_add_data('jquery-core', 'strategy', 'defer');
+}
+add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
+
+/**
  * Drop jquery-migrate on the public site when plugins do not require it.
  */
 function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {
@@ -90,6 +178,36 @@ function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {
     );
 }
 add_action('wp_default_scripts', 'viar_dequeue_jquery_migrate');
+
+/**
+ * Preload the homepage hero image for faster LCP discovery.
+ */
+function viar_preload_lcp_hero_image(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $image_url = viar_get_home_hero_image_url();
+    if ($image_url === '') {
+        return;
+    }
+
+    printf(
+        '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
+        esc_url($image_url)
+    );
+}
+add_action('wp_head', 'viar_preload_lcp_hero_image', 2);
+
+/**
+ * Keep Breeze lazy-load away from marked LCP images.
+ */
+function viar_breeze_exclude_lcp_image_attributes(array $attributes): array {
+    $attributes[] = 'fetchpriority';
+
+    return $attributes;
+}
+add_filter('breeze_excluded_attributes', 'viar_breeze_exclude_lcp_image_attributes');
 
 /**
  * Add modern loading attributes to non-critical images in raw template HTML.
@@ -118,6 +236,15 @@ function viar_optimize_template_images(string $html): string {
     $img_index = 0;
     return preg_replace_callback('/<img\b[^>]*>/i', static function ($matches) use (&$img_index) {
         $img_tag = $matches[0];
+
+        if (
+            stripos($img_tag, 'viar-lcp-image') !== false
+            || stripos($img_tag, 'data-no-lazy=') !== false
+            || stripos($img_tag, 'fetchpriority=') !== false
+        ) {
+            return $img_tag;
+        }
+
         $img_index++;
         $attrs_to_add = [];
 

@@ -19,7 +19,7 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
         <?php endif; ?>
       </div>
       <?php viar_render_messenger_buttons(['context' => 'footer']); ?>
-      <p class="viar-logo-subtitle font-sans text-sm text-[#00234B]/60 dark:text-slate-400 mb-8"><?php echo esc_html($logo_subtitle); ?></p>
+      <p class="viar-logo-subtitle font-sans text-sm text-on-surface-variant dark:text-slate-300 mb-8"><?php echo esc_html($logo_subtitle); ?></p>
       <div class="viar-contact-details">
         <?php if ($footer_address !== '') : ?>
           <p class="viar-contact-item">
@@ -55,7 +55,7 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
             'fallback_cb' => false,
             'menu_class' => 'space-y-4',
             'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
-            'link_before' => '<span class="font-sans text-sm tracking-wide text-[#00234B]/60 dark:text-slate-400 hover:text-[#C5A059] underline-offset-4 hover:underline transition-all duration-300">',
+            'link_before' => '<span class="font-sans text-sm tracking-wide text-on-surface-variant dark:text-slate-300 underline underline-offset-4 hover:text-[#C5A059] transition-colors duration-300">',
             'link_after' => '</span>',
         ]);
         ?>
@@ -69,7 +69,7 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
             'fallback_cb' => false,
             'menu_class' => 'space-y-4',
             'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
-            'link_before' => '<span class="font-sans text-sm tracking-wide text-[#00234B]/60 dark:text-slate-400 hover:text-[#C5A059] underline-offset-4 hover:underline transition-all duration-300">',
+            'link_before' => '<span class="font-sans text-sm tracking-wide text-on-surface-variant dark:text-slate-300 underline underline-offset-4 hover:text-[#C5A059] transition-colors duration-300">',
             'link_after' => '</span>',
         ]);
         ?>
@@ -77,12 +77,12 @@ $footer_tagline = get_theme_mod('viar_footer_tagline', 'Quiet luxury, perfectly 
     </div>
   </div>
   <div class="max-w-[1440px] mx-auto px-6 md:px-12 mt-24 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-t border-[#00234B]/5 pt-8">
-    <span class="font-sans text-[10px] text-[#00234B]/40 uppercase tracking-widest"><?php echo esc_html($footer_copyright); ?></span>
+    <span class="font-sans text-[10px] text-on-surface-variant dark:text-slate-300 uppercase tracking-widest"><?php echo esc_html($footer_copyright); ?></span>
     <div class="flex flex-col items-start sm:items-end gap-2">
       <span class="font-serif italic text-sm text-primary"><?php echo esc_html($footer_tagline); ?></span>
-      <p class="font-sans text-[10px] text-[#00234B]/40 tracking-wide">
+      <p class="font-sans text-[10px] text-on-surface-variant dark:text-slate-300 tracking-wide">
         Design &amp; Develop by
-        <a href="https://ftiaxesite.gr" class="text-[#00234B]/60 hover:text-[#C5A059] underline-offset-4 hover:underline transition-all duration-300" target="_blank" rel="noopener noreferrer">ftiaxesite.gr</a>
+        <a href="https://ftiaxesite.gr" class="text-on-surface-variant dark:text-slate-300 underline underline-offset-4 hover:text-[#C5A059] transition-colors duration-300" target="_blank" rel="noopener noreferrer">ftiaxesite.gr</a>
       </p>
     </div>
   </div>

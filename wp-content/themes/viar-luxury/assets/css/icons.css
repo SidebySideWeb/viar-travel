@@ -41,7 +41,7 @@
 }
 
 .viar-icon--muted {
-  color: rgba(0, 35, 75, 0.6);
+  color: #43474e;
 }
 
 .viar-icon--current {
@@ -87,12 +87,13 @@
   font-family: Manrope, sans-serif;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: rgba(0, 35, 75, 0.6);
+  color: #43474e;
 }
 
 .viar-contact-item a {
   color: inherit;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
   transition: color 0.2s ease;
 }
 
@@ -117,10 +118,15 @@
 }
 
 .dark .viar-contact-item {
-  color: rgba(255, 255, 255, 0.65);
+  color: #cbd5e1;
 }
 
 .dark .viar-contact-item a:hover,
 .dark .viar-contact-item a:focus-visible {
   color: #c5a059;
+}
+
+footer .viar-logo a,
+footer .viar-logo .custom-logo-link {
+  text-decoration: none;
 }
