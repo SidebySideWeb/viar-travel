@@ -69,6 +69,16 @@ function viar_page_needs_messenger_styles(): bool {
  *
  * @return array{text: string, icons: string}
  */
+/**
+ * Critical Material Symbols CSS (inlined into main bundle so CDN/file cache cannot break icons).
+ */
+function viar_get_icon_font_css(): string {
+    $font_url = get_template_directory_uri() . '/assets/fonts/material-symbols-outlined.woff2';
+
+    return "@font-face{font-family:'Material Symbols Outlined';font-style:normal;font-weight:100 700;font-display:swap;src:url({$font_url}) format('woff2');}"
+        . ".material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:'liga';-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;}";
+}
+
 function viar_get_typography_stylesheet_urls(): array {
     $theme_uri = get_template_directory_uri();
     $defaults = [
@@ -132,7 +142,6 @@ function viar_typography_uses_gstatic_font_files(): bool {
 function viar_get_async_style_handles(): array {
     $handles = [
         'viar-luxury-text-fonts',
-        'viar-luxury-material-symbols',
         'viar-luxury-icons',
     ];
 

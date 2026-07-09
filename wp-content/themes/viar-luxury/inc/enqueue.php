@@ -25,10 +25,11 @@ function viar_luxury_enqueue_assets(): void {
     $version = wp_get_theme()->get('Version');
     $typography = viar_get_typography_stylesheet_urls();
 
-    wp_enqueue_style('viar-luxury-text-fonts', $typography['text'], [], null);
-    wp_enqueue_style('viar-luxury-material-symbols', $typography['icons'], [], null);
+    wp_enqueue_style('viar-luxury-text-fonts', $typography['text'], [], $version);
+    wp_enqueue_style('viar-luxury-material-symbols', $typography['icons'], [], $version);
 
     wp_enqueue_style('viar-luxury-main', get_template_directory_uri() . '/assets/css/style.css', [], $version);
+    wp_add_inline_style('viar-luxury-main', viar_get_icon_font_css());
     wp_enqueue_style('viar-luxury-icons', get_template_directory_uri() . '/assets/css/icons.css', ['viar-luxury-main'], $version);
 
     if (viar_page_needs_forms_styles()) {
