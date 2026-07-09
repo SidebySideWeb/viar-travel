@@ -102,7 +102,7 @@
     ),
     'breeze-wp-emoji' => '0',
     'breeze-store-googlefonts-locally' => '1',
-    'breeze-store-googleanalytics-locally' => '1',
+    'breeze-store-googleanalytics-locally' => '0',
     'breeze-store-facebookpixel-locally' => '0',
     'breeze-store-gravatars-locally' => '0',
     'breeze-enable-api' => '0',
@@ -142,13 +142,6 @@
   ),
   'wp-user-roles' => 
   array (
-    0 => 'administrator',
-    1 => 'editor',
-    2 => 'author',
-    3 => 'contributor',
-    4 => 'subscriber',
-    5 => 'bookingpress-customer',
-    6 => 'affiliatepress-affiliate-user',
   ),
   'enabled-lazy-load' => '1',
   'use-lazy-load-native' => '0',
@@ -156,6 +149,6 @@
   'breeze-lazy-load-iframes' => '0',
   'breeze-lazy-load-videos' => '1',
   'woocommerce_geolocation_ajax' => 0,
-  'permalink_structure' => '/%year%/%monthnum%/%day%/%postname%/',
+  'permalink_structure' => '/%year%/%monthnum%/%postname%/',
 ); 
 

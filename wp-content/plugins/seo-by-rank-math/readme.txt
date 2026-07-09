@@ -3,13 +3,13 @@ Contributors: rankmath
 Plugin link: https://rankmath.com/?utm_source=LP&utm_campaign=WP
 Tags: seo, google search console, schema, redirection, xml sitemap
 Tested up to: 7.0
-Requires at least: 6.3
+Requires at least: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.270
+Stable tag: 1.0.273
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt
 
-Grow your organic traffic and AI visibility with powerful SEO tools, Schema automation, actionable insights, and built-in AI SEO, all in one place.
+Grow your organic traffic and AI visibility with powerful SEO tools, XML sitemaps, Schema automation, and built-in AI SEO, all in one place.
 
 == Description ==
 
@@ -262,6 +262,10 @@ No, you won't. When you install Rank Math, it will seamlessly import your settin
 
 If you set up Rank Math from scratch, your search engine rankings will depend on how you configure it. But please be advised that Google and other search engines prefer good, helpful content over anything else.
 
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Rank Math SEO plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fb4c0-23d7-4a55-9a5c-256a4c6daf1e). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 = Can I use Rank Math on a WordPress.com website? =
 Yes, as the plugin is provided through WordPress.org, it is available on WordPress.com as well. However, you might be required to opt for the business plan on WordPress.com.
 
@@ -371,11 +375,15 @@ Terms of service: https://developers.facebook.com/terms/
 
 == Changelog ==
 
-= 1.0.270 [May 14, 2026] =
-- Improved [AI Link Genius module](https://rankmath.com/blog/ai-link-genius/) so users with the [Link Builder capability](https://rankmath.com/kb/role-manager/) can now access it.
-- Improved plugin code to better align with WordPress plugin guidelines
-- Fixed Compatibility issue with the [ACF plugin](https://rankmath.com/kb/advanced-custom-fields/) where the global expand/collapse state of the ACF fields was not preserved after updating a post.
-- Fixed the [Content AI History tab](https://rankmath.com/kb/content-ai-history/) so it no longer displays a blank page after reloading.
-- Fixed the [Open Graph meta tag generation via Content AI](https://rankmath.com/kb/content-ai-open-graph-tool/) so it works correctly following the last update.
+= 1.0.273 [June 30, 2026] =
+- [HUGE!] Added **[AI Visibility](https://rankmath.com/ai-visibility/?play-video=gS5-DFQrSxs)** to monitor your brand presence across major AI platforms.
+- Added `rank-math/get-ai-visibility-overview` [MCP Tool](https://rankmath.com/kb/mcp-tools/) to let AI assistants retrieve the complete AI Visibility dashboard, including brand scores, ranks, sentiment, mentions, citations, and analysis status
+- Added `rank-math/get-ai-visibility-brand-insights` [MCP Tool](https://rankmath.com/kb/mcp-tools/) to let AI assistants retrieve detailed AI Visibility insights for a specific brand, including score, rank, sentiment, competitors, and query transcripts
+- Added `rank-math/get-ai-visibility-brand-queries` [MCP Tool](https://rankmath.com/kb/mcp-tools/) to let AI assistants retrieve monitored queries for a brand, including query status and baseline settings
+- Added `rank-math/create-ai-visibility-brand` [MCP Tool](https://rankmath.com/kb/mcp-tools/) to let AI assistants create new AI Visibility brands with details like name, URL, description, and locale, and trigger initial analysis
+- Updated the [Minimum required WordPress version](https://wordpress.org/about/requirements/) to 6.7.
+- Fixed the [Content Analysis](https://rankmath.com/kb/score-100-in-tests/) that was not correctly counting Swedish special characters toward keyword density.
+- Fixed compatibility issue with the Phoenix Media Rename plugin, where Rank Math was affecting the fields layout.
+
 
 Full changelog can be found here - **[Rank Math changelog](https://rankmath.com/changelog/?utm_source=Plugin&utm_medium=Changelog&utm_campaign=WP)**

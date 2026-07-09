@@ -50,77 +50,9 @@ class Smush_Controller extends Controller {
 			10,
 			2
 		);
-		$this->register_action(
-			'wp_smush_settings_updated',
-			array(
-				$this,
-				'maybe_mark_global_stats_as_outdated',
-			),
-			10,
-			2
-		);
 
-		// Bulk image sizes.
-		$this->register_action(
-			'wp_smush_image_sizes_updated',
-			array(
-				$this,
-				'mark_global_stats_as_outdated_on_image_sizes_change',
-			),
-			10,
-			2
-		);
 		$this->register_action( 'wp_smush_image_sizes_deleted', array( $this->global_stats, 'mark_as_outdated' ) );
 		$this->register_action( 'wp_smush_image_sizes_added', array( $this->global_stats, 'mark_as_outdated' ) );
-	}
-
-	/**
-	 * Localize data for the Smush bulk optimization UI.
-	 *
-	 * TODO: [WPMUDEV SMUSH UI] remove
-	 *
-	 * @param array $data Script data.
-	 */
-	public function localize_smush_bulk_data( $data, $page_slug ) {
-		$allowed_pages = array(
-			'smush', // Dashboard.
-			'smush-bulk',
-		);
-		if ( ! in_array( $page_slug, $allowed_pages, true ) ) {
-			return $data;
-		}
-
-		$core                = WP_Smush::get_instance()->core();
-		$data['globalStats'] = $core->get_global_stats();
-		// Background processing.
-		$bg_optimization              = $core->mod->bg_optimization;
-		$data['canUseBgOptimization'] = $bg_optimization->can_use_background();
-
-		$is_bulk_smush_page = 'smush-bulk' === $page_slug;
-		if ( ! $is_bulk_smush_page ) {
-			return $data;
-		}
-
-		// Backup status.
-		$backups       = new Backups();
-		$backup_exists = $backups->items_with_backup_exist();
-
-		// Image sizes.
-		$settings     = Settings::get_instance();
-		$image_sizes  = $settings->get_setting( 'wp-smush-image_sizes' );
-		$sizes        = $core->image_dimensions();
-		$all_selected = false === $image_sizes || count( $image_sizes ) === count( $sizes );
-
-		$data['bulkSmushMetaData'] = array(
-			'imageSizes'   => array(
-				'allSelected' => $all_selected,
-				'sizes'       => $sizes,
-				'selected'    => is_array( $image_sizes ) ? $image_sizes : array(),
-			),
-			'backupExists' => $backup_exists,
-		);
-
-		return $data;
 	}
 
 	/**
@@ -151,28 +83,5 @@ class Smush_Controller extends Controller {
 		}
 
 		return $original;
-	}
-
-	public function maybe_mark_global_stats_as_outdated( $old_settings, $settings ) {
-		$old_lossy_status     = ! empty( $old_settings['lossy'] ) ? (int) $old_settings['lossy'] : 0;
-		$new_lossy_status     = ! empty( $settings['lossy'] ) ? (int) $settings['lossy'] : 0;
-		$lossy_status_changed = $old_lossy_status !== $new_lossy_status;
-
-		$old_exif_status     = ! empty( $old_settings['strip_exif'] );
-		$new_exif_status     = ! empty( $settings['strip_exif'] );
-		$exif_status_changed = $old_exif_status !== $new_exif_status;
-
-		if ( $lossy_status_changed || $exif_status_changed ) {
-			$this->global_stats->mark_as_outdated();
-		}
-	}
-
-	public function mark_global_stats_as_outdated_on_image_sizes_change( $old_image_sizes, $new_image_sizes ) {
-		$image_sizes_updated = count( $old_image_sizes ) !== count( $new_image_sizes )
-							   || array_diff( $old_image_sizes, $new_image_sizes );
-
-		if ( ! empty( $image_sizes_updated ) ) {
-			$this->global_stats->mark_as_outdated();
-		}
 	}
 }

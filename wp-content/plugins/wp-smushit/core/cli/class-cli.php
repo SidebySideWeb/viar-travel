@@ -9,6 +9,7 @@
 namespace Smush\Core\CLI;
 
 use Smush\Core\Array_Utils;
+use Smush\Core\Backups\Backups;
 use Smush\Core\Helper;
 use Smush\Core\Media_Library\Background_Media_Library_Scanner;
 use Smush\Core\Membership\Membership;
@@ -201,7 +202,7 @@ class CLI extends WP_CLI_Command {
 	public function restore( $args, $assoc_args ) {
 		$id = $this->array_utils->get_array_value( $assoc_args, 'id' );
 		if ( 'all' === $id ) {
-			$restore_ids = WP_Smush::get_instance()->core()->mod->backup->get_attachments_with_backups();
+			$restore_ids = ( new Backups() )->get_attachments_with_backups();
 			$this->cli_optimizer->set_ids( $restore_ids )
 			                    ->bulk_restore( __( 'Restoring all images', 'wp-smushit' ) );
 			return;
@@ -318,8 +319,15 @@ class CLI extends WP_CLI_Command {
 		$optimize_message = '';
 		if ( 0 < $optimize_count ) {
 			$optimize_message = sprintf(
-			/* translators: 1. opening strong tag, 2: unsmushed images count,3. closing strong tag. */
-				esc_html( _n( 'Found %d attachment that needs smushing', 'Found %1$d attachments that need smushing', $optimize_count, 'wp-smushit' ) ),
+				esc_html(
+					/* translators: %d - number of attachments. */
+					_n(
+						'Found %d attachment that needs smushing',
+						'Found %d attachments that need smushing',
+						$optimize_count,
+						'wp-smushit'
+					)
+				),
 				absint( $optimize_count )
 			);
 		}
@@ -327,9 +335,16 @@ class CLI extends WP_CLI_Command {
 		$reoptimize_message = '';
 		if ( 0 < $reoptimize_count ) {
 			$reoptimize_message = sprintf(
-			/* translators: 1. opening strong tag, 2: re-smush images count,3. closing strong tag. */
-				esc_html( _n( 'Found %d attachment that needs re-smushing', 'Found %d attachments that need re-smushing', $reoptimize_count, 'wp-smushit' ) ),
-				esc_html( $reoptimize_count )
+				esc_html(
+					/* translators: %d - number of attachments. */
+					_n(
+						'Found %d attachment that needs re-smushing',
+						'Found %d attachments that need re-smushing',
+						$reoptimize_count,
+						'wp-smushit'
+					)
+				),
+				absint( $reoptimize_count )
 			);
 		}
 

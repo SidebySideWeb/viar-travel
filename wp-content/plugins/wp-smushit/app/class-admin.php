@@ -11,6 +11,7 @@ use Smush\Core\Core;
 use Smush\Core\Error_Handler;
 use Smush\Core\Helper;
 use Smush\Core\Next_Gen\Next_Gen_Manager;
+use Smush\Core\Server_Utils;
 use Smush\Core\Settings;
 use Smush\Core\Stats\Global_Stats;
 use Smush\Core\Membership\Membership;
@@ -51,36 +52,23 @@ class Admin {
 	 * @var array $plugin_pages
 	 */
 	public static $plugin_pages = array(
-		'gallery_page_wp-smush-nextgen-bulk',
-		'nextgen-gallery_page_wp-smush-nextgen-bulk', // Different since NextGen 3.3.6.
 		'toplevel_page_smush',
 		'toplevel_page_smush-network',
 	);
 
 	/**
 	 * Admin constructor.
-	 *
-	 * @param Media_Library $media_lib  Media uploads library.
 	 */
-	public function __construct( $media_lib ) {
-		// add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
+	public function __construct() {
 		add_action( 'admin_init', array( $this, 'smush_i18n' ) );
 		// Add information to privacy policy page (only during creation).
 		add_action( 'admin_init', array( $this, 'add_policy' ) );
 
-		if ( wp_doing_ajax() ) {
-			$this->ajax = new Ajax();
-		}
-
-		// Init media library UI.
-		$media_lib->init_ui();
-
 		// Plugin conflict notice.
-		// add_action( 'admin_notices', array( $this, 'show_plugin_conflict_notice' ) );
+		add_action( 'admin_notices', array( $this, 'show_plugin_conflict_notice' ) );
 		// add_action( 'admin_notices', array( $this, 'show_parallel_unavailability_notice' ) );
 		// add_action( 'admin_notices', array( $this, 'show_background_unavailability_notice' ) );
-		// add_action( 'smush_check_for_conflicts', array( $this, 'check_for_conflicts_cron' ) );
+        add_action( 'smush_check_for_conflicts', array( $this, 'check_for_conflicts_cron' ) );
 		add_action( 'activated_plugin', array( $this, 'check_for_conflicts_cron' ) );
 		add_action( 'deactivated_plugin', array( $this, 'check_for_conflicts_cron' ) );
 
@@ -90,6 +78,10 @@ class Admin {
 
 		// Tempo hide deactivation survey modal in plugin page.
 		// add_action( 'admin_footer-plugins.php', array( $this, 'load_deactivation_survey_modal' ) );
+	}
+
+	public function __call( $method_name, $arguments ) {
+		_deprecated_function( esc_html( $method_name ), '4.2.0' );
 	}
 
 	public static function get_cdn_pop_locations() {
@@ -138,96 +130,6 @@ class Admin {
 
 		// Styles that can be used on all pages in the WP backend.
 		wp_register_style( 'smush-admin-common', WP_SMUSH_URL . 'app/assets/css/smush-global.min.css', array(), WP_SMUSH_VERSION );
-
-		// Dismiss update info.
-		WP_Smush::get_instance()->core()->mod->smush->dismiss_update_info();
-	}
-
-	/**
-	 * Enqueue scripts.
-	 */
-	public function enqueue_scripts() {
-		wp_enqueue_script( 'smush-global', WP_SMUSH_URL . 'app/assets/js/smush-global.min.js', array(), WP_SMUSH_VERSION, true );
-		wp_localize_script(
-			'smush-global',
-			'smush_global',
-			array(
-				// General AJAX nonce used by most Smush requests.
-				'nonce'          => wp_create_nonce( 'wp-smush-ajax' ),
-				// Dedicated nonce for unified settings sync endpoint (expects 'wp_smush_ajax').
-				'settings_nonce' => wp_create_nonce( 'wp_smush_ajax' ),
-				'strings' => array(
-					'stats_label'         => esc_html__( 'Smush', 'wp-smushit' ),
-					'filter_all'           => esc_html__( 'Smush: All images', 'wp-smushit' ),
-					'filter_not_processed' => esc_html__( 'Smush: Not processed', 'wp-smushit' ),
-					'filter_excl'          => esc_html__( 'Smush: Bulk ignored', 'wp-smushit' ),
-					'filter_failed'        => esc_html__( 'Smush: Failed Processing', 'wp-smushit' ),
-					'gb'                  => array(
-						'stats'        => esc_html__( 'Smush Stats', 'wp-smushit' ),
-						'select_image' => esc_html__( 'Select an image to view Smush stats.', 'wp-smushit' ),
-						'size'         => esc_html__( 'Image size', 'wp-smushit' ),
-						'savings'      => esc_html__( 'Savings', 'wp-smushit' ),
-					),
-				),
-			)
-		);
-
-		wp_localize_script(
-			'smush-global',
-			'wp_smush_mixpanel',
-			array(
-				'opt_in' => Settings::get_instance()->get( 'usage' ),
-			)
-		);
-
-		$current_page   = '';
-		$current_screen = '';
-
-		if ( function_exists( 'get_current_screen' ) ) {
-			$current_screen = get_current_screen();
-			$current_page   = ! empty( $current_screen ) ? $current_screen->base : $current_page;
-		}
-
-		if ( 'plugins' === $current_page || 'plugins-network' === $current_page ) {
-			$this->register_scripts();
-			wp_enqueue_script( 'smush-sui' );
-			wp_enqueue_style( 'smush-admin' );
-			return;
-		}
-
-		if ( ! in_array( $current_page, Core::$external_pages, true ) && false === strpos( $current_page, 'page_smush' ) ) {
-			return;
-		}
-
-		// Allows to disable enqueuing smush files on a particular page.
-		if ( ! apply_filters( 'wp_smush_enqueue', true ) ) {
-			return;
-		}
-
-		$this->register_scripts();
-
-		// Load on all Smush page only.
-		if ( isset( $current_screen->id ) && ( in_array( $current_screen->id, self::$plugin_pages, true ) || false !== strpos( $current_screen->id, 'page_smush' ) ) ) {
-			// Smush admin (smush-admin) includes the Shared UI.
-			wp_enqueue_style( 'smush-admin' );
-			wp_enqueue_script( 'smush-wpmudev-sui' );
-			// Required for wp.media (media uploader) used in lazy-load spinner upload.
-			wp_enqueue_media();
-		}
-
-		if ( ! in_array( $current_page, array( 'post', 'post-new', 'page', 'edit-page' ), true ) ) {
-			// Skip these pages where the script isn't used.
-			wp_enqueue_script( 'smush-admin' );
-		} else {
-			// Otherwise, load only the common JS code.
-			wp_enqueue_script( 'smush-admin-common' );
-		}
-
-		// We need it on media pages and Smush pages.
-		wp_enqueue_style( 'smush-admin-common' );
-
-		// Localize translatable strings for js.
-		WP_Smush::get_instance()->core()->localize();
 	}
 
 	/**
@@ -272,16 +174,25 @@ class Admin {
 	 * @param string $deactivated  Holds the slug of activated/deactivated plugin.
 	 */
 	public function check_for_conflicts_cron( $deactivated = '' ) {
-		$conflicting_plugins = array(
+		$optimization_plugins = array(
 			'autoptimize/autoptimize.php',
 			'ewww-image-optimizer/ewww-image-optimizer.php',
 			'imagify/imagify.php',
 			'resmushit-image-optimizer/resmushit.php',
 			'shortpixel-image-optimiser/wp-shortpixel.php',
 			'tiny-compress-images/tiny-compress-images.php',
-			'wp-rocket/wp-rocket.php',
 			'optimole-wp/optimole-wp.php',
-			// lazy load plugins.
+			'image-optimization/image-optimization.php',
+		);
+
+		$lazyload_plugins = array(
+			// Optimization plugins that also include lazy load.
+			'autoptimize/autoptimize.php',
+			'ewww-image-optimizer/ewww-image-optimizer.php',
+			'shortpixel-image-optimiser/wp-shortpixel.php',
+			'optimole-wp/optimole-wp.php',
+			// Lazy load plugins.
+			'wp-rocket/wp-rocket.php',
 			'rocket-lazy-load/rocket-lazy-load.php',
 			'a3-lazy-load/a3-lazy-load.php',
 			'jetpack/jetpack.php',
@@ -294,25 +205,37 @@ class Admin {
 
 		$plugins = get_plugins();
 
-		$active_plugins = array();
-		foreach ( $conflicting_plugins as $plugin ) {
-			if ( ! array_key_exists( $plugin, $plugins ) ) {
-				continue;
-			}
+		$active_conflicts = array(
+			'optimization' => array(),
+			'lazyload'     => array(),
+		);
 
-			if ( ! is_plugin_active( $plugin ) ) {
-				continue;
+		foreach ( $optimization_plugins as $plugin ) {
+			if ( $this->is_plugin_active_conflict( $plugin, $plugins, $deactivated ) ) {
+				$active_conflicts['optimization'][] = $plugins[ $plugin ]['Name'];
 			}
-
-			// Deactivation of the plugin in process.
-			if ( doing_action( 'deactivated_plugin' ) && $deactivated === $plugin ) {
-				continue;
-			}
-
-			$active_plugins[] = $plugins[ $plugin ]['Name'];
 		}
 
-		set_transient( 'wp-smush-conflict_check', $active_plugins, 3600 );
+		foreach ( $lazyload_plugins as $plugin ) {
+			if ( $this->is_plugin_active_conflict( $plugin, $plugins, $deactivated ) ) {
+				$active_conflicts['lazyload'][] = $plugins[ $plugin ]['Name'];
+			}
+		}
+
+		set_transient( 'wp-smush-conflict-plugins', $active_conflicts, 3600 );
+	}
+
+	private function is_plugin_active_conflict( $plugin, $plugins, $deactivated ) {
+		if ( ! array_key_exists( $plugin, $plugins ) ) {
+			return false;
+		}
+		if ( ! is_plugin_active( $plugin ) ) {
+			return false;
+		}
+		if ( doing_action( 'deactivated_plugin' ) && $deactivated === $plugin ) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -321,18 +244,13 @@ class Admin {
 	 * @since 3.6.0
 	 */
 	public function show_plugin_conflict_notice() {
-		// Do not show on lazy load module, there we show an inline notice.
-		$is_lazy_preload_page = false !== strpos( get_current_screen()->id, 'page_smush-lazy-preload' );
-		if ( $is_lazy_preload_page ) {
-			return;
-		}
 
 		$dismissed = $this->is_notice_dismissed( 'plugin-conflict' );
 		if ( $dismissed ) {
 			return;
 		}
 
-		$conflict_check = get_transient( 'wp-smush-conflict_check' );
+		$conflict_check = get_transient( 'wp-smush-conflict-plugins' );
 
 		// Have never checked before.
 		if ( false === $conflict_check ) {
@@ -340,28 +258,32 @@ class Admin {
 			return;
 		}
 
+		$optimization_plugins = isset( $conflict_check['optimization'] ) ? $conflict_check['optimization'] : array();
+		$lazyload_plugins     = isset( $conflict_check['lazyload'] ) ? $conflict_check['lazyload'] : array();
+		$conflict_plugins      = array_unique( array_merge( $optimization_plugins, $lazyload_plugins ) );
+
 		// No conflicting plugins detected.
-		if ( isset( $conflict_check ) && is_array( $conflict_check ) && empty( $conflict_check ) ) {
+		if ( empty( $conflict_plugins ) ) {
 			return;
 		}
 
 		array_walk(
-			$conflict_check,
+			$conflict_plugins,
 			function ( &$item ) {
 				$item = '<strong>' . $item . '</strong>';
 			}
 		);
 		?>
-		<div class="notice notice-info is-dismissible smush-dismissible-notice"
+		<div class="notice notice-info is-dismissible smush-dismissible-notice smush-plugin-conflict-notice"
 			 id="smush-conflict-notice"
 			 data-key="plugin-conflict">
 
-			<p><?php esc_html_e( 'You have multiple WordPress image optimization plugins installed. This may cause unpredictable behavior while optimizing your images, inaccurate reporting, or images to not display. For best results use only one image optimizer plugin at a time. These plugins may cause issues with Smush:', 'wp-smushit' ); ?></p>
+			<p><?php esc_html_e( 'You have multiple image optimization plugins installed that could conflict with Smush and cause issues. For best results, we recommend deactivating the following plugin(s):', 'wp-smushit' ); ?></p>
 			<p>
-				<?php echo wp_kses_post( join( '<br>', $conflict_check ) ); ?>
+				<?php echo wp_kses_post( join( '<br>', $conflict_plugins ) ); ?>
 			</p>
 			<p>
-				<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button button-primary">
+				<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button button-primary smush-plugin-conflict-manage-button">
 					<?php esc_html_e( 'Manage Plugins', 'wp-smushit' ); ?>
 				</a>
 				<a href="#"
@@ -423,72 +345,16 @@ class Admin {
 		<?php
 	}
 
-	public function get_global_stats_with_bulk_smush_content() {
-		$core             = WP_Smush::get_instance()->core();
-		$stats            = $core->get_global_stats();
-		$global_stats     = Global_Stats::get();
-		$remaining_count  = $global_stats->get_remaining_count();
-		$optimize_count   = $global_stats->get_optimize_list()->get_count();
-		$reoptimize_count = $global_stats->get_redo_count();
-
-		$stats['errors']  = Error_Handler::get_last_errors();
-
-		if ( $remaining_count > 0 ) {
-			ob_start();
-			WP_Smush::get_instance()->admin()->print_pending_bulk_smush_content(
-				$remaining_count,
-				$reoptimize_count,
-				$optimize_count
-			);
-			$content          = ob_get_clean();
-			$stats['content'] = $content;
-		}
-
-		return $stats;
-	}
-
-	public function get_global_stats_with_bulk_smush_content_and_notice() {
-		$stats = $this->get_global_stats_with_bulk_smush_content();
-		$remaining_count  = Global_Stats::get()->get_remaining_count();
-		if ( $remaining_count < 1 ) {
-			$stats['notice']     = esc_html__( 'Yay! All images are optimized as per your current settings.', 'wp-smushit' );
-			$stats['noticeType'] = 'success';
-		} else {
-			$stats['noticeType'] = 'warning';
-			$stats['notice']     = sprintf(
-				/* translators: %1$d - number of images, %2$s - opening a tag, %3$s - closing a tag */
-				esc_html__( 'Image check complete, you have %1$d images that need smushing. %2$sBulk smush now!%3$s', 'wp-smushit' ),
-				$remaining_count,
-				'<a href="#" class="wp-smush-trigger-bulk">',
-				'</a>'
-			);
-		}
-
-		return $stats;
-	}
-
 	/**
 	 * Add more pages to builtin wpmudev branding.
 	 *
 	 * @since 3.0
 	 *
-	 * @param array $plugin_pages  Nextgen pages is not introduced in built in wpmudev branding.
+	 * @param array $plugin_pages  Plugin pages for wpmudev branding.
 	 *
 	 * @return array
 	 */
 	public function builtin_wpmudev_branding( $plugin_pages ) {
-		$plugin_pages['gallery_page_wp-smush-nextgen-bulk'] = array(
-			'wpmudev_whitelabel_sui_plugins_branding',
-			'wpmudev_whitelabel_sui_plugins_footer',
-			'wpmudev_whitelabel_sui_plugins_doc_links',
-		);
-
-		// There's a different page ID since NextGen 3.3.6.
-		$plugin_pages['nextgen-gallery_page_wp-smush-nextgen-bulk'] = array(
-			'wpmudev_whitelabel_sui_plugins_branding',
-			'wpmudev_whitelabel_sui_plugins_footer',
-			'wpmudev_whitelabel_sui_plugins_doc_links',
-		);
 
 		foreach ( $this->pages as $key => $value ) {
 			$plugin_pages[ "smush-pro_page_smush-{$key}" ] = array(
@@ -509,7 +375,7 @@ class Admin {
 
 	public function show_parallel_unavailability_notice() {
 		$smush                     = WP_Smush::get_instance()->core()->mod->smush;
-		$curl_multi_exec_available = $smush->curl_multi_exec_available();
+		$curl_multi_exec_available = ( new Server_Utils() )->curl_multi_exec_available();
 		$is_current_user_not_admin = ! current_user_can( 'manage_options' );
 		$is_not_bulk_smush_page    = false === strpos( get_current_screen()->id, 'page_smush-bulk' );
 		$notice_hidden             = $this->is_notice_dismissed( 'curl-multi-unavailable' );

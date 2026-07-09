@@ -19,8 +19,10 @@ use Smush\Core\Bulk\Bulk_Optimize;
 use Smush\Core\Core;
 use Smush\Core\Installer;
 use Smush\Core\Membership\Membership;
+use Smush\Core\Optimizer;
 use Smush\Core\Settings;
 use Smush\Core\Helper;
+use Smush\Core\Smush\Dir_Smusher_Options_Provider;
 use WP_Error;
 use WP_Smush;
 
@@ -70,6 +72,9 @@ class Dir extends Abstract_Module {
 			return;
 		}
 
+		add_filter( 'wp_smush_localize_ui_script_data', array( $this, 'localize_dir_script_data' ) );
+		add_filter( 'wp_smush_sync_settings', array( $this, 'handle_settings_sync' ), 10, 3 );
+
 		$this->membership = Membership::get_instance();
 
 		/**
@@ -99,6 +104,12 @@ class Dir extends Abstract_Module {
 		}
 
 		add_action( 'current_screen', array( $this, 'initialize' ), 10 );
+		// Handle Ajax request for directory smush stats (stats meta box).
+		add_action( 'wp_ajax_get_dir_smush_stats', array( $this, 'get_dir_smush_stats' ) );
+	}
+
+	public function __call( $method_name, $arguments ) {
+		_deprecated_function( esc_html( $method_name ), '4.2.0' );
 	}
 
 	/**
@@ -303,7 +314,8 @@ class Dir extends Abstract_Module {
 		}
 
 		// We have the image path, optimise.
-		$results = WP_Smush::get_instance()->core()->mod->smush->do_smushit( $path );
+		$dir_smusher_options = ( new Dir_Smusher_Options_Provider() )->get_options();
+		$results             = Optimizer::get_instance()->optimize_file( $path, false, $dir_smusher_options );
 
 		if ( is_wp_error( $results ) ) {
 			/**
@@ -347,8 +359,8 @@ class Dir extends Abstract_Module {
 				"UPDATE {$wpdb->base_prefix}smush_dir_images SET error=NULL, image_size=%d, file_time=%d, lossy=%d, meta=%d WHERE id=%d LIMIT 1",
 				$results['data']->after_size,
 				filectime( $path ), // Get file time.
-				$this->settings->get( 'lossy' ),
-				$this->settings->get( 'strip_exif' ),
+				$this->settings->get_dir_lossy_level_setting(),
+				$this->settings->get( 'dir_strip_exif' ),
 				$id
 			)
 		); // Db call ok; no-cache ok.
@@ -443,12 +455,12 @@ class Dir extends Abstract_Module {
 		global $wpdb;
 
 		$condition   = 'image_size IS NULL';
-		$lossy_level = $this->settings->get_lossy_level_setting();
+		$lossy_level = $this->settings->get_dir_lossy_level_setting();
 		if ( $lossy_level > 0 ) {
 			$condition .= ' OR lossy IS NULL OR lossy < ' . intval( $lossy_level );
 		}
 
-		if ( $this->settings->get( 'strip_exif' ) ) {
+		if ( $this->settings->get( 'dir_strip_exif' ) ) {
 			$condition .= ' OR meta <> 1';
 		}
 
@@ -1223,47 +1235,6 @@ class Dir extends Abstract_Module {
 	}
 
 	/**
-	 * Combine the stats from Directory Smush and Media Library Smush.
-	 *
-	 * @param array $stats  Directory Smush stats.
-	 *
-	 * @return array Combined array of stats.
-	 */
-	public function combine_stats( $stats ) {
-		if ( empty( $stats ) || empty( $stats['percent'] ) || empty( $stats['bytes'] ) ) {
-			return array();
-		}
-
-		$dasharray = 125.663706144;
-
-		$core = WP_Smush::get_instance()->core();
-
-		// Initialize global stats.
-		$core->setup_global_stats();
-
-		// Get the total/Smushed attachment count.
-		$total_attachments = $core->total_count + $stats['total'];
-		$total_images      = $core->stats['total_images'] + $stats['total'];
-
-		$smushed     = $core->smushed_count + $stats['optimised'];
-		$savings     = ! empty( $core->stats ) ? $core->stats['bytes'] + $stats['bytes'] : $stats['bytes'];
-		$size_before = ! empty( $core->stats ) ? $core->stats['size_before'] + $stats['orig_size'] : $stats['orig_size'];
-		$percent     = $size_before > 0 ? ( $savings / $size_before ) * 100 : 0;
-
-		// Store the stats in array.
-		return array(
-			'total_count'   => $total_attachments,
-			'smushed_count' => $smushed,
-			'savings'       => size_format( $savings ),
-			'percent'       => round( $percent, 1 ),
-			'image_count'   => $total_images,
-			'dash_offset'   => $total_attachments > 0 ? $dasharray - ( $dasharray * ( $smushed / $total_attachments ) ) : $dasharray,
-			/* translators: %s: total number of images */
-			'tooltip_text'  => ! empty( $total_images ) ? sprintf( __( "You've smushed %d images in total.", 'wp-smushit' ), $total_images ) : '',
-		);
-	}
-
-	/**
 	 * Check and create dir smush table if required.
 	 *
 	 * @since 2.9.0
@@ -1343,5 +1314,89 @@ class Dir extends Abstract_Module {
 		</div>
 			<?php
 		}
+	}
+
+	/**
+	 * Localize directory smush settings for React.
+	 *
+	 * @param array $localize Current localize data.
+	 *
+	 * @return array
+	 */
+	public function localize_dir_script_data( $localize ) {
+		$dir_settings = array(
+			'dir_lossy'      => Settings::get_instance()->get_dir_lossy_level_setting(),
+			'dir_strip_exif' => Settings::get_instance()->get_dir_strip_exif_setting(),
+		);
+
+		$localize['directorySettings']                = Dir_Settings_DTO::to_react_props( $dir_settings );
+		$localize['directorySettings']['tableExists'] = self::table_exist();
+
+		return $localize;
+	}
+
+	/**
+	 * Handle directory smush settings sync via unified endpoint.
+	 *
+	 * @param array|null $saved_settings Saved settings from previous filter, or null.
+	 * @param array      $settings       Incoming settings from React (camelCase).
+	 * @param string     $context        Context identifier.
+	 *
+	 * @return array|null Saved settings array if context matches, otherwise pass through.
+	 */
+	public function handle_settings_sync( $saved_settings, $settings, $context ) {
+		if ( 'directory' !== $context ) {
+			return $saved_settings;
+		}
+
+		$db_settings = Dir_Settings_DTO::from_react_props( $settings );
+
+		// Save directory settings to separate option
+		$dir_settings = array(
+			'dir_lossy'      => $this->settings->get_dir_lossy_level_setting(),
+			'dir_strip_exif' => $this->settings->get_dir_strip_exif_setting(),
+		);
+		foreach ( $db_settings as $key => $value ) {
+			if ( in_array( $key, array( 'dir_lossy', 'dir_strip_exif' ), true ) ) {
+				$dir_settings[ $key ] = $value;
+			}
+		}
+		if ( ! empty( $dir_settings ) ) {
+			$this->settings->update_dir_settings( $dir_settings );
+		}
+
+		$updated_settings = array(
+			'dir_lossy'      => $this->settings->get_dir_lossy_level_setting(),
+			'dir_strip_exif' => $this->settings->get_dir_strip_exif_setting(),
+		);
+
+		return Dir_Settings_DTO::to_react_props( $updated_settings );
+	}
+
+	/**
+	 * Returns Directory Smush stats and Cumulative stats
+	 */
+	public function get_dir_smush_stats() {
+		check_ajax_referer( 'wp-smush-ajax' );
+
+		// Check capability.
+		$capability = is_multisite() ? 'manage_network' : 'manage_options';
+		if ( ! Helper::is_user_allowed( $capability ) ) {
+			wp_die( esc_html__( 'Unauthorized', 'wp-smushit' ), 403 );
+		}
+
+		$result = array();
+
+		// Store the Total/Smushed count.
+		$stats = WP_Smush::get_instance()->core()->mod->dir->total_stats();
+
+		$result['dir_smush'] = $stats;
+		$result['errors']    = WP_Smush::get_instance()->core()->mod->dir->get_image_errors_count();
+
+		// Store the stats in options table.
+		update_option( 'dir_smush_stats', $result, false );
+
+		// Send ajax response.
+		wp_send_json_success( $result );
 	}
 }
