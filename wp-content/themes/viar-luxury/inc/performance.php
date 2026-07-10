@@ -20,16 +20,7 @@ add_action('init', 'viar_cleanup_wp_head');
  * Add resource hints for critical third-party hosts.
  */
 function viar_resource_hints(array $urls, string $relation_type): array {
-    if ('preconnect' !== $relation_type || !viar_typography_uses_gstatic_font_files()) {
-        return $urls;
-    }
-
-    $urls[] = [
-        'href' => 'https://fonts.gstatic.com',
-        'crossorigin' => 'anonymous',
-    ];
-
-    return array_unique($urls, SORT_REGULAR);
+    return $urls;
 }
 add_filter('wp_resource_hints', 'viar_resource_hints', 10, 2);
 
@@ -492,9 +483,33 @@ function viar_wrap_below_fold_fluent_inline_scripts(string $html): string {
 }
 
 /**
+ * Remove leftover Google Font resource hints when the theme self-hosts typography.
+ */
+function viar_strip_google_font_resource_hints(string $html): string {
+    if (viar_uses_google_fonts() || viar_typography_uses_gstatic_font_files()) {
+        return $html;
+    }
+
+    $patterns = [
+        '/<link[^>]+href=[\'"][^\'"]*fonts\.gstatic\.com[^\'"]*[\'"][^>]*>\s*/i',
+        '/<link[^>]+href=[\'"][^\'"]*fonts\.googleapis\.com[^\'"]*[\'"][^>]*>\s*/i',
+    ];
+
+    foreach ($patterns as $pattern) {
+        $updated = preg_replace($pattern, '', $html);
+        if (is_string($updated)) {
+            $html = $updated;
+        }
+    }
+
+    return $html;
+}
+
+/**
  * Optimize image loading attributes for templates with raw <img> markup.
  */
 function viar_optimize_template_images(string $html): string {
+    $html = viar_strip_google_font_resource_hints($html);
     $html = viar_defer_fluent_date_picker_init($html);
     $html = viar_wrap_below_fold_fluent_inline_scripts($html);
     $html = viar_fix_lcp_image_lazy_attributes($html);

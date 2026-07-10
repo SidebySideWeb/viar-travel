@@ -26,40 +26,65 @@ require_once get_template_directory() . '/inc/icons.php';
 require_once get_template_directory() . '/inc/messenger-buttons.php';
 
 // Google Places Autocomplete (VIP transfer form).
+function viar_page_needs_google_places(): bool {
+    return is_page_template([
+        'templates/page-vip-transfers-services.php',
+        'templates/page-transfers.php',
+    ]);
+}
+
 function viar_print_google_places_script(): void {
     $api_key = viar_google_maps_api_key();
-    if ($api_key === '') {
+    if ($api_key === '' || !viar_page_needs_google_places()) {
         return;
     }
 
     ?>
     <script>
     (function(apiKey) {
-        (function(g) {
-            var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__', m = document, b = window;
-            b = b[c] || (b[c] = {});
-            var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams,
-                u = function() {
-                    return h || (h = new Promise(function(resolve, reject) {
-                        a = m.createElement('script');
-                        e.set('libraries', [].concat(Array.from(r)).join(''));
-                        for (k in g) {
-                            e.set(k.replace(/[A-Z]/g, function(t) { return '_' + t[0].toLowerCase(); }), g[k]);
-                        }
-                        e.set('callback', c + '.maps.' + q);
-                        a.src = 'https://maps.' + c + 'apis.com/maps/api/js?' + e;
-                        d[q] = resolve;
-                        a.onerror = function() { reject(new Error(p + ' could not load.')); };
-                        a.nonce = m.querySelector('script[nonce]')?.nonce || '';
-                        m.head.append(a);
-                    }));
+        var wrapperIds = ['pickup_location_wrapper', 'pickup_destination_wrapper'];
+
+        function hasPlaceFields() {
+            return wrapperIds.some(function (id) {
+                return document.getElementById(id);
+            });
+        }
+
+        var mapsBootstrapped = false;
+        var placesStarted = false;
+
+        function bootstrapMapsLoader() {
+            if (mapsBootstrapped) {
+                return;
+            }
+            mapsBootstrapped = true;
+
+            (function(g) {
+                var h, a, k, p = 'The Google Maps JavaScript API', c = 'google', l = 'importLibrary', q = '__ib__', m = document, b = window;
+                b = b[c] || (b[c] = {});
+                var d = b.maps || (b.maps = {}), r = new Set(), e = new URLSearchParams,
+                    u = function() {
+                        return h || (h = new Promise(function(resolve, reject) {
+                            a = m.createElement('script');
+                            e.set('libraries', [].concat(Array.from(r)).join(''));
+                            for (k in g) {
+                                e.set(k.replace(/[A-Z]/g, function(t) { return '_' + t[0].toLowerCase(); }), g[k]);
+                            }
+                            e.set('callback', c + '.maps.' + q);
+                            a.src = 'https://maps.' + c + 'apis.com/maps/api/js?' + e;
+                            d[q] = resolve;
+                            a.onerror = function() { reject(new Error(p + ' could not load.')); };
+                            a.nonce = m.querySelector('script[nonce]')?.nonce || '';
+                            m.head.append(a);
+                        }));
+                    };
+                d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = function(f) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    r.add(f);
+                    return u().then(function() { return d[l].apply(d, [f].concat(args)); });
                 };
-            d[l] ? console.warn(p + ' only loads once. Ignoring:', g) : d[l] = function(f) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                r.add(f);
-                return u().then(function() { return d[l].apply(d, [f].concat(args)); });
-            };
-        })({ key: apiKey, v: 'weekly' });
+            })({ key: apiKey, v: 'weekly' });
+        }
 
         function setFluentHiddenValue(fieldName, value) {
             var hidden = document.querySelector('input[name="' + fieldName + '"]');
@@ -135,13 +160,42 @@ function viar_print_google_places_script(): void {
         }
 
         async function initPlaces() {
+            bootstrapMapsLoader();
             await setupPlaceAutocomplete('pickup_location_wrapper', 'pickup_location', 'Start typing location...');
             await setupPlaceAutocomplete('pickup_destination_wrapper', 'pickup_destination', 'Start typing destination...');
         }
 
-        initPlaces().catch(function(error) {
-            console.error('ViaR Places Autocomplete failed:', error);
-        });
+        function startPlaces() {
+            if (placesStarted) {
+                return;
+            }
+            placesStarted = true;
+            initPlaces().catch(function(error) {
+                console.error('ViaR Places Autocomplete failed:', error);
+            });
+        }
+
+        function bindDeferredPlacesLoad() {
+            if (!hasPlaceFields()) {
+                return;
+            }
+
+            wrapperIds.forEach(function (id) {
+                var wrapper = document.getElementById(id);
+                if (!wrapper) {
+                    return;
+                }
+
+                wrapper.addEventListener('focusin', startPlaces, { once: true, capture: true });
+                wrapper.addEventListener('pointerdown', startPlaces, { once: true });
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindDeferredPlacesLoad);
+        } else {
+            bindDeferredPlacesLoad();
+        }
     })(<?php echo wp_json_encode($api_key); ?>);
     </script>
     <?php

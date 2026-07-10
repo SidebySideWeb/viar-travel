@@ -596,7 +596,7 @@ function viar_print_interaction_recaptcha_loader(): void {
         }
 
         target.addEventListener('focusin', loadRecaptcha, { once: true, capture: true });
-        target.addEventListener('pointerdown', loadRecaptcha, { once: true });
+        target.addEventListener('submit', loadRecaptcha, { once: true, capture: true });
     })(<?php echo wp_json_encode($recaptcha_url); ?>);
     </script>
     <?php
