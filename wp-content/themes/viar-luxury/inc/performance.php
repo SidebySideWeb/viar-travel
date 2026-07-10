@@ -166,43 +166,48 @@ function viar_optimize_noncritical_scripts(): void {
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 
 /**
- * Print Fluent Forms dependencies before its wp_footer callbacks (priority 10).
- *
- * Fluent Forms DateTime fields echo inline handlers that expect jQuery, flatpickr,
- * and fluentFormVars, but those scripts normally print at wp_print_footer_scripts
- * (priority 20) after the inline code has already run.
+ * Print flatpickr before Fluent Forms footer callbacks (priority 10).
  */
 function viar_ensure_fluent_form_footer_scripts(): void {
     if (!viar_page_needs_jquery()) {
         return;
     }
 
-    wp_enqueue_script('jquery');
     wp_enqueue_script('flatpickr');
-    wp_enqueue_script('fluent-form-submission');
 
     $scripts = wp_scripts();
-    $handles = ['jquery-core', 'jquery-migrate', 'jquery', 'flatpickr', 'fluent-form-submission'];
-
-    foreach ($handles as $handle) {
-        if (!isset($scripts->registered[$handle])) {
-            continue;
-        }
-
-        unset($scripts->registered[$handle]->extra['strategy']);
+    if (!isset($scripts->registered['flatpickr'])) {
+        return;
     }
 
-    if (!wp_script_is('jquery', 'done')) {
-        $scripts->do_item('jquery');
-    }
+    unset($scripts->registered['flatpickr']->extra['strategy']);
 
     if (!wp_script_is('flatpickr', 'done')) {
         $scripts->do_item('flatpickr');
     }
+}
 
-    if (!wp_script_is('fluent-form-submission', 'done')) {
-        $scripts->do_item('fluent-form-submission');
+/**
+ * Print Fluent Forms localized vars before inline footer handlers (priority 10).
+ *
+ * Only the inline data is printed early. form-submission.js must load once later
+ * or reCAPTCHA and other handlers initialize twice.
+ */
+function viar_print_fluent_form_script_extras(): void {
+    static $printed = false;
+
+    if ($printed || !viar_page_needs_jquery()) {
+        return;
     }
+
+    $scripts = wp_scripts();
+    if (!isset($scripts->registered['fluent-form-submission'])) {
+        return;
+    }
+
+    $printed = true;
+    $scripts->print_extra_script('fluent-form-submission', true);
+    unset($scripts->registered['fluent-form-submission']->extra['data']);
 }
 
 /**
@@ -229,6 +234,7 @@ function viar_ensure_jquery_in_head_for_forms(): void {
 
 add_action('wp_head', 'viar_ensure_jquery_in_head_for_forms', 1);
 add_action('wp_footer', 'viar_ensure_fluent_form_footer_scripts', 5);
+add_action('wp_footer', 'viar_print_fluent_form_script_extras', 9);
 
 /**
  * Drop jquery-migrate on the public site when plugins do not require it.
