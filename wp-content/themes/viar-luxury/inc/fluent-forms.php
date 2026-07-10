@@ -295,6 +295,13 @@ function viar_bootstrap_fluent_form_footer_assets(): void {
     }
 
     $printed = true;
+
+    if (!wp_script_is('jquery', 'done')) {
+        wp_enqueue_script('jquery');
+        viar_sync_fluent_form_scripts();
+        $scripts->do_item('jquery');
+    }
+
     $localized = $scripts->get_data('fluent-form-submission', 'data');
 
     echo "<script id='viar-fluentform-bootstrap'>\n";
@@ -398,4 +405,24 @@ function viar_breeze_exclude_fluent_form_scripts(array $scripts): array {
 }
 add_filter('breeze_filter_js_exclude', 'viar_breeze_exclude_fluent_form_scripts');
 add_filter('default_scripts_gnore_from_delay', 'viar_breeze_exclude_fluent_form_scripts');
+
+/**
+ * Load Fluent Forms plugin CSS without blocking first paint.
+ *
+ * @param string[] $handles
+ * @return string[]
+ */
+function viar_add_fluent_form_async_style_handles(array $handles): array {
+    if (!viar_page_uses_fluent_forms()) {
+        return $handles;
+    }
+
+    $handles[] = 'flatpickr-css';
+    $handles[] = 'fluent-form-styles';
+    $handles[] = 'fluentform-public-default';
+    $handles[] = 'viar-luxury-material-symbols';
+
+    return $handles;
+}
+add_filter('viar_async_style_handles', 'viar_add_fluent_form_async_style_handles');
 

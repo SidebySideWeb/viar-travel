@@ -160,30 +160,6 @@ function viar_optimize_noncritical_scripts(): void {
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 
 /**
- * Load jQuery in the head on form pages so inline footer handlers can bind safely.
- */
-function viar_ensure_jquery_in_head_for_forms(): void {
-    if (!viar_page_needs_jquery() || wp_script_is('jquery', 'done')) {
-        return;
-    }
-
-    wp_enqueue_script('jquery');
-
-    $scripts = wp_scripts();
-    foreach (['jquery-core', 'jquery-migrate', 'jquery'] as $handle) {
-        if (!isset($scripts->registered[$handle])) {
-            continue;
-        }
-
-        unset($scripts->registered[$handle]->extra['strategy']);
-    }
-
-    $scripts->do_item('jquery');
-}
-
-add_action('wp_head', 'viar_ensure_jquery_in_head_for_forms', 1);
-
-/**
  * Drop jquery-migrate on the public site when plugins do not require it.
  */
 function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {
