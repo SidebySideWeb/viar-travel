@@ -226,20 +226,39 @@ function viar_print_google_places_script(): void {
 add_action('wp_footer', 'viar_print_google_places_script', 5);
 
 /**
- * Load Silktide CSS for non-admins only.
- * Priority 99 ensures the current user is fully loaded before the check.
+ * Load Silktide consent assets for non-admins only.
+ * Self-hosted to avoid third-party CSP allowlist issues.
  */
+function viar_should_load_silktide_consent(): bool {
+    if (is_admin() || (is_user_logged_in() && current_user_can('administrator'))) {
+        return false;
+    }
+
+    return (bool) apply_filters('viar_should_load_silktide_consent', true);
+}
+
+function viar_enqueue_silktide_consent_assets(): void {
+    if (!viar_should_load_silktide_consent()) {
+        return;
+    }
+
+    $theme_version = wp_get_theme()->get('Version');
+    $base_uri = get_template_directory_uri() . '/assets/vendor/silktide';
+
+    wp_enqueue_style(
+        'viar-silktide-consent',
+        $base_uri . '/silktide-consent-manager.css',
+        [],
+        '2.0.0-viar-' . $theme_version
+    );
+}
+add_action('wp_enqueue_scripts', 'viar_enqueue_silktide_consent_assets', 99);
+
 function add_silktide_assets(): void {
-    if ( is_user_logged_in() && current_user_can('administrator') ) {
+    if (!viar_should_load_silktide_consent()) {
         return;
     }
     ?>
-    <?php
-    $silktide_css = 'https://cdn.jsdelivr.net/gh/silktide/consent-manager@v2.0.0/silktide-consent-manager.css';
-    $silktide_integrity = 'sha384-IO1E/jCrQXyH5rwcI0SXP7OXw47JFqQNDQcKhbFvqnL2IunBxxwE2Ne5XyAmCqKs';
-    ?>
-    <link rel="stylesheet" href="<?php echo esc_url($silktide_css); ?>" integrity="<?php echo esc_attr($silktide_integrity); ?>" crossorigin="anonymous" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="<?php echo esc_url($silktide_css); ?>" integrity="<?php echo esc_attr($silktide_integrity); ?>" crossorigin="anonymous"></noscript>
     <style>
     #stcm-wrapper {
       --primaryColor: #C5A059;
