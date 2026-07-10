@@ -53,7 +53,6 @@ function viar_luxury_enqueue_assets(): void {
     }
 
     wp_enqueue_script('viar-luxury-navigation', get_template_directory_uri() . '/assets/js/navigation.js', [], $version, true);
-    wp_enqueue_script('viar-luxury-animations', get_template_directory_uri() . '/assets/js/animations.js', [], $version, true);
 
     if (is_front_page() && viar_get_home_hero_vimeo_id() !== '') {
         wp_enqueue_script(

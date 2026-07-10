@@ -44,7 +44,15 @@ function viar_remove_unused_font_resource_hints(array $urls, string $relation_ty
     return array_values(array_filter($urls, static function ($url) {
         $href = is_array($url) ? ($url['href'] ?? '') : $url;
 
-        return !is_string($href) || !str_contains($href, 'fonts.googleapis.com');
+        if (!is_string($href)) {
+            return true;
+        }
+
+        if (viar_typography_uses_gstatic_font_files() || viar_uses_google_fonts()) {
+            return !str_contains($href, 'fonts.googleapis.com');
+        }
+
+        return !str_contains($href, 'fonts.googleapis.com') && !str_contains($href, 'fonts.gstatic.com');
     }));
 }
 add_filter('wp_resource_hints', 'viar_remove_unused_font_resource_hints', 99, 2);
@@ -98,11 +106,11 @@ add_filter('viar_async_style_handles', 'viar_add_plugin_async_style_handles');
 function viar_get_defer_script_handles(): array {
     $handles = [
         'viar-luxury-navigation',
-        'viar-luxury-animations',
         'viar-luxury-hero-video-modal',
         'viar-gtm-events',
         'breeze-lazy',
         'breeze-prefetch',
+        'smush-lazy-load',
         'ht_ctc_app_js',
         'ht_ctc_woo_js',
         'ht_ctc_group_js',

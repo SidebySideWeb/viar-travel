@@ -407,6 +407,112 @@ function viar_guard_fluent_recaptcha_render(): void {
 add_action('wp_footer', 'viar_guard_fluent_recaptcha_render', 2);
 
 /**
+ * Whether the Fluent Form sits below the fold (booking section at page bottom).
+ */
+function viar_fluent_form_is_below_fold(): bool {
+    return is_singular(['viar_bespoke_tour', 'viar_fleet']);
+}
+
+/**
+ * Build the Fluent Forms reCAPTCHA script URL for the configured API version.
+ */
+function viar_get_fluent_recaptcha_script_url(): string {
+    $settings = get_option('_fluentform_reCaptcha_details');
+    if (!is_array($settings) || empty($settings['siteKey'])) {
+        return '';
+    }
+
+    $site_key = (string) $settings['siteKey'];
+    $api_version = (string) ($settings['api_version'] ?? 'v2_visible');
+    $url = ('v3_invisible' === $api_version)
+        ? 'https://www.google.com/recaptcha/api.js?render=' . rawurlencode($site_key)
+        : 'https://www.google.com/recaptcha/api.js?render=explicit';
+
+    $locale = apply_filters('fluentform/recaptcha_lang', '');
+    if (is_string($locale) && $locale !== '') {
+        $url .= '&hl=' . rawurlencode($locale);
+    }
+
+    return $url;
+}
+
+/**
+ * Stop Fluent Forms from loading reCAPTCHA during initial navigation on below-fold forms.
+ */
+function viar_defer_below_fold_recaptcha_script(): void {
+    if (!viar_page_uses_fluent_forms() || !viar_fluent_form_is_below_fold()) {
+        return;
+    }
+
+    wp_dequeue_script('google-recaptcha');
+    wp_deregister_script('google-recaptcha');
+}
+add_action('wp_enqueue_scripts', 'viar_defer_below_fold_recaptcha_script', 9999);
+add_action('wp_print_scripts', 'viar_defer_below_fold_recaptcha_script', 9999);
+add_action('wp_print_footer_scripts', 'viar_defer_below_fold_recaptcha_script', 0);
+
+/**
+ * Load reCAPTCHA when the booking form approaches the viewport.
+ */
+function viar_print_deferred_recaptcha_loader(): void {
+    if (!viar_page_uses_fluent_forms() || !viar_fluent_form_is_below_fold()) {
+        return;
+    }
+
+    $recaptcha_url = viar_get_fluent_recaptcha_script_url();
+    if ($recaptcha_url === '') {
+        return;
+    }
+    ?>
+    <script>
+    (function (recaptchaUrl) {
+        var target = document.querySelector('.viar-tour-booking-form, .viar-fluent-form');
+        if (!target || window.viarDeferredRecaptchaLoader) {
+            return;
+        }
+        window.viarDeferredRecaptchaLoader = true;
+
+        var loaded = false;
+        function loadRecaptcha() {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+
+            var script = document.createElement('script');
+            script.src = recaptchaUrl;
+            script.async = true;
+            script.onload = function () {
+                if (window.jQuery) {
+                    window.jQuery(document).trigger('reInitExtras');
+                }
+            };
+            document.head.appendChild(script);
+        }
+
+        if (!('IntersectionObserver' in window)) {
+            loadRecaptcha();
+            return;
+        }
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                loadRecaptcha();
+                observer.disconnect();
+            });
+        }, { rootMargin: '320px 0px' });
+
+        observer.observe(target);
+    })(<?php echo wp_json_encode($recaptcha_url); ?>);
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_print_deferred_recaptcha_loader', 4);
+
+/**
  * Keep Breeze from deferring or combining critical Fluent Forms scripts.
  *
  * @param string[] $scripts
