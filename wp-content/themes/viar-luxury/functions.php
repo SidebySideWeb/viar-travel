@@ -175,26 +175,49 @@ function viar_print_google_places_script(): void {
             });
         }
 
-        function bindDeferredPlacesLoad() {
+        function schedulePlacesInit() {
             if (!hasPlaceFields()) {
                 return;
             }
 
-            wrapperIds.forEach(function (id) {
-                var wrapper = document.getElementById(id);
-                if (!wrapper) {
-                    return;
-                }
+            var form = document.querySelector('.viar-fluent-form');
+            var observeTarget = form || document.getElementById('pickup_location_wrapper');
+            if (!observeTarget) {
+                return;
+            }
 
-                wrapper.addEventListener('focusin', startPlaces, { once: true, capture: true });
-                wrapper.addEventListener('pointerdown', startPlaces, { once: true });
-            });
+            function isNearViewport(element) {
+                var rect = element.getBoundingClientRect();
+                return rect.top < window.innerHeight + 320 && rect.bottom > -320;
+            }
+
+            if (isNearViewport(observeTarget)) {
+                startPlaces();
+                return;
+            }
+
+            if (!('IntersectionObserver' in window)) {
+                startPlaces();
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    startPlaces();
+                    observer.disconnect();
+                });
+            }, { rootMargin: '320px 0px' });
+
+            observer.observe(observeTarget);
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', bindDeferredPlacesLoad);
+            document.addEventListener('DOMContentLoaded', schedulePlacesInit);
         } else {
-            bindDeferredPlacesLoad();
+            schedulePlacesInit();
         }
     })(<?php echo wp_json_encode($api_key); ?>);
     </script>

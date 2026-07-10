@@ -558,7 +558,7 @@ add_action('wp_print_scripts', 'viar_defer_fluent_recaptcha_script', 9999);
 add_action('wp_print_footer_scripts', 'viar_defer_fluent_recaptcha_script', 0);
 
 /**
- * Load reCAPTCHA only after a visitor interacts with the form.
+ * Load reCAPTCHA when the form is near the viewport and guard premature submits.
  */
 function viar_print_interaction_recaptcha_loader(): void {
     if (!viar_page_uses_fluent_forms()) {
@@ -584,25 +584,118 @@ function viar_print_interaction_recaptcha_loader(): void {
         window.viarInteractionRecaptchaLoader = true;
 
         var loaded = false;
-        function loadRecaptcha() {
-            if (loaded) {
+        var rendering = false;
+
+        function recaptchaIsRendered() {
+            var widget = target.querySelector('.ff-el-recaptcha, .g-recaptcha');
+            return !!(widget && widget.querySelector('iframe'));
+        }
+
+        function notifyFluentRecaptcha() {
+            if (!window.jQuery) {
                 return;
             }
-            loaded = true;
+
+            window.jQuery(document).trigger('reInitExtras');
+        }
+
+        function loadRecaptcha() {
+            if (loaded || rendering) {
+                return;
+            }
+            rendering = true;
+
+            if (window.grecaptcha && typeof window.grecaptcha.render === 'function') {
+                loaded = true;
+                rendering = false;
+                notifyFluentRecaptcha();
+                return;
+            }
 
             var script = document.createElement('script');
             script.src = recaptchaUrl;
             script.async = true;
             script.onload = function () {
-                if (window.jQuery) {
-                    window.jQuery(document).trigger('reInitExtras');
-                }
+                loaded = true;
+                rendering = false;
+                notifyFluentRecaptcha();
+            };
+            script.onerror = function () {
+                rendering = false;
             };
             document.head.appendChild(script);
         }
 
-        target.addEventListener('focusin', loadRecaptcha, { once: true, capture: true });
-        target.addEventListener('submit', loadRecaptcha, { once: true, capture: true });
+        window.viarLoadFormRecaptcha = loadRecaptcha;
+
+        function scheduleRecaptchaLoad() {
+            function isNearViewport(element) {
+                var rect = element.getBoundingClientRect();
+                return rect.top < window.innerHeight + 320 && rect.bottom > -320;
+            }
+
+            if (isNearViewport(target)) {
+                loadRecaptcha();
+                return;
+            }
+
+            if (!('IntersectionObserver' in window)) {
+                loadRecaptcha();
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+                    loadRecaptcha();
+                    observer.disconnect();
+                });
+            }, { rootMargin: '320px 0px' });
+
+            observer.observe(target);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', scheduleRecaptchaLoad);
+        } else {
+            scheduleRecaptchaLoad();
+        }
+
+        target.addEventListener('focusin', loadRecaptcha, { capture: true });
+
+        target.addEventListener('submit', function (event) {
+            if (recaptchaIsRendered() || target.getAttribute('data-viar-recaptcha-resubmit') === '1') {
+                target.removeAttribute('data-viar-recaptcha-resubmit');
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            loadRecaptcha();
+
+            var attempts = 0;
+            var timer = window.setInterval(function () {
+                attempts += 1;
+                if (recaptchaIsRendered()) {
+                    window.clearInterval(timer);
+                    notifyFluentRecaptcha();
+                    window.setTimeout(function () {
+                        target.setAttribute('data-viar-recaptcha-resubmit', '1');
+                        if (typeof target.requestSubmit === 'function') {
+                            target.requestSubmit();
+                        } else {
+                            target.submit();
+                        }
+                    }, 250);
+                    return;
+                }
+                if (attempts >= 80) {
+                    window.clearInterval(timer);
+                }
+            }, 100);
+        }, true);
     })(<?php echo wp_json_encode($recaptcha_url); ?>);
     </script>
     <?php
@@ -685,6 +778,9 @@ function viar_print_below_fold_form_asset_loader(): void {
                 window.jQuery(fn);
             });
             window.viarFluentFormInitQueue = [];
+            if (typeof window.viarLoadFormRecaptcha === 'function') {
+                window.viarLoadFormRecaptcha();
+            }
             window.jQuery(document).trigger('reInitExtras');
         }
 
