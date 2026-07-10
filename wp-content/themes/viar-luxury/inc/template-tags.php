@@ -301,7 +301,8 @@ function viar_prefer_modern_image_url(string $url): string {
  *     fetchpriority?: string,
  *     sizes?: string,
  *     decoding?: string,
- *     lcp?: bool
+ *     lcp?: bool,
+ *     skip_lazy?: bool
  * } $args
  */
 function viar_render_responsive_image(array $args): void {
@@ -316,6 +317,7 @@ function viar_render_responsive_image(array $args): void {
         'sizes' => '100vw',
         'decoding' => 'async',
         'lcp' => false,
+        'skip_lazy' => false,
     ]);
 
     $attributes = [
@@ -337,6 +339,9 @@ function viar_render_responsive_image(array $args): void {
         $attributes['class'] = trim($attributes['class'] . ' viar-lcp-image no-lazyload skip-lazy');
         $attributes['loading'] = 'eager';
         $attributes['fetchpriority'] = 'high';
+        $attributes['data-no-lazy'] = '1';
+    } elseif ($args['skip_lazy']) {
+        $attributes['class'] = trim($attributes['class'] . ' no-lazyload skip-lazy');
         $attributes['data-no-lazy'] = '1';
     }
 
@@ -362,7 +367,7 @@ function viar_render_responsive_image(array $args): void {
         <?php if ($args['fetchpriority'] !== '') : ?>
             fetchpriority="<?php echo esc_attr($args['fetchpriority']); ?>"
         <?php endif; ?>
-        <?php if ($args['lcp']) : ?>
+        <?php if ($args['lcp'] || $args['skip_lazy']) : ?>
             data-no-lazy="1"
         <?php endif; ?>
         <?php if (!empty($dimensions)) : ?>

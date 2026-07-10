@@ -248,6 +248,20 @@ function viar_print_deferred_breeze_lazy_loader(): void {
             var script = document.createElement('script');
             script.src = src;
             script.async = true;
+            script.onload = function () {
+                if (typeof window.LazyLoad !== 'function') {
+                    return;
+                }
+
+                window.lazyLoadInstance = new window.LazyLoad({
+                    elements_selector: '.br-lazy',
+                    data_src: 'breeze',
+                    data_srcset: 'brsrcset',
+                    data_sizes: 'brsizes',
+                    class_loaded: 'br-loaded',
+                    threshold: 300
+                });
+            };
             document.body.appendChild(script);
         }
 
@@ -506,6 +520,71 @@ function viar_fix_lcp_image_lazy_attributes(string $html): string {
 }
 
 /**
+ * Restore Breeze lazy placeholders to native image tags when the lazy script is deferred.
+ */
+function viar_restore_breeze_lazy_placeholders(string $html): string {
+    if (!str_contains($html, 'data-breeze=')) {
+        return $html;
+    }
+
+    $updated = preg_replace_callback(
+        '/<img\b[^>]*>/i',
+        static function (array $matches): string {
+            $tag = $matches[0];
+
+            if (!str_contains($tag, 'data-breeze=')) {
+                return $tag;
+            }
+
+            if (
+                str_contains($tag, 'viar-lcp-image')
+                || preg_match('/\sdata-no-lazy=(?:"|\')[^"\']*(?:"|\')/i', $tag)
+            ) {
+                return $tag;
+            }
+
+            if (preg_match('/\sdata-breeze=(?:"|\')([^"\']+)(?:"|\')/i', $tag, $breeze_src)) {
+                $image_url = $breeze_src[1];
+                if (preg_match('/\ssrc=(?:"|\')[^"\']*(?:"|\')/i', $tag)) {
+                    $tag = preg_replace('/\ssrc=(?:"|\')[^"\']*(?:"|\')/i', ' src="' . $image_url . '"', $tag) ?? $tag;
+                } else {
+                    $tag = preg_replace('/<img/i', '<img src="' . $image_url . '"', $tag, 1) ?? $tag;
+                }
+            }
+
+            if (preg_match('/\sdata-brsrcset=(?:"|\')([^"\']*)(?:"|\')/i', $tag, $srcset_match)) {
+                $tag = preg_replace('/\ssrcset=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+                $tag = preg_replace('/<img/i', '<img srcset="' . $srcset_match[1] . '"', $tag, 1) ?? $tag;
+            }
+
+            if (preg_match('/\sdata-brsizes=(?:"|\')([^"\']*)(?:"|\')/i', $tag, $sizes_match)) {
+                $tag = preg_replace('/\ssizes=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+                $tag = preg_replace('/<img/i', '<img sizes="' . $sizes_match[1] . '"', $tag, 1) ?? $tag;
+            }
+
+            $tag = preg_replace('/\sdata-breeze=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+            $tag = preg_replace('/\sdata-brsrcset=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+            $tag = preg_replace('/\sdata-brsizes=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+
+            if (preg_match('/\sclass=(?:"|\')(.*?)(?:"|\')/i', $tag, $class_match)) {
+                $classes = trim(preg_replace('/\s*br-lazy\s*/', ' ', $class_match[1]) ?? $class_match[1]);
+                $classes = trim(preg_replace('/\s+/', ' ', $classes));
+                $tag = preg_replace('/\sclass=(?:"|\')[^"\']*(?:"|\')/i', ' class="' . $classes . '"', $tag) ?? $tag;
+            }
+
+            if (!preg_match('/\sloading=(?:"|\')[^"\']*(?:"|\')/i', $tag)) {
+                $tag = preg_replace('/<img/i', '<img loading="lazy"', $tag, 1) ?? $tag;
+            }
+
+            return $tag;
+        },
+        $html
+    );
+
+    return is_string($updated) ? $updated : $html;
+}
+
+/**
  * Add modern loading attributes to non-critical images in raw template HTML.
  */
 function viar_buffer_start(): void {
@@ -641,6 +720,7 @@ function viar_optimize_template_images(string $html): string {
     $html = viar_strip_noncritical_script_tags($html);
     $html = viar_defer_fluent_date_picker_init($html);
     $html = viar_wrap_below_fold_fluent_inline_scripts($html);
+    $html = viar_restore_breeze_lazy_placeholders($html);
     $html = viar_fix_lcp_image_lazy_attributes($html);
 
     if (stripos($html, '<img') === false) {

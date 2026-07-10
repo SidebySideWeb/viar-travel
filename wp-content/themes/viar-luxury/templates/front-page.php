@@ -124,6 +124,8 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-fu
                             'sizes' => '(max-width: 768px) 90vw, 450px',
                             'class' => 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-105',
                             'alt' => get_the_title(),
+                            'loading' => 'eager',
+                            'skip_lazy' => true,
                         ]);
                         ?>
                     <?php endif; ?>
