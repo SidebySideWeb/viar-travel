@@ -8,9 +8,17 @@
 
   const isStaticSpacer = spacer.classList.contains('viar-header-spacer--static');
   const isFixedSpacer = spacer.classList.contains('viar-header-spacer--fixed');
+  const needsHeightSync = !isStaticSpacer && !isFixedSpacer;
+  const desktopQuery = window.matchMedia('(min-width: 768px)');
+
   let lastHeight = 0;
   let pendingHeight = 0;
   let heightFrame = 0;
+  let resizeObserver = null;
+
+  function canSyncHeight() {
+    return needsHeightSync && !desktopQuery.matches;
+  }
 
   function readHeight(entry) {
     if (entry.borderBoxSize && entry.borderBoxSize.length > 0) {
@@ -21,7 +29,7 @@
   }
 
   function applyHeaderHeight(heightPx) {
-    if (isStaticSpacer || isFixedSpacer) {
+    if (!canSyncHeight()) {
       return;
     }
 
@@ -50,27 +58,63 @@
     });
   }
 
-  if (!isStaticSpacer) {
-    if (typeof ResizeObserver !== 'undefined') {
-      const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          scheduleHeaderHeight(readHeight(entry));
-        }
+  function startHeightObserver() {
+    if (!canSyncHeight() || resizeObserver || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        scheduleHeaderHeight(readHeight(entry));
+      }
+    });
+
+    resizeObserver.observe(header);
+  }
+
+  function stopHeightObserver() {
+    if (!resizeObserver) {
+      return;
+    }
+
+    resizeObserver.disconnect();
+    resizeObserver = null;
+  }
+
+  function syncHeightObserverState() {
+    if (canSyncHeight()) {
+      startHeightObserver();
+      return;
+    }
+
+    stopHeightObserver();
+  }
+
+  if (needsHeightSync) {
+    const bootHeightSync = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(syncHeightObserverState);
       });
+    };
 
-      observer.observe(header);
-    } else {
-      function measureHeaderHeight() {
-        scheduleHeaderHeight(header.offsetHeight);
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', measureHeaderHeight, { once: true });
+    if (document.readyState === 'complete') {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(bootHeightSync, { timeout: 2000 });
       } else {
-        measureHeaderHeight();
+        window.setTimeout(bootHeightSync, 0);
       }
+    } else {
+      window.addEventListener('load', bootHeightSync, { once: true, passive: true });
+    }
 
-      window.addEventListener('resize', measureHeaderHeight);
+    if (typeof desktopQuery.addEventListener === 'function') {
+      desktopQuery.addEventListener('change', () => {
+        requestAnimationFrame(syncHeightObserverState);
+      });
+    } else if (typeof desktopQuery.addListener === 'function') {
+      desktopQuery.addListener(() => {
+        requestAnimationFrame(syncHeightObserverState);
+      });
     }
   }
 
@@ -81,15 +125,29 @@
       return;
     }
 
-    window.addEventListener('resize', () => {
-      if (!window.matchMedia('(min-width: 768px)').matches) {
-        menu.classList.add('hidden');
-        btn.setAttribute('aria-expanded', 'false');
+    let viewportFrame = 0;
+
+    function onViewportChange() {
+      if (viewportFrame) {
+        return;
       }
-    });
+
+      viewportFrame = requestAnimationFrame(() => {
+        viewportFrame = 0;
+
+        if (!desktopQuery.matches) {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+
+        syncHeightObserverState();
+      });
+    }
+
+    window.addEventListener('resize', onViewportChange, { passive: true });
 
     btn.addEventListener('click', () => {
-      if (window.matchMedia('(min-width: 768px)').matches) {
+      if (desktopQuery.matches) {
         return;
       }
 

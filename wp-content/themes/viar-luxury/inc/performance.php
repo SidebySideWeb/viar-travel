@@ -171,12 +171,68 @@ function viar_dequeue_redundant_frontend_scripts(): void {
     }
 
     wp_dequeue_script('breeze-prefetch');
-
-    if (wp_script_is('breeze-lazy', 'registered') || wp_script_is('breeze-lazy', 'enqueued')) {
-        wp_dequeue_script('smush-lazy-load');
-    }
+    wp_dequeue_script('smush-lazy-load');
+    wp_deregister_script('smush-lazy-load');
+    wp_dequeue_script('breeze-lazy');
 }
 add_action('wp_enqueue_scripts', 'viar_dequeue_redundant_frontend_scripts', 120);
+
+/**
+ * Disable Smush lazy-load markup and scripts; Breeze or native lazy loading handles images.
+ */
+function viar_skip_smush_lazy_load(bool $skip): bool {
+    if (is_admin()) {
+        return $skip;
+    }
+
+    return true;
+}
+add_filter('wp_smush_should_skip_lazy_load', 'viar_skip_smush_lazy_load');
+
+/**
+ * Defer Breeze lazy-load until after first paint to avoid layout thrash during LCP.
+ */
+function viar_print_deferred_breeze_lazy_loader(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $src = viar_get_registered_script_src('breeze-lazy');
+    if ($src === '') {
+        return;
+    }
+    ?>
+    <script>
+    (function (src) {
+        if (window.viarBreezeLazyLoader) {
+            return;
+        }
+        window.viarBreezeLazyLoader = true;
+
+        var loaded = false;
+        function loadBreezeLazy() {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.body.appendChild(script);
+        }
+
+        window.addEventListener('scroll', loadBreezeLazy, { once: true, passive: true });
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadBreezeLazy, { timeout: 2500 });
+        } else {
+            window.setTimeout(loadBreezeLazy, 2500);
+        }
+    })(<?php echo wp_json_encode($src); ?>);
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_print_deferred_breeze_lazy_loader', 98);
 
 /**
  * Defer the Click to Chat plugin script until the first visitor interaction.
