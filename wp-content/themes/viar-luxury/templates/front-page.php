@@ -84,7 +84,7 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-fu
 <?php endif; ?>
 <!-- Section 2: Explore Our Trips (Carousel) -->
 <section class="py-[120px] bg-white">
-<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 min-w-0">
 <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-16">
 <div>
 <span class="font-label-caps text-label-caps text-secondary mb-4 block"><?php echo esc_html($viar_home_tours_label); ?></span>
@@ -99,7 +99,7 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-fu
 </button>
 </div>
 </div>
-<div class="flex overflow-x-auto gap-8 no-scrollbar pb-12">
+<div class="flex min-w-0 overflow-x-auto gap-8 no-scrollbar pb-12">
 <?php if ($home_tours_query->have_posts()) : ?>
     <?php while ($home_tours_query->have_posts()) : $home_tours_query->the_post(); ?>
         <?php
@@ -107,8 +107,8 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-fu
         $experience_terms = wp_get_post_terms(get_the_ID(), 'viar_tour_experience_type', ['fields' => 'names']);
         $card_meta = trim(implode(' • ', array_filter([$region_terms[0] ?? '', $experience_terms[0] ?? ''])));
         ?>
-        <article class="w-[min(100%,28rem)] max-w-[450px] shrink-0 group cursor-pointer">
-            <a href="<?php echo esc_url(get_permalink()); ?>" class="block">
+        <article class="w-[min(100%,28rem)] max-w-[450px] shrink-0 min-w-0 group cursor-pointer">
+            <a href="<?php echo esc_url(get_permalink()); ?>" class="block min-w-0 w-full">
                 <div class="aspect-[4/5] overflow-hidden mb-6">
                     <?php
                     $tour_post_id = get_the_ID();
@@ -131,8 +131,10 @@ viar_render_hero_background($viar_hero_image, 'ViaR Travel homepage hero', 'w-fu
                 <?php if ($card_meta !== '') : ?>
                     <span class="font-label-caps text-[10px] text-secondary tracking-[0.2em] mb-2 block"><?php echo esc_html($card_meta); ?></span>
                 <?php endif; ?>
-                <h3 class="font-headline-h2 text-headline-h2 text-primary mb-2"><?php the_title(); ?></h3>
-                <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2"><?php echo esc_html(get_the_excerpt()); ?></p>
+                <div class="min-w-0 w-full">
+                <h3 class="font-headline-h2 text-headline-h2 text-primary mb-2 break-words"><?php the_title(); ?></h3>
+                <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 break-words"><?php echo esc_html(get_the_excerpt()); ?></p>
+                </div>
             </a>
         </article>
     <?php endwhile; wp_reset_postdata(); ?>
