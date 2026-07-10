@@ -155,13 +155,7 @@ function viar_optimize_noncritical_scripts(): void {
         return;
     }
 
-    foreach (['jquery', 'jquery-core', 'jquery-migrate'] as $handle) {
-        if (!isset($scripts->registered[$handle])) {
-            continue;
-        }
-
-        unset($scripts->registered[$handle]->extra['strategy']);
-    }
+    viar_sync_fluent_form_scripts();
 }
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 

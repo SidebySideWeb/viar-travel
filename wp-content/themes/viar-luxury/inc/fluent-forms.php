@@ -197,6 +197,63 @@ function viar_google_maps_api_key(): string {
 }
 
 /**
+ * Script handles that must stay synchronous on Fluent Forms pages.
+ *
+ * Inline Fluent footer handlers (DateTime initPicker, etc.) are plain synchronous
+ * scripts and run as soon as they are parsed. If jQuery/flatpickr are deferred
+ * or moved to the end by an optimizer, those inlines execute first and fail.
+ *
+ * @return string[]
+ */
+function viar_get_fluent_form_sync_script_handles(): array {
+    return [
+        'jquery',
+        'jquery-core',
+        'jquery-migrate',
+        'flatpickr',
+        'fluent-form-submission',
+    ];
+}
+
+/**
+ * Strip defer/async from Fluent Form dependencies on the frontend.
+ */
+function viar_sync_fluent_form_scripts(): void {
+    if (!viar_page_uses_fluent_forms()) {
+        return;
+    }
+
+    $scripts = wp_scripts();
+
+    foreach (viar_get_fluent_form_sync_script_handles() as $handle) {
+        if (!isset($scripts->registered[$handle])) {
+            continue;
+        }
+
+        unset($scripts->registered[$handle]->extra['strategy']);
+        $scripts->registered[$handle]->args = false;
+    }
+}
+add_action('wp_enqueue_scripts', 'viar_sync_fluent_form_scripts', 999);
+add_action('wp_print_scripts', 'viar_sync_fluent_form_scripts', 0);
+add_action('wp_print_footer_scripts', 'viar_sync_fluent_form_scripts', 0);
+
+/**
+ * Remove defer/async attributes optimizers may add to Fluent Form dependencies.
+ */
+function viar_fluent_form_script_loader_tag(string $tag, string $handle, string $src): string {
+    if (!viar_page_uses_fluent_forms() || !in_array($handle, viar_get_fluent_form_sync_script_handles(), true)) {
+        return $tag;
+    }
+
+    $tag = preg_replace('/\sdefer(=[\'"][^\'"]*[\'"])?/i', '', $tag) ?? $tag;
+    $tag = preg_replace('/\sasync(=[\'"][^\'"]*[\'"])?/i', '', $tag) ?? $tag;
+
+    return $tag;
+}
+add_filter('script_loader_tag', 'viar_fluent_form_script_loader_tag', 999, 3);
+
+/**
  * Minimal Fluent Forms globals for footer bootstrap fallbacks.
  *
  * @return array<string, mixed>
