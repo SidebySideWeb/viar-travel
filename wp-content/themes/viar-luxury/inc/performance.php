@@ -166,51 +166,6 @@ function viar_optimize_noncritical_scripts(): void {
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
 
 /**
- * Print flatpickr before Fluent Forms footer callbacks (priority 10).
- */
-function viar_ensure_fluent_form_footer_scripts(): void {
-    if (!viar_page_needs_jquery()) {
-        return;
-    }
-
-    wp_enqueue_script('flatpickr');
-
-    $scripts = wp_scripts();
-    if (!isset($scripts->registered['flatpickr'])) {
-        return;
-    }
-
-    unset($scripts->registered['flatpickr']->extra['strategy']);
-
-    if (!wp_script_is('flatpickr', 'done')) {
-        $scripts->do_item('flatpickr');
-    }
-}
-
-/**
- * Print Fluent Forms localized vars before inline footer handlers (priority 10).
- *
- * Only the inline data is printed early. form-submission.js must load once later
- * or reCAPTCHA and other handlers initialize twice.
- */
-function viar_print_fluent_form_script_extras(): void {
-    static $printed = false;
-
-    if ($printed || !viar_page_needs_jquery()) {
-        return;
-    }
-
-    $scripts = wp_scripts();
-    if (!isset($scripts->registered['fluent-form-submission'])) {
-        return;
-    }
-
-    $printed = true;
-    $scripts->print_extra_script('fluent-form-submission', true);
-    unset($scripts->registered['fluent-form-submission']->extra['data']);
-}
-
-/**
  * Load jQuery in the head on form pages so inline footer handlers can bind safely.
  */
 function viar_ensure_jquery_in_head_for_forms(): void {
@@ -233,8 +188,6 @@ function viar_ensure_jquery_in_head_for_forms(): void {
 }
 
 add_action('wp_head', 'viar_ensure_jquery_in_head_for_forms', 1);
-add_action('wp_footer', 'viar_ensure_fluent_form_footer_scripts', 5);
-add_action('wp_footer', 'viar_print_fluent_form_script_extras', 9);
 
 /**
  * Drop jquery-migrate on the public site when plugins do not require it.

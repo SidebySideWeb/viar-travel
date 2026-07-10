@@ -196,3 +196,149 @@ function viar_google_maps_api_key(): string {
     return (string) apply_filters('viar_google_maps_api_key', is_string($key) ? trim($key) : '');
 }
 
+/**
+ * Minimal Fluent Forms globals for footer bootstrap fallbacks.
+ *
+ * @return array<string, mixed>
+ */
+function viar_get_fluent_form_global_vars(): array {
+    $step_text = __('Step %activeStep% of %totalStep% - %stepTitle%', 'viar-luxury');
+    $date_i18n = [];
+
+    if (class_exists('\FluentForm\App\Modules\Component\Component')) {
+        $date_i18n = \FluentForm\App\Modules\Component\Component::getDatei18n();
+    }
+
+    $vars = [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'forms' => [],
+        'step_text' => $step_text,
+        'step_completed_text' => __('Completed', 'viar-luxury'),
+        'is_rtl' => is_rtl(),
+        'date_i18n' => $date_i18n,
+        'force_init' => false,
+    ];
+
+    return (array) apply_filters('fluentform/global_form_vars', $vars);
+}
+
+/**
+ * Print Fluent Forms globals and flatpickr before inline wp_footer handlers.
+ */
+function viar_bootstrap_fluent_form_footer_assets(): void {
+    static $printed = false;
+
+    if ($printed || !viar_page_uses_fluent_forms()) {
+        return;
+    }
+
+    $scripts = wp_scripts();
+    if (!isset($scripts->registered['fluent-form-submission'])) {
+        return;
+    }
+
+    $printed = true;
+    $localized = $scripts->get_data('fluent-form-submission', 'data');
+
+    echo "<script id='viar-fluentform-bootstrap'>\n";
+    if (!empty($localized)) {
+        if (is_array($localized)) {
+            foreach ($localized as $chunk) {
+                if (is_string($chunk) && $chunk !== '') {
+                    echo $chunk . "\n";
+                }
+            }
+        } elseif (is_string($localized)) {
+            echo $localized . "\n";
+        }
+        unset($scripts->registered['fluent-form-submission']->extra['data']);
+    } else {
+        echo 'window.fluentFormVars = ' . wp_json_encode(viar_get_fluent_form_global_vars()) . ";\n";
+    }
+    echo "</script>\n";
+
+    if (isset($scripts->registered['flatpickr']) && !wp_script_is('flatpickr', 'done')) {
+        unset($scripts->registered['flatpickr']->extra['strategy']);
+        $scripts->do_item('flatpickr');
+    }
+}
+add_action('wp_footer', 'viar_bootstrap_fluent_form_footer_assets', 1);
+
+/**
+ * Prevent Fluent Forms from rendering reCAPTCHA twice on the same element.
+ */
+function viar_guard_fluent_recaptcha_render(): void {
+    if (!viar_page_uses_fluent_forms()) {
+        return;
+    }
+    ?>
+    <script>
+    (function () {
+        if (window.viarFluentRecaptchaGuard) {
+            return;
+        }
+        window.viarFluentRecaptchaGuard = true;
+
+        function patchRecaptchaRender() {
+            if (!window.grecaptcha || typeof window.grecaptcha.render !== 'function' || window.grecaptcha.render.__viarPatched) {
+                return false;
+            }
+
+            var originalRender = window.grecaptcha.render;
+            window.grecaptcha.render = function (container, parameters) {
+                var element = typeof container === 'string' ? document.getElementById(container) : container;
+                if (element && element.getAttribute('data-viar-recaptcha-rendered') === '1') {
+                    var existingWidgetId = element.getAttribute('data-widget-id');
+                    return existingWidgetId ? parseInt(existingWidgetId, 10) : 0;
+                }
+
+                var widgetId = originalRender.apply(this, arguments);
+                if (element) {
+                    element.setAttribute('data-viar-recaptcha-rendered', '1');
+                    if (widgetId !== undefined && widgetId !== null) {
+                        element.setAttribute('data-widget-id', String(widgetId));
+                    }
+                }
+
+                return widgetId;
+            };
+            window.grecaptcha.render.__viarPatched = true;
+            return true;
+        }
+
+        if (!patchRecaptchaRender()) {
+            var attempts = 0;
+            var timer = window.setInterval(function () {
+                attempts += 1;
+                if (patchRecaptchaRender() || attempts > 40) {
+                    window.clearInterval(timer);
+                }
+            }, 50);
+        }
+    })();
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_guard_fluent_recaptcha_render', 2);
+
+/**
+ * Keep Breeze from deferring or combining critical Fluent Forms scripts.
+ *
+ * @param string[] $scripts
+ * @return string[]
+ */
+function viar_breeze_exclude_fluent_form_scripts(array $scripts): array {
+    $needles = [
+        'fluentform',
+        'fluent-form-submission',
+        'form-submission.js',
+        'flatpickr',
+        'recaptcha',
+        'jquery',
+    ];
+
+    return array_values(array_unique(array_merge($scripts, $needles)));
+}
+add_filter('breeze_filter_js_exclude', 'viar_breeze_exclude_fluent_form_scripts');
+add_filter('default_scripts_gnore_from_delay', 'viar_breeze_exclude_fluent_form_scripts');
+
