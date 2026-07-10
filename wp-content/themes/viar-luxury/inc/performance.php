@@ -96,13 +96,7 @@ add_filter('viar_async_style_handles', 'viar_add_plugin_async_style_handles');
  */
 function viar_get_defer_script_handles(): array {
     $handles = [
-        'viar-luxury-navigation',
         'viar-luxury-hero-video-modal',
-        'viar-gtm-events',
-        'breeze-lazy',
-        'breeze-prefetch',
-        'smush-lazy-load',
-        'ht_ctc_app_js',
         'ht_ctc_woo_js',
         'ht_ctc_group_js',
         'ht_ctc_share_js',
@@ -171,11 +165,30 @@ function viar_dequeue_redundant_frontend_scripts(): void {
     }
 
     wp_dequeue_script('breeze-prefetch');
+    wp_deregister_script('breeze-prefetch');
     wp_dequeue_script('smush-lazy-load');
     wp_deregister_script('smush-lazy-load');
     wp_dequeue_script('breeze-lazy');
+    wp_dequeue_script('viar-gtm-events');
+    wp_dequeue_script('viar-luxury-navigation');
 }
 add_action('wp_enqueue_scripts', 'viar_dequeue_redundant_frontend_scripts', 120);
+add_action('wp_print_scripts', 'viar_dequeue_redundant_frontend_scripts', 0);
+add_action('wp_print_footer_scripts', 'viar_dequeue_redundant_frontend_scripts', 0);
+
+/**
+ * Keep Breeze link-prefetch out of the head even when the plugin option is enabled.
+ */
+function viar_block_breeze_prefetch(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    wp_dequeue_script('breeze-prefetch');
+    wp_deregister_script('breeze-prefetch');
+}
+add_action('wp_enqueue_scripts', 'viar_block_breeze_prefetch', 99999);
+add_action('wp_print_scripts', 'viar_block_breeze_prefetch', 0);
 
 /**
  * Disable Smush lazy-load markup and scripts; Breeze or native lazy loading handles images.
@@ -233,6 +246,52 @@ function viar_print_deferred_breeze_lazy_loader(): void {
     <?php
 }
 add_action('wp_footer', 'viar_print_deferred_breeze_lazy_loader', 98);
+
+/**
+ * Load navigation.js after first paint so it stays off the critical request chain.
+ */
+function viar_print_deferred_navigation_loader(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    $src = viar_get_registered_script_src('viar-luxury-navigation');
+    if ($src === '') {
+        $version = wp_get_theme()->get('Version');
+        $src = get_template_directory_uri() . '/assets/js/navigation.js?ver=' . rawurlencode((string) $version);
+    }
+    ?>
+    <script>
+    (function (src) {
+        if (window.viarNavigationLoader) {
+            return;
+        }
+        window.viarNavigationLoader = true;
+
+        var loaded = false;
+        function loadNavigation() {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+
+            var script = document.createElement('script');
+            script.src = src;
+            script.defer = true;
+            document.body.appendChild(script);
+        }
+
+        document.querySelector('.viar-nav-toggle')?.addEventListener('pointerdown', loadNavigation, { once: true, passive: true });
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadNavigation, { timeout: 2000 });
+        } else {
+            window.setTimeout(loadNavigation, 2000);
+        }
+    })(<?php echo wp_json_encode($src); ?>);
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_print_deferred_navigation_loader', 97);
 
 /**
  * Defer the Click to Chat plugin script until the first visitor interaction.
@@ -570,10 +629,45 @@ function viar_strip_google_font_resource_hints(string $html): string {
 }
 
 /**
+ * Remove non-critical scripts that optimizers may leave in cached HTML.
+ */
+function viar_strip_noncritical_script_tags(string $html): string {
+    $patterns = [
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*smush-lazy-load[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*breeze-lazy-load[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*breeze-prefetch-links[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*\/animations\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*gtm-events\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+    ];
+
+    if (function_exists('viar_below_fold_fluent_form_defer_enabled') && viar_below_fold_fluent_form_defer_enabled()) {
+        $patterns = array_merge($patterns, [
+            '/<script\b[^>]*\bsrc=[\'"][^\'"]*recaptcha\/api\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+            '/<script\b[^>]*\bsrc=[\'"][^\'"]*fluentform\/[^\'"]*form-submission\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+            '/<script\b[^>]*\bsrc=[\'"][^\'"]*flatpickr\/flatpickr\.min\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+            '/<script\b[^>]*\bsrc=[\'"][^\'"]*jquery\/jquery\.min\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+            '/<link\b[^>]*\bhref=[\'"][^\'"]*fluentform-public-default[^\'"]*[\'"][^>]*>\s*/i',
+            '/<link\b[^>]*\bhref=[\'"][^\'"]*fluent-forms-public\.css[^\'"]*[\'"][^>]*>\s*/i',
+            '/<link\b[^>]*\bhref=[\'"][^\'"]*flatpickr\.min\.css[^\'"]*[\'"][^>]*>\s*/i',
+        ]);
+    }
+
+    foreach ($patterns as $pattern) {
+        $updated = preg_replace($pattern, '', $html);
+        if (is_string($updated)) {
+            $html = $updated;
+        }
+    }
+
+    return $html;
+}
+
+/**
  * Optimize image loading attributes for templates with raw <img> markup.
  */
 function viar_optimize_template_images(string $html): string {
     $html = viar_strip_google_font_resource_hints($html);
+    $html = viar_strip_noncritical_script_tags($html);
     $html = viar_defer_fluent_date_picker_init($html);
     $html = viar_wrap_below_fold_fluent_inline_scripts($html);
     $html = viar_fix_lcp_image_lazy_attributes($html);

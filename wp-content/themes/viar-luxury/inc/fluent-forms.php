@@ -340,6 +340,7 @@ function viar_defer_below_fold_fluent_form_assets(): void {
 }
 add_action('wp_enqueue_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
 add_action('wp_print_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
+add_action('wp_print_styles', 'viar_defer_below_fold_fluent_form_assets', 9998);
 add_action('wp_print_footer_scripts', 'viar_defer_below_fold_fluent_form_assets', 0);
 
 /**
