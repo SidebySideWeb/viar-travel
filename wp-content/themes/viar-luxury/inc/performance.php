@@ -112,6 +112,7 @@ add_filter('viar_async_style_handles', 'viar_add_plugin_async_style_handles');
  */
 function viar_get_defer_script_handles(): array {
     $handles = [
+        'viar-luxury-navigation',
         'viar-luxury-hero-video-modal',
         'ht_ctc_woo_js',
         'ht_ctc_group_js',
@@ -186,7 +187,6 @@ function viar_dequeue_redundant_frontend_scripts(): void {
     wp_deregister_script('smush-lazy-load');
     wp_dequeue_script('breeze-lazy');
     wp_dequeue_script('viar-gtm-events');
-    wp_dequeue_script('viar-luxury-navigation');
 }
 add_action('wp_enqueue_scripts', 'viar_dequeue_redundant_frontend_scripts', 120);
 add_action('wp_print_scripts', 'viar_dequeue_redundant_frontend_scripts', 0);
@@ -262,52 +262,6 @@ function viar_print_deferred_breeze_lazy_loader(): void {
     <?php
 }
 add_action('wp_footer', 'viar_print_deferred_breeze_lazy_loader', 98);
-
-/**
- * Load navigation.js after first paint so it stays off the critical request chain.
- */
-function viar_print_deferred_navigation_loader(): void {
-    if (is_admin()) {
-        return;
-    }
-
-    $src = viar_get_registered_script_src('viar-luxury-navigation');
-    if ($src === '') {
-        $version = wp_get_theme()->get('Version');
-        $src = get_template_directory_uri() . '/assets/js/navigation.js?ver=' . rawurlencode((string) $version);
-    }
-    ?>
-    <script>
-    (function (src) {
-        if (window.viarNavigationLoader) {
-            return;
-        }
-        window.viarNavigationLoader = true;
-
-        var loaded = false;
-        function loadNavigation() {
-            if (loaded) {
-                return;
-            }
-            loaded = true;
-
-            var script = document.createElement('script');
-            script.src = src;
-            script.defer = true;
-            document.body.appendChild(script);
-        }
-
-        document.querySelector('.viar-nav-toggle')?.addEventListener('pointerdown', loadNavigation, { once: true, passive: true });
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(loadNavigation, { timeout: 2000 });
-        } else {
-            window.setTimeout(loadNavigation, 2000);
-        }
-    })(<?php echo wp_json_encode($src); ?>);
-    </script>
-    <?php
-}
-add_action('wp_footer', 'viar_print_deferred_navigation_loader', 97);
 
 /**
  * Defer the Click to Chat plugin script until the first visitor interaction.
@@ -655,7 +609,6 @@ function viar_strip_noncritical_script_tags(string $html): string {
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*\/animations\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*gtm-events\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*\/rrhr\/[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
-        '/<script\b[^>]*\bsrc=[\'"][^\'"]*googletagmanager\.com\/gtm\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
     ];
 
     if (function_exists('viar_below_fold_fluent_form_defer_enabled') && viar_below_fold_fluent_form_defer_enabled()) {
