@@ -237,10 +237,85 @@ function viar_get_fluent_form_sync_script_handles(): array {
 }
 
 /**
+ * Whether Fluent Form scripts should load only when the form nears the viewport.
+ */
+function viar_below_fold_fluent_form_defer_enabled(): bool {
+    return viar_page_uses_fluent_forms() && viar_fluent_form_is_below_fold();
+}
+
+/**
+ * Script handles deferred until the below-fold booking form is near the viewport.
+ *
+ * @return string[]
+ */
+function viar_get_below_fold_fluent_form_script_handles(): array {
+    return [
+        'jquery',
+        'jquery-core',
+        'jquery-migrate',
+        'flatpickr',
+        'fluent-form-submission',
+        'fluentform-advanced',
+    ];
+}
+
+/**
+ * Resolve a registered script URL for dynamic loading.
+ */
+function viar_get_registered_script_src(string $handle): string {
+    $scripts = wp_scripts();
+    if (!isset($scripts->registered[$handle])) {
+        return '';
+    }
+
+    return (string) $scripts->registered[$handle]->src;
+}
+
+/**
+ * Inline bootstrap JS for Fluent Forms globals.
+ */
+function viar_get_fluent_form_bootstrap_js(): string {
+    $scripts = wp_scripts();
+    if (!isset($scripts->registered['fluent-form-submission'])) {
+        return 'window.fluentFormVars = ' . wp_json_encode(viar_get_fluent_form_global_vars()) . ';';
+    }
+
+    $localized = $scripts->get_data('fluent-form-submission', 'data');
+    if (empty($localized)) {
+        return 'window.fluentFormVars = ' . wp_json_encode(viar_get_fluent_form_global_vars()) . ';';
+    }
+
+    if (is_array($localized)) {
+        return implode(
+            "\n",
+            array_values(array_filter($localized, static fn($chunk): bool => is_string($chunk) && $chunk !== ''))
+        );
+    }
+
+    return is_string($localized) ? $localized : '';
+}
+
+/**
+ * Stop heavy Fluent Form scripts from running during initial page load.
+ */
+function viar_defer_below_fold_fluent_form_assets(): void {
+    if (!viar_below_fold_fluent_form_defer_enabled()) {
+        return;
+    }
+
+    foreach (viar_get_below_fold_fluent_form_script_handles() as $handle) {
+        wp_dequeue_script($handle);
+    }
+}
+add_action('wp_enqueue_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
+add_action('wp_print_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
+add_action('wp_print_footer_scripts', 'viar_defer_below_fold_fluent_form_assets', 0);
+
+/**
  * Strip defer/async from Fluent Form dependencies on the frontend.
  */
 function viar_sync_fluent_form_scripts(): void {
-    if (!viar_page_uses_fluent_forms()) {
+    if (!viar_page_uses_fluent_forms() || viar_below_fold_fluent_form_defer_enabled()) {
         return;
     }
 
@@ -306,7 +381,7 @@ function viar_get_fluent_form_global_vars(): array {
 function viar_bootstrap_fluent_form_footer_assets(): void {
     static $printed = false;
 
-    if ($printed || !viar_page_uses_fluent_forms()) {
+    if ($printed || !viar_page_uses_fluent_forms() || viar_below_fold_fluent_form_defer_enabled()) {
         return;
     }
 
@@ -452,46 +527,115 @@ add_action('wp_print_scripts', 'viar_defer_below_fold_recaptcha_script', 9999);
 add_action('wp_print_footer_scripts', 'viar_defer_below_fold_recaptcha_script', 0);
 
 /**
- * Load reCAPTCHA when the booking form approaches the viewport.
+ * Load Fluent Form and reCAPTCHA assets when the booking form approaches the viewport.
  */
-function viar_print_deferred_recaptcha_loader(): void {
-    if (!viar_page_uses_fluent_forms() || !viar_fluent_form_is_below_fold()) {
+function viar_print_below_fold_form_asset_loader(): void {
+    if (!viar_below_fold_fluent_form_defer_enabled()) {
         return;
     }
 
-    $recaptcha_url = viar_get_fluent_recaptcha_script_url();
-    if ($recaptcha_url === '') {
+    $scripts = wp_scripts();
+    if (!isset($scripts->registered['fluent-form-submission'])) {
         return;
     }
+
+    $payload = [
+        'jquery' => viar_get_registered_script_src('jquery') ?: viar_get_registered_script_src('jquery-core'),
+        'flatpickr' => viar_get_registered_script_src('flatpickr'),
+        'submission' => viar_get_registered_script_src('fluent-form-submission'),
+        'advanced' => viar_get_registered_script_src('fluentform-advanced'),
+        'recaptcha' => viar_get_fluent_recaptcha_script_url(),
+        'bootstrap' => viar_get_fluent_form_bootstrap_js(),
+    ];
     ?>
     <script>
-    (function (recaptchaUrl) {
-        var target = document.querySelector('.viar-tour-booking-form, .viar-fluent-form');
-        if (!target || window.viarDeferredRecaptchaLoader) {
+    window.viarFluentFormInitQueue = window.viarFluentFormInitQueue || [];
+    window.viarQueueFluentFormInit = function (fn) {
+        if (window.viarFluentFormAssetsReady && window.jQuery) {
+            window.jQuery(fn);
             return;
         }
-        window.viarDeferredRecaptchaLoader = true;
+        window.viarFluentFormInitQueue.push(fn);
+    };
+    (function (config) {
+        var target = document.querySelector('.viar-tour-booking-form, .viar-fluent-form');
+        if (!target || window.viarBelowFoldFormLoader) {
+            return;
+        }
+        window.viarBelowFoldFormLoader = true;
 
+        var loading = false;
         var loaded = false;
-        function loadRecaptcha() {
-            if (loaded) {
+
+        function loadScript(src) {
+            return new Promise(function (resolve, reject) {
+                if (!src) {
+                    resolve();
+                    return;
+                }
+                var script = document.createElement('script');
+                script.src = src;
+                script.onload = function () { resolve(); };
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        }
+
+        function runInline(js) {
+            if (!js) {
                 return;
             }
-            loaded = true;
-
             var script = document.createElement('script');
-            script.src = recaptchaUrl;
-            script.async = true;
-            script.onload = function () {
-                if (window.jQuery) {
-                    window.jQuery(document).trigger('reInitExtras');
-                }
-            };
-            document.head.appendChild(script);
+            script.text = js;
+            document.body.appendChild(script);
+        }
+
+        function drainQueue() {
+            window.viarFluentFormAssetsReady = true;
+            if (!window.jQuery) {
+                return;
+            }
+            window.viarFluentFormInitQueue.forEach(function (fn) {
+                window.jQuery(fn);
+            });
+            window.viarFluentFormInitQueue = [];
+            window.jQuery(document).trigger('reInitExtras');
+        }
+
+        function loadAssets() {
+            if (loading || loaded) {
+                return;
+            }
+            loading = true;
+
+            loadScript(config.jquery)
+                .then(function () {
+                    runInline(config.bootstrap);
+                    return loadScript(config.flatpickr);
+                })
+                .then(function () {
+                    return loadScript(config.submission);
+                })
+                .then(function () {
+                    return loadScript(config.advanced);
+                })
+                .then(function () {
+                    if (!config.recaptcha) {
+                        return;
+                    }
+                    return loadScript(config.recaptcha);
+                })
+                .then(function () {
+                    loaded = true;
+                    drainQueue();
+                })
+                .catch(function () {
+                    loading = false;
+                });
         }
 
         if (!('IntersectionObserver' in window)) {
-            loadRecaptcha();
+            loadAssets();
             return;
         }
 
@@ -500,17 +644,17 @@ function viar_print_deferred_recaptcha_loader(): void {
                 if (!entry.isIntersecting) {
                     return;
                 }
-                loadRecaptcha();
+                loadAssets();
                 observer.disconnect();
             });
         }, { rootMargin: '320px 0px' });
 
         observer.observe(target);
-    })(<?php echo wp_json_encode($recaptcha_url); ?>);
+    })(<?php echo wp_json_encode($payload); ?>);
     </script>
     <?php
 }
-add_action('wp_footer', 'viar_print_deferred_recaptcha_loader', 4);
+add_action('wp_footer', 'viar_print_below_fold_form_asset_loader', 3);
 
 /**
  * Keep Breeze from deferring or combining critical Fluent Forms scripts.

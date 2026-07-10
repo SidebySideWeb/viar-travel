@@ -124,6 +124,10 @@ function viar_get_defer_script_handles(): array {
  * Whether the current view needs jQuery on the frontend.
  */
 function viar_page_needs_jquery(): bool {
+    if (function_exists('viar_below_fold_fluent_form_defer_enabled') && viar_below_fold_fluent_form_defer_enabled()) {
+        return false;
+    }
+
     if (viar_page_uses_fluent_forms()) {
         return true;
     }
@@ -166,6 +170,22 @@ function viar_optimize_noncritical_scripts(): void {
     viar_sync_fluent_form_scripts();
 }
 add_action('wp_enqueue_scripts', 'viar_optimize_noncritical_scripts', 100);
+
+/**
+ * Drop duplicate or low-value plugin scripts from the frontend.
+ */
+function viar_dequeue_redundant_frontend_scripts(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    wp_dequeue_script('breeze-prefetch');
+
+    if (wp_script_is('breeze-lazy', 'registered') || wp_script_is('breeze-lazy', 'enqueued')) {
+        wp_dequeue_script('smush-lazy-load');
+    }
+}
+add_action('wp_enqueue_scripts', 'viar_dequeue_redundant_frontend_scripts', 120);
 
 /**
  * Drop jquery-migrate on the public site when plugins do not require it.
@@ -367,7 +387,11 @@ add_action('template_redirect', 'viar_buffer_start', 0);
  * Optimize image loading attributes for templates with raw <img> markup.
  */
 function viar_defer_fluent_date_picker_init(string $html): string {
-    if (!viar_page_uses_fluent_forms() || !str_contains($html, 'initPicker();')) {
+    if (
+        (function_exists('viar_below_fold_fluent_form_defer_enabled') && viar_below_fold_fluent_form_defer_enabled())
+        || !viar_page_uses_fluent_forms()
+        || !str_contains($html, 'initPicker();')
+    ) {
         return $html;
     }
 
@@ -379,10 +403,46 @@ function viar_defer_fluent_date_picker_init(string $html): string {
 }
 
 /**
+ * Queue Fluent Form inline handlers until below-fold assets are loaded.
+ */
+function viar_wrap_below_fold_fluent_inline_scripts(string $html): string {
+    if (!function_exists('viar_below_fold_fluent_form_defer_enabled') || !viar_below_fold_fluent_form_defer_enabled()) {
+        return $html;
+    }
+
+    if (!str_contains($html, 'function initPicker')) {
+        return $html;
+    }
+
+    $updated = preg_replace_callback(
+        '/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/i',
+        static function (array $matches): string {
+            $body = $matches[1];
+            if (!str_contains($body, 'initPicker')) {
+                return $matches[0];
+            }
+
+            $body = preg_replace(
+                '/jQuery\(document\)\.ready\(function\s*\(\$\)\s*\{/i',
+                'window.viarQueueFluentFormInit(function($){',
+                $body,
+                1
+            ) ?? $body;
+
+            return str_replace($matches[1], $body, $matches[0]);
+        },
+        $html
+    );
+
+    return is_string($updated) ? $updated : $html;
+}
+
+/**
  * Optimize image loading attributes for templates with raw <img> markup.
  */
 function viar_optimize_template_images(string $html): string {
     $html = viar_defer_fluent_date_picker_init($html);
+    $html = viar_wrap_below_fold_fluent_inline_scripts($html);
     $html = viar_fix_lcp_image_lazy_attributes($html);
 
     if (stripos($html, '<img') === false) {
