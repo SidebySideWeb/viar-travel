@@ -254,6 +254,13 @@ function viar_enqueue_silktide_consent_assets(): void {
 }
 add_action('wp_enqueue_scripts', 'viar_enqueue_silktide_consent_assets', 99);
 
+function viar_add_silktide_async_style_handle(array $handles): array {
+    $handles[] = 'viar-silktide-consent';
+
+    return $handles;
+}
+add_filter('viar_async_style_handles', 'viar_add_silktide_async_style_handle');
+
 function add_silktide_assets(): void {
     if (!viar_should_load_silktide_consent()) {
         return;

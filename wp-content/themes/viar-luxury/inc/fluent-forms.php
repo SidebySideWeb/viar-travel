@@ -916,6 +916,7 @@ function viar_breeze_exclude_async_styles(string $exclude): string {
         'fluent-forms.css',
         'messenger-buttons.css',
         'click-to-chat',
+        'silktide-consent-manager.css',
     ];
 
     $existing = array_filter(array_map('trim', explode(',', $exclude)));

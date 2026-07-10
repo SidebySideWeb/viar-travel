@@ -159,3 +159,52 @@ function viar_patch_webpc_passthru_cache_headers(): void {
 add_action('webpc_refresh_loader', 'viar_patch_webpc_passthru_cache_headers', 20);
 add_action('webpc_settings_updated', 'viar_patch_webpc_passthru_cache_headers', 20);
 add_action('after_switch_theme', 'viar_patch_webpc_passthru_cache_headers');
+
+/**
+ * Write long-lived cache headers for uploaded media files.
+ */
+function viar_ensure_uploads_cache_headers(): void {
+    $upload_dir = wp_upload_dir();
+    if (!empty($upload_dir['error'])) {
+        return;
+    }
+
+    $htaccess = trailingslashit($upload_dir['basedir']) . '.htaccess';
+    $marker = '# VIAR_UPLOADS_CACHE';
+    $rules = <<<HTACCESS
+{$marker}
+<IfModule mod_headers.c>
+  <FilesMatch "\.(jpe?g|png|gif|webp|svg|ico|avif)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+HTACCESS;
+
+    $existing = is_readable($htaccess) ? (string) file_get_contents($htaccess) : '';
+    if (str_contains($existing, $marker)) {
+        return;
+    }
+
+    $content = rtrim($existing) . ($existing !== '' ? "\n\n" : '') . $rules . "\n";
+    file_put_contents($htaccess, $content);
+}
+
+/**
+ * Apply uploads cache headers once after theme updates.
+ */
+function viar_maybe_ensure_uploads_cache_headers(): void {
+    if (is_admin() && !wp_doing_ajax()) {
+        return;
+    }
+
+    $theme_version = wp_get_theme()->get('Version');
+    $option_key = 'viar_uploads_cache_htaccess_version';
+    if (get_option($option_key) === $theme_version) {
+        return;
+    }
+
+    viar_ensure_uploads_cache_headers();
+    update_option($option_key, $theme_version, false);
+}
+add_action('init', 'viar_maybe_ensure_uploads_cache_headers', 1);
+add_action('after_switch_theme', 'viar_ensure_uploads_cache_headers');

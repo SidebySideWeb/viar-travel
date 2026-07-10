@@ -69,6 +69,7 @@ for ($i = 1; $i <= 4; $i++) {
         'title' => viar_field_value("viar_vip_service_{$i}_title", $defaults['title'], $page_id),
         'body'  => viar_field_value("viar_vip_service_{$i}_body", $defaults['body'], $page_id),
         'image' => viar_field_image_url("viar_vip_service_{$i}_image", $page_id, $defaults['image']),
+        'attachment_id' => viar_image_attachment_id("viar_vip_service_{$i}_image", $page_id),
     ];
 }
 
@@ -132,6 +133,7 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !=
             'fallback_url' => $theme_uri . '/assets/images/remote-bc1dabf815b0.jpg',
             'post_id' => $page_id,
             'class' => 'w-full h-full object-cover',
+            'sizes' => '(max-width: 768px) 100vw, 1440px',
         ]);
         ?>
         <div class="absolute inset-0 bg-primary/20"></div>
@@ -182,9 +184,20 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !=
         <div class="col-span-12 <?php echo $has_services_intro ? 'lg:col-span-8' : 'lg:col-span-12'; ?> grid grid-cols-1 md:grid-cols-2 gap-12 min-w-0">
             <?php foreach ($services as $index => $service) : ?>
                 <div class="group<?php echo $index % 2 === 1 ? ' mt-12 md:mt-24' : ''; ?>">
-                    <?php if ($service['image'] !== '') : ?>
+                    <?php if ($service['image'] !== '' || ($service['attachment_id'] ?? 0) > 0) : ?>
                     <div class="aspect-[4/5] overflow-hidden mb-6">
-                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" src="<?php echo esc_url($service['image']); ?>">
+                        <?php
+                        viar_render_responsive_image([
+                            'attachment_id' => (int) ($service['attachment_id'] ?? 0),
+                            'url' => (string) $service['image'],
+                            'size' => 'viar-card',
+                            'sizes' => '(max-width: 768px) 90vw, (max-width: 1024px) 50vw, 450px',
+                            'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-700',
+                            'alt' => (string) $service['title'],
+                            'loading' => 'lazy',
+                            'skip_lazy' => true,
+                        ]);
+                        ?>
                     </div>
                     <?php endif; ?>
                     <?php if ($service['title'] !== '') : ?>
@@ -226,11 +239,23 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !=
                 $fleet_excerpt = get_the_excerpt();
                 $fleet_label = viar_field_value('viar_fleet_card_label', 'VIP Fleet', get_the_ID());
                 $fleet_card_image = viar_field_image_url('viar_fleet_card_image', get_the_ID());
+                $fleet_attachment_id = viar_image_attachment_id('viar_fleet_card_image', get_the_ID());
                 ?>
                 <article class="group border border-[#00234B]/10 hover:border-[#C5A059] transition-colors p-6">
                     <a href="<?php echo esc_url(get_permalink()); ?>" class="block">
-                        <?php if ($fleet_card_image !== '') : ?>
-                            <img src="<?php echo esc_url($fleet_card_image); ?>" class="w-full h-56 object-cover mb-5" alt="<?php echo esc_attr(get_the_title()); ?>">
+                        <?php if ($fleet_card_image !== '' || $fleet_attachment_id > 0) : ?>
+                            <?php
+                            viar_render_responsive_image([
+                                'attachment_id' => $fleet_attachment_id,
+                                'url' => $fleet_card_image,
+                                'size' => 'viar-card',
+                                'sizes' => '(max-width: 768px) 100vw, 33vw',
+                                'class' => 'w-full h-56 object-cover mb-5',
+                                'alt' => get_the_title(),
+                                'loading' => 'lazy',
+                                'skip_lazy' => true,
+                            ]);
+                            ?>
                         <?php endif; ?>
                         <?php if ($fleet_label !== '') : ?>
                             <p class="font-label-caps text-[10px] text-[#C5A059] mb-2"><?php echo esc_html($fleet_label); ?></p>
