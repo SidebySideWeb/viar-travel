@@ -71,6 +71,8 @@ class PassthruLoader {
 					header( 'X-Content-Type-Options: nosniff' );
 					header( 'Content-Type: ' . $mime_type );
 					header( 'Content-Length: ' . filesize( $output_image_path ) );
+					header( 'Cache-Control: public, max-age=31536000, immutable' ); // VIAR_WEBPC_CACHE_HEADERS
+					header( 'Vary: Accept' );
 					readfile( $output_image_path );
 					exit;
 				}

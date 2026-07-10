@@ -122,3 +122,40 @@ function viar_filter_upload_size_limit($size, $u_bytes, $p_bytes) {
     return (int) min($limits);
 }
 add_filter('upload_size_limit', 'viar_filter_upload_size_limit', 20, 3);
+
+/**
+ * Allow Converter for Media passthru WebP responses to be cached by browsers and CDN.
+ */
+function viar_allow_webpc_passthru_url_cache(): bool {
+    return false;
+}
+add_filter('webpc_passthru_url_nocache', 'viar_allow_webpc_passthru_url_cache');
+
+/**
+ * Re-apply cache headers after the WebP plugin regenerates webpc-passthru.php.
+ */
+function viar_patch_webpc_passthru_cache_headers(): void {
+    $loader_path = WP_CONTENT_DIR . '/webpc-passthru.php';
+    if (!is_readable($loader_path) || !is_writable($loader_path)) {
+        return;
+    }
+
+    $contents = file_get_contents($loader_path);
+    if (!is_string($contents) || $contents === '' || str_contains($contents, 'VIAR_WEBPC_CACHE_HEADERS')) {
+        return;
+    }
+
+    $needle = "\t\t\t\t\theader( 'Content-Length: ' . filesize( \$output_image_path ) );";
+    $patch = "\t\t\t\t\theader( 'Content-Length: ' . filesize( \$output_image_path ) );\n"
+        . "\t\t\t\t\theader( 'Cache-Control: public, max-age=31536000, immutable' ); // VIAR_WEBPC_CACHE_HEADERS\n"
+        . "\t\t\t\t\theader( 'Vary: Accept' );";
+
+    if (!str_contains($contents, $needle)) {
+        return;
+    }
+
+    file_put_contents($loader_path, str_replace($needle, $patch, $contents));
+}
+add_action('webpc_refresh_loader', 'viar_patch_webpc_passthru_cache_headers', 20);
+add_action('webpc_settings_updated', 'viar_patch_webpc_passthru_cache_headers', 20);
+add_action('after_switch_theme', 'viar_patch_webpc_passthru_cache_headers');

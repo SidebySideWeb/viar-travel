@@ -1,0 +1,7 @@
+# Cache WebP passthru responses (Converter for Media).
+<IfModule mod_headers.c>
+  <Files "webpc-passthru.php">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header append Vary "Accept"
+  </Files>
+</IfModule>
