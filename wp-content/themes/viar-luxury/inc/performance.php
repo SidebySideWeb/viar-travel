@@ -80,6 +80,22 @@ function viar_async_style_loader_tag(string $html, string $handle, string $href,
 add_filter('style_loader_tag', 'viar_async_style_loader_tag', 10, 4);
 
 /**
+ * Keep Cloudflare Rocket Loader from rebundling scripts into /rrhr/ URLs.
+ */
+function viar_exclude_scripts_from_cloudflare_rocket_loader(string $tag, string $handle, string $src): string {
+    if (is_admin() || !str_contains($tag, '<script')) {
+        return $tag;
+    }
+
+    if (str_contains($tag, 'data-cfasync')) {
+        return $tag;
+    }
+
+    return str_replace('<script ', '<script data-cfasync="false" ', $tag);
+}
+add_filter('script_loader_tag', 'viar_exclude_scripts_from_cloudflare_rocket_loader', 98, 3);
+
+/**
  * Style handles from plugins that can load without blocking first paint.
  */
 function viar_add_plugin_async_style_handles(array $handles): array {
@@ -638,6 +654,8 @@ function viar_strip_noncritical_script_tags(string $html): string {
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*breeze-prefetch-links[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*\/animations\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
         '/<script\b[^>]*\bsrc=[\'"][^\'"]*gtm-events\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*\/rrhr\/[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
+        '/<script\b[^>]*\bsrc=[\'"][^\'"]*googletagmanager\.com\/gtm\.js[^\'"]*[\'"][^>]*>\s*<\/script>\s*/i',
     ];
 
     if (function_exists('viar_below_fold_fluent_form_defer_enabled') && viar_below_fold_fluent_form_defer_enabled()) {

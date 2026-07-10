@@ -576,28 +576,77 @@ function viar_print_interaction_recaptcha_loader(): void {
         if (!target || window.viarInteractionRecaptchaLoader) {
             return;
         }
-        window.viarInteractionRecaptchaLoader = true;
 
-        var loaded = false;
-        function loadRecaptcha() {
-            if (loaded) {
-                return;
-            }
-            loaded = true;
-
-            var script = document.createElement('script');
-            script.src = recaptchaUrl;
-            script.async = true;
-            script.onload = function () {
-                if (window.jQuery) {
-                    window.jQuery(document).trigger('reInitExtras');
-                }
-            };
-            document.head.appendChild(script);
+        if (!target.querySelector('.g-recaptcha, .ff-el-recaptcha')) {
+            return;
         }
 
-        target.addEventListener('focusin', loadRecaptcha, { once: true, capture: true });
-        target.addEventListener('submit', loadRecaptcha, { once: true, capture: true });
+        window.viarInteractionRecaptchaLoader = true;
+
+        var scriptLoaded = false;
+        var scriptLoading = false;
+        var submitAfterLoad = false;
+
+        function afterRecaptchaReady() {
+            if (window.jQuery) {
+                window.jQuery(document).trigger('reInitExtras');
+            }
+
+            if (submitAfterLoad && typeof target.requestSubmit === 'function') {
+                target.requestSubmit();
+            }
+
+            submitAfterLoad = false;
+        }
+
+        function loadRecaptcha() {
+            return new Promise(function (resolve, reject) {
+                if (scriptLoaded) {
+                    resolve();
+                    return;
+                }
+
+                if (scriptLoading) {
+                    var check = window.setInterval(function () {
+                        if (!scriptLoaded) {
+                            return;
+                        }
+
+                        window.clearInterval(check);
+                        resolve();
+                    }, 50);
+                    return;
+                }
+
+                scriptLoading = true;
+
+                var script = document.createElement('script');
+                script.src = recaptchaUrl;
+                script.async = true;
+                script.onload = function () {
+                    scriptLoaded = true;
+                    scriptLoading = false;
+                    afterRecaptchaReady();
+                    resolve();
+                };
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        target.addEventListener('submit', function (event) {
+            if (scriptLoaded) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            submitAfterLoad = true;
+
+            loadRecaptcha().catch(function () {
+                submitAfterLoad = false;
+            });
+        }, { capture: true });
     })(<?php echo wp_json_encode($recaptcha_url); ?>);
     </script>
     <?php
