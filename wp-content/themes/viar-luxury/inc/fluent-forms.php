@@ -197,6 +197,27 @@ function viar_google_maps_api_key(): string {
 }
 
 /**
+ * Use a modern flatpickr build without legacy Object.assign polyfills.
+ */
+function viar_register_modern_flatpickr(): void {
+    if (!viar_page_uses_fluent_forms() || !wp_script_is('flatpickr', 'registered')) {
+        return;
+    }
+
+    $theme_version = wp_get_theme()->get('Version');
+
+    wp_deregister_script('flatpickr');
+    wp_register_script(
+        'flatpickr',
+        get_template_directory_uri() . '/assets/js/flatpickr.min.js',
+        ['jquery'],
+        '4.6.9-viar-' . $theme_version,
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'viar_register_modern_flatpickr', 15);
+
+/**
  * Script handles that must stay synchronous on Fluent Forms pages.
  *
  * Inline Fluent footer handlers (DateTime initPicker, etc.) are plain synchronous
