@@ -86,6 +86,60 @@ function viar_get_custom_logo_url(): string {
 }
 
 /**
+ * Whether the header logo is the primary LCP candidate on the current view.
+ */
+function viar_header_logo_is_lcp_candidate(): bool {
+    if (is_admin() || !has_custom_logo()) {
+        return false;
+    }
+
+    return viar_get_lcp_hero_image_url() === '';
+}
+
+/**
+ * Output the header custom logo with LCP-friendly loading attributes.
+ */
+function viar_render_header_custom_logo(): void {
+    if (!function_exists('has_custom_logo') || !has_custom_logo()) {
+        ?>
+        <a href="<?php echo esc_url(home_url('/')); ?>" class="font-['Cormorant_Garamond'] text-2xl tracking-[0.08em] text-[#00234B]">VIAR</a>
+        <?php
+        return;
+    }
+
+    $logo_id = (int) get_theme_mod('custom_logo');
+    if ($logo_id <= 0) {
+        return;
+    }
+
+    $is_lcp = viar_header_logo_is_lcp_candidate();
+    $logo_classes = trim('custom-logo no-lazyload skip-lazy' . ($is_lcp ? ' viar-lcp-image' : ''));
+    $logo_attr = [
+        'class' => $logo_classes,
+        'loading' => 'eager',
+        'decoding' => 'async',
+        'data-no-lazy' => '1',
+    ];
+
+    if ($is_lcp) {
+        $logo_attr['fetchpriority'] = 'high';
+    }
+
+    $logo_markup = wp_get_attachment_image($logo_id, 'full', false, $logo_attr);
+    if ($logo_markup === '') {
+        return;
+    }
+
+    $home_url = home_url('/');
+    $aria_current = is_front_page() ? ' aria-current="page"' : '';
+    ?>
+    <a href="<?php echo esc_url($home_url); ?>" class="custom-logo-link" rel="home"<?php echo $aria_current; ?>>
+        <?php echo $logo_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_get_attachment_image() ?>
+    </a>
+    <?php
+}
+
+/**
  * Extract a Vimeo video ID from a URL or raw ID string.
  */
 function viar_parse_vimeo_id(string $input): string {

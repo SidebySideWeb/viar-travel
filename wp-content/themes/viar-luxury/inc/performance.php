@@ -336,7 +336,7 @@ function viar_get_lcp_hero_image_url(): string {
 }
 
 /**
- * Preload the homepage hero image for faster LCP discovery.
+ * Preload the LCP image for faster discovery.
  */
 function viar_preload_lcp_hero_image(): void {
     if (is_admin()) {
@@ -344,6 +344,10 @@ function viar_preload_lcp_hero_image(): void {
     }
 
     $image_url = viar_get_lcp_hero_image_url();
+    if ($image_url === '') {
+        $image_url = viar_header_logo_is_lcp_candidate() ? viar_get_custom_logo_url() : '';
+    }
+
     if ($image_url === '') {
         return;
     }
@@ -374,6 +378,7 @@ add_filter('breeze_excluded_attributes', 'viar_breeze_exclude_lcp_image_attribut
  */
 function viar_smush_exclude_lcp_lazy_load_keywords(array $keywords): array {
     $keywords[] = 'viar-lcp-image';
+    $keywords[] = 'custom-logo';
     $keywords[] = 'no-lazyload';
     $keywords[] = 'skip-lazy';
 
@@ -392,6 +397,7 @@ function viar_smush_skip_lcp_image_from_lazy_load(bool $skip, string $src_url, s
     }
 
     return str_contains($markup, 'viar-lcp-image')
+        || str_contains($markup, 'custom-logo')
         || str_contains($markup, 'no-lazyload')
         || str_contains($markup, 'skip-lazy');
 }
@@ -403,7 +409,7 @@ add_filter('smush_skip_image_from_lazy_load', 'viar_smush_skip_lcp_image_from_la
  * @param string|false $value
  */
 function viar_lcp_img_loading_attr($value, string $image, string $context) {
-    if (str_contains($image, 'viar-lcp-image') || str_contains($image, 'no-lazyload')) {
+    if (str_contains($image, 'viar-lcp-image') || str_contains($image, 'no-lazyload') || str_contains($image, 'custom-logo')) {
         return false;
     }
 
@@ -412,15 +418,17 @@ function viar_lcp_img_loading_attr($value, string $image, string $context) {
 add_filter('wp_img_tag_add_loading_attr', 'viar_lcp_img_loading_attr', 10, 3);
 
 /**
- * Restore eager LCP images if a lazy-load plugin rewrote them in cached HTML.
+ * Restore eager logo/LCP images if a lazy-load plugin rewrote them in cached HTML.
  */
 function viar_fix_lcp_image_lazy_attributes(string $html): string {
-    if (!str_contains($html, 'viar-lcp-image')) {
+    if (!str_contains($html, 'viar-lcp-image') && !str_contains($html, 'custom-logo')) {
         return $html;
     }
 
+    $pattern = '/<img\b[^>]*\b(?:viar-lcp-image|custom-logo)\b[^>]*>/i';
+
     $updated = preg_replace_callback(
-        '/<img\b[^>]*\bviar-lcp-image\b[^>]*>/i',
+        $pattern,
         static function (array $matches): string {
             $tag = $matches[0];
 
