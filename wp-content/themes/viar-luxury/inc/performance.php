@@ -179,6 +179,34 @@ function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {
 add_action('wp_default_scripts', 'viar_dequeue_jquery_migrate');
 
 /**
+ * Preload the LCP hero image for faster discovery.
+ */
+function viar_get_lcp_hero_image_url(): string {
+    if (is_front_page()) {
+        return viar_get_home_hero_image_url();
+    }
+
+    if (is_singular('viar_bespoke_tour')) {
+        $post_id = (int) get_queried_object_id();
+        if ($post_id <= 0) {
+            return '';
+        }
+
+        $attachment_id = viar_image_attachment_id('viar_tour_hero_image', $post_id);
+        if ($attachment_id > 0) {
+            $src = wp_get_attachment_image_url($attachment_id, 'viar-hero');
+            if (is_string($src) && $src !== '') {
+                return $src;
+            }
+        }
+
+        return viar_image_url('viar_tour_hero_image', '', $post_id);
+    }
+
+    return '';
+}
+
+/**
  * Preload the homepage hero image for faster LCP discovery.
  */
 function viar_preload_lcp_hero_image(): void {
@@ -186,7 +214,7 @@ function viar_preload_lcp_hero_image(): void {
         return;
     }
 
-    $image_url = viar_get_home_hero_image_url();
+    $image_url = viar_get_lcp_hero_image_url();
     if ($image_url === '') {
         return;
     }
@@ -203,10 +231,113 @@ add_action('wp_head', 'viar_preload_lcp_hero_image', 2);
  */
 function viar_breeze_exclude_lcp_image_attributes(array $attributes): array {
     $attributes[] = 'fetchpriority';
+    $attributes[] = 'data-no-lazy';
 
-    return $attributes;
+    return array_values(array_unique($attributes));
 }
 add_filter('breeze_excluded_attributes', 'viar_breeze_exclude_lcp_image_attributes');
+
+/**
+ * Tell Smush lazy-load to ignore theme LCP images.
+ *
+ * @param string[] $keywords
+ * @return string[]
+ */
+function viar_smush_exclude_lcp_lazy_load_keywords(array $keywords): array {
+    $keywords[] = 'viar-lcp-image';
+    $keywords[] = 'no-lazyload';
+    $keywords[] = 'skip-lazy';
+
+    return array_values(array_unique($keywords));
+}
+add_filter('wp_smush_lazyload_excluded_keywords', 'viar_smush_exclude_lcp_lazy_load_keywords');
+
+/**
+ * @param bool $skip
+ * @param string $src_url
+ * @param string $markup
+ */
+function viar_smush_skip_lcp_image_from_lazy_load(bool $skip, string $src_url, string $markup): bool {
+    if ($skip) {
+        return true;
+    }
+
+    return str_contains($markup, 'viar-lcp-image')
+        || str_contains($markup, 'no-lazyload')
+        || str_contains($markup, 'skip-lazy');
+}
+add_filter('smush_skip_image_from_lazy_load', 'viar_smush_skip_lcp_image_from_lazy_load', 10, 3);
+
+/**
+ * Do not let WordPress override eager loading on marked LCP images.
+ *
+ * @param string|false $value
+ */
+function viar_lcp_img_loading_attr($value, string $image, string $context) {
+    if (str_contains($image, 'viar-lcp-image') || str_contains($image, 'no-lazyload')) {
+        return false;
+    }
+
+    return $value;
+}
+add_filter('wp_img_tag_add_loading_attr', 'viar_lcp_img_loading_attr', 10, 3);
+
+/**
+ * Restore eager LCP images if a lazy-load plugin rewrote them in cached HTML.
+ */
+function viar_fix_lcp_image_lazy_attributes(string $html): string {
+    if (!str_contains($html, 'viar-lcp-image')) {
+        return $html;
+    }
+
+    $updated = preg_replace_callback(
+        '/<img\b[^>]*\bviar-lcp-image\b[^>]*>/i',
+        static function (array $matches): string {
+            $tag = $matches[0];
+
+            $tag = preg_replace('/\sloading=(?:"|\')lazy(?:"|\')/i', '', $tag) ?? $tag;
+            $tag = preg_replace('/\sdata-srcset=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+            $tag = preg_replace('/\sdata-sizes=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+
+            if (preg_match('/\sdata-src=(?:"|\')([^"\']+)(?:"|\')/i', $tag, $data_src)) {
+                $tag = preg_replace('/\ssrc=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+                $tag = preg_replace('/<img/i', '<img src="' . esc_attr($data_src[1]) . '"', $tag, 1) ?? $tag;
+                $tag = preg_replace('/\sdata-src=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+            }
+
+            if (preg_match('/\sclass=(?:"|\')([^"\']*)(?:"|\')/i', $tag, $class_match)) {
+                $classes = trim(preg_replace('/\s*(lazyload|lazyloaded|br-lazy)\s*/', ' ', $class_match[1]) ?? $class_match[1]);
+                $classes = trim(preg_replace('/\s+/', ' ', $classes . ' no-lazyload skip-lazy viar-lcp-image'));
+                $tag = preg_replace(
+                    '/\sclass=(?:"|\')[^"\']*(?:"|\')/i',
+                    ' class="' . esc_attr($classes) . '"',
+                    $tag,
+                    1
+                ) ?? $tag;
+            } else {
+                $tag = preg_replace('/<img/i', '<img class="no-lazyload skip-lazy viar-lcp-image"', $tag, 1) ?? $tag;
+            }
+
+            if (!preg_match('/\sloading=(?:"|\')eager(?:"|\')/i', $tag)) {
+                $tag = preg_replace('/\sloading=(?:"|\')[^"\']*(?:"|\')/i', '', $tag) ?? $tag;
+                $tag = preg_replace('/<img/i', '<img loading="eager"', $tag, 1) ?? $tag;
+            }
+
+            if (!preg_match('/\sfetchpriority=(?:"|\')high(?:"|\')/i', $tag)) {
+                $tag = preg_replace('/<img/i', '<img fetchpriority="high"', $tag, 1) ?? $tag;
+            }
+
+            if (!preg_match('/\sdata-no-lazy=/i', $tag)) {
+                $tag = preg_replace('/<img/i', '<img data-no-lazy="1"', $tag, 1) ?? $tag;
+            }
+
+            return $tag;
+        },
+        $html
+    );
+
+    return is_string($updated) ? $updated : $html;
+}
 
 /**
  * Add modern loading attributes to non-critical images in raw template HTML.
@@ -244,6 +375,7 @@ function viar_defer_fluent_date_picker_init(string $html): string {
  */
 function viar_optimize_template_images(string $html): string {
     $html = viar_defer_fluent_date_picker_init($html);
+    $html = viar_fix_lcp_image_lazy_attributes($html);
 
     if (stripos($html, '<img') === false) {
         return $html;

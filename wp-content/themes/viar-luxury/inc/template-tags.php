@@ -280,6 +280,9 @@ function viar_render_responsive_image(array $args): void {
     }
 
     if ($args['lcp']) {
+        $attributes['class'] = trim($attributes['class'] . ' viar-lcp-image no-lazyload skip-lazy');
+        $attributes['loading'] = 'eager';
+        $attributes['fetchpriority'] = 'high';
         $attributes['data-no-lazy'] = '1';
     }
 
