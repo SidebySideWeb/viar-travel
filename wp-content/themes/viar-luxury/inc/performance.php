@@ -227,7 +227,24 @@ add_action('template_redirect', 'viar_buffer_start', 0);
 /**
  * Optimize image loading attributes for templates with raw <img> markup.
  */
+function viar_defer_fluent_date_picker_init(string $html): string {
+    if (!viar_page_uses_fluent_forms() || !str_contains($html, 'initPicker();')) {
+        return $html;
+    }
+
+    return str_replace(
+        'initPicker();',
+        'requestAnimationFrame(function(){requestAnimationFrame(initPicker);});',
+        $html
+    );
+}
+
+/**
+ * Optimize image loading attributes for templates with raw <img> markup.
+ */
 function viar_optimize_template_images(string $html): string {
+    $html = viar_defer_fluent_date_picker_init($html);
+
     if (stripos($html, '<img') === false) {
         return $html;
     }

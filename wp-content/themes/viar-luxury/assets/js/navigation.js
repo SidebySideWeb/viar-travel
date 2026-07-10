@@ -9,6 +9,8 @@
   const isStaticSpacer = spacer.classList.contains('viar-header-spacer--static');
   const isFixedSpacer = spacer.classList.contains('viar-header-spacer--fixed');
   let lastHeight = 0;
+  let pendingHeight = 0;
+  let heightFrame = 0;
 
   function readHeight(entry) {
     if (entry.borderBoxSize && entry.borderBoxSize.length > 0) {
@@ -32,25 +34,34 @@
     }
 
     lastHeight = heightPx;
-    const height = `${heightPx}px`;
-    document.documentElement.style.setProperty('--viar-header-height', height);
-    spacer.style.height = height;
+    document.documentElement.style.setProperty('--viar-header-height', `${heightPx}px`);
+  }
+
+  function scheduleHeaderHeight(heightPx) {
+    pendingHeight = heightPx;
+
+    if (heightFrame) {
+      return;
+    }
+
+    heightFrame = requestAnimationFrame(() => {
+      heightFrame = 0;
+      applyHeaderHeight(pendingHeight);
+    });
   }
 
   if (!isStaticSpacer) {
     if (typeof ResizeObserver !== 'undefined') {
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
-          applyHeaderHeight(readHeight(entry));
+          scheduleHeaderHeight(readHeight(entry));
         }
       });
 
       observer.observe(header);
     } else {
       function measureHeaderHeight() {
-        requestAnimationFrame(() => {
-          applyHeaderHeight(header.offsetHeight);
-        });
+        scheduleHeaderHeight(header.offsetHeight);
       }
 
       if (document.readyState === 'loading') {
