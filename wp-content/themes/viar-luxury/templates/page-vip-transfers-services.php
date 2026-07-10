@@ -126,7 +126,14 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || $cta_primary_label !=
 <header class="viar-hero-flush viar-hero-flush--soft relative w-full h-[921px] flex items-center overflow-hidden">
     <?php if ($hero_image !== '') : ?>
     <div class="absolute inset-0 z-0">
-        <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($hero_image); ?>">
+        <?php
+        viar_render_lcp_hero_image([
+            'field_key' => 'viar_vip_hero_image',
+            'fallback_url' => $theme_uri . '/assets/images/remote-bc1dabf815b0.jpg',
+            'post_id' => $page_id,
+            'class' => 'w-full h-full object-cover',
+        ]);
+        ?>
         <div class="absolute inset-0 bg-primary/20"></div>
     </div>
     <?php endif; ?>

@@ -377,6 +377,56 @@ function viar_render_hero_background(
 }
 
 /**
+ * Render a full-bleed LCP hero image with srcset and the viar-hero size.
+ *
+ * @param array{
+ *     field_key?: string,
+ *     fallback_url?: string,
+ *     post_id?: int,
+ *     alt?: string,
+ *     class?: string,
+ *     sizes?: string
+ * } $args
+ */
+function viar_render_lcp_hero_image(array $args): void {
+    $args = wp_parse_args($args, [
+        'field_key' => '',
+        'fallback_url' => '',
+        'post_id' => 0,
+        'alt' => '',
+        'class' => 'absolute inset-0 h-full w-full object-cover',
+        'sizes' => '100vw',
+    ]);
+
+    $post_id = (int) ($args['post_id'] ?: get_the_ID());
+    $field_key = (string) $args['field_key'];
+    $image_url = $field_key !== ''
+        ? viar_image_url($field_key, (string) $args['fallback_url'], $post_id)
+        : (string) $args['fallback_url'];
+    $attachment_id = $field_key !== '' ? viar_image_attachment_id($field_key, $post_id) : 0;
+
+    if ($image_url === '' && $attachment_id <= 0) {
+        return;
+    }
+
+    if ($attachment_id <= 0 && $image_url !== '') {
+        $attachment_id = (int) attachment_url_to_postid($image_url);
+    }
+
+    viar_render_responsive_image([
+        'attachment_id' => $attachment_id,
+        'url' => $image_url,
+        'size' => 'viar-hero',
+        'sizes' => (string) $args['sizes'],
+        'class' => trim((string) $args['class'] . ' viar-lcp-image'),
+        'alt' => (string) $args['alt'],
+        'loading' => 'eager',
+        'fetchpriority' => 'high',
+        'lcp' => true,
+    ]);
+}
+
+/**
  * Hero play button that opens the Vimeo popup.
  */
 function viar_render_hero_play_button(): void {

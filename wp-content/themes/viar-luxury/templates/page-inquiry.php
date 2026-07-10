@@ -26,7 +26,14 @@ $viar_card_image = viar_image_url('viar_card_image', get_template_directory_uri(
 <!-- Hero Section -->
 <section class="viar-hero-flush relative h-[921px] flex items-center justify-center overflow-hidden bg-primary-container">
 <div class="absolute inset-0 z-0">
-<img class="w-full h-full object-cover opacity-60" data-alt="A cinematic, wide-angle shot of a lone luxury yacht anchored in a secluded, turquoise Mediterranean cove during the golden hour. The sunlight reflects softly off the water, creating a serene and exclusive atmosphere. The overall aesthetic is one of quiet luxury and atmospheric minimalism, utilizing deep navies and warm champagne gold tones. The lighting is soft and directional, emphasizing the stillness and privacy of the location." src="<?php echo esc_url($viar_hero_image); ?>"/>
+<?php
+viar_render_lcp_hero_image([
+    'field_key' => 'viar_hero_image',
+    'fallback_url' => get_template_directory_uri() . '/assets/images/remote-e6e41969906c.jpg',
+    'class' => 'w-full h-full object-cover opacity-60',
+    'alt' => 'A cinematic, wide-angle shot of a lone luxury yacht anchored in a secluded, turquoise Mediterranean cove during the golden hour.',
+]);
+?>
 <div class="absolute inset-0 hero-gradient"></div>
 </div>
 <div class="relative z-10 max-w-[1440px] mx-auto px-12 text-center">

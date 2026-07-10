@@ -14,7 +14,6 @@ while (have_posts()) :
     $post_id = get_the_ID();
 
     $collection_label = viar_field_value('viar_tour_collection_label', 'Signature Collection', $post_id);
-    $hero_image = viar_image_url('viar_tour_hero_image', '', $post_id);
     $intro_title = viar_field_value('viar_tour_intro_title', '', $post_id);
     $intro_lead = viar_field_value('viar_tour_intro_lead', get_the_excerpt(), $post_id);
     $intro_body = viar_field_value('viar_tour_intro_body', '', $post_id);
@@ -62,13 +61,13 @@ while (have_posts()) :
     <main class="site-main w-full max-w-full min-w-0 overflow-x-clip bg-background text-on-background">
         <!-- Hero -->
         <section class="viar-hero-flush relative h-[min(85vh,751px)] md:h-[min(92vh,1024px)] w-full overflow-hidden">
-            <?php if ($hero_image !== '') : ?>
-                <img
-                    src="<?php echo esc_url($hero_image); ?>"
-                    alt="<?php echo esc_attr(get_the_title()); ?>"
-                    class="absolute inset-0 h-full w-full object-cover"
-                >
-            <?php endif; ?>
+            <?php
+            viar_render_lcp_hero_image([
+                'field_key' => 'viar_tour_hero_image',
+                'post_id' => $post_id,
+                'alt' => get_the_title(),
+            ]);
+            ?>
             <div class="absolute inset-0 bg-black/20 md:bg-black/20"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent md:from-black/30 md:via-transparent md:to-transparent"></div>
             <div class="absolute inset-0 flex flex-col justify-end px-8 pb-16 md:px-12 md:pb-24 max-w-[1440px] mx-auto w-full">

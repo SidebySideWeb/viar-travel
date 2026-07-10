@@ -106,7 +106,14 @@ $has_cta = $cta_title !== '' || $cta_description !== '' || ($cta_label !== '' &&
         <?php if ($hero_image !== '') : ?>
         <div class="col-span-12 <?php echo ($hero_eyebrow !== '' || $hero_title !== '' || $hero_description !== '') ? 'md:col-span-7' : 'md:col-span-12'; ?> min-w-0">
             <div class="relative h-[320px] md:h-[600px] w-full overflow-hidden shadow-sm">
-                <img class="w-full h-full object-cover" alt="" src="<?php echo esc_url($hero_image); ?>">
+                <?php
+                viar_render_lcp_hero_image([
+                    'field_key' => 'viar_about_hero_image',
+                    'post_id' => $page_id,
+                    'class' => 'w-full h-full object-cover',
+                    'sizes' => '(max-width: 768px) 100vw, 700px',
+                ]);
+                ?>
             </div>
         </div>
         <?php endif; ?>

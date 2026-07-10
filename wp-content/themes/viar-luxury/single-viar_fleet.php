@@ -25,7 +25,19 @@ while (have_posts()) :
                 <div class="lg:col-span-6">
                     <div class="overflow-hidden bg-[#F2F0ED]">
                         <?php if ($fleet_hero_image !== '') : ?>
-                            <img src="<?php echo esc_url($fleet_hero_image); ?>" class="w-full h-[280px] md:h-[520px] object-cover" alt="<?php echo esc_attr(get_the_title()); ?>">
+                        <?php
+                        viar_render_responsive_image([
+                            'attachment_id' => viar_image_attachment_id('viar_fleet_hero_image', get_the_ID()),
+                            'url' => $fleet_hero_image,
+                            'size' => 'viar-card',
+                            'sizes' => '(max-width: 1024px) 100vw, 600px',
+                            'class' => 'w-full h-[280px] md:h-[520px] object-cover',
+                            'alt' => get_the_title(),
+                            'loading' => 'eager',
+                            'fetchpriority' => 'high',
+                            'lcp' => true,
+                        ]);
+                        ?>
                         <?php endif; ?>
                     </div>
                 </div>
