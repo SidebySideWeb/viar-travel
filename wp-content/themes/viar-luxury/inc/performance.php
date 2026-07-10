@@ -188,6 +188,60 @@ function viar_dequeue_redundant_frontend_scripts(): void {
 add_action('wp_enqueue_scripts', 'viar_dequeue_redundant_frontend_scripts', 120);
 
 /**
+ * Defer the Click to Chat plugin script until the first visitor interaction.
+ */
+function viar_defer_click_to_chat_script(): void {
+    if (is_admin()) {
+        return;
+    }
+
+    wp_dequeue_script('ht_ctc_app_js');
+}
+add_action('wp_enqueue_scripts', 'viar_defer_click_to_chat_script', 200);
+
+/**
+ * Dynamically load Click to Chat after interaction to keep it out of the initial bundle.
+ */
+function viar_print_deferred_click_to_chat_loader(): void {
+    $src = viar_get_registered_script_src('ht_ctc_app_js');
+    if ($src === '') {
+        return;
+    }
+    ?>
+    <script>
+    (function (src) {
+        if (window.viarClickToChatLoader) {
+            return;
+        }
+        window.viarClickToChatLoader = true;
+
+        var loaded = false;
+        function loadClickToChat() {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.body.appendChild(script);
+        }
+
+        document.querySelectorAll('.ht-ctc').forEach(function (el) {
+            el.addEventListener('mouseenter', loadClickToChat, { once: true, passive: true });
+            el.addEventListener('pointerdown', loadClickToChat, { once: true, passive: true });
+        });
+        ['pointerdown', 'keydown'].forEach(function (type) {
+            window.addEventListener(type, loadClickToChat, { once: true, passive: true });
+        });
+    })(<?php echo wp_json_encode($src); ?>);
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_print_deferred_click_to_chat_loader', 99);
+
+/**
  * Drop jquery-migrate on the public site when plugins do not require it.
  */
 function viar_dequeue_jquery_migrate(WP_Scripts $scripts): void {

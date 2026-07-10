@@ -512,19 +512,66 @@ function viar_get_fluent_recaptcha_script_url(): string {
 }
 
 /**
- * Stop Fluent Forms from loading reCAPTCHA during initial navigation on below-fold forms.
+ * Stop Fluent Forms from loading reCAPTCHA during initial navigation.
  */
-function viar_defer_below_fold_recaptcha_script(): void {
-    if (!viar_page_uses_fluent_forms() || !viar_fluent_form_is_below_fold()) {
+function viar_defer_fluent_recaptcha_script(): void {
+    if (!viar_page_uses_fluent_forms()) {
         return;
     }
 
     wp_dequeue_script('google-recaptcha');
     wp_deregister_script('google-recaptcha');
 }
-add_action('wp_enqueue_scripts', 'viar_defer_below_fold_recaptcha_script', 9999);
-add_action('wp_print_scripts', 'viar_defer_below_fold_recaptcha_script', 9999);
-add_action('wp_print_footer_scripts', 'viar_defer_below_fold_recaptcha_script', 0);
+add_action('wp_enqueue_scripts', 'viar_defer_fluent_recaptcha_script', 9999);
+add_action('wp_print_scripts', 'viar_defer_fluent_recaptcha_script', 9999);
+add_action('wp_print_footer_scripts', 'viar_defer_fluent_recaptcha_script', 0);
+
+/**
+ * Load reCAPTCHA only after a visitor interacts with the form.
+ */
+function viar_print_interaction_recaptcha_loader(): void {
+    if (!viar_page_uses_fluent_forms()) {
+        return;
+    }
+
+    $recaptcha_url = viar_get_fluent_recaptcha_script_url();
+    if ($recaptcha_url === '') {
+        return;
+    }
+    ?>
+    <script>
+    (function (recaptchaUrl) {
+        var target = document.querySelector('.viar-tour-booking-form, .viar-fluent-form');
+        if (!target || window.viarInteractionRecaptchaLoader) {
+            return;
+        }
+        window.viarInteractionRecaptchaLoader = true;
+
+        var loaded = false;
+        function loadRecaptcha() {
+            if (loaded) {
+                return;
+            }
+            loaded = true;
+
+            var script = document.createElement('script');
+            script.src = recaptchaUrl;
+            script.async = true;
+            script.onload = function () {
+                if (window.jQuery) {
+                    window.jQuery(document).trigger('reInitExtras');
+                }
+            };
+            document.head.appendChild(script);
+        }
+
+        target.addEventListener('focusin', loadRecaptcha, { once: true, capture: true });
+        target.addEventListener('pointerdown', loadRecaptcha, { once: true });
+    })(<?php echo wp_json_encode($recaptcha_url); ?>);
+    </script>
+    <?php
+}
+add_action('wp_footer', 'viar_print_interaction_recaptcha_loader', 4);
 
 /**
  * Load Fluent Form and reCAPTCHA assets when the booking form approaches the viewport.
@@ -544,7 +591,6 @@ function viar_print_below_fold_form_asset_loader(): void {
         'flatpickr' => viar_get_registered_script_src('flatpickr'),
         'submission' => viar_get_registered_script_src('fluent-form-submission'),
         'advanced' => viar_get_registered_script_src('fluentform-advanced'),
-        'recaptcha' => viar_get_fluent_recaptcha_script_url(),
         'bootstrap' => viar_get_fluent_form_bootstrap_js(),
     ];
     ?>
@@ -618,12 +664,6 @@ function viar_print_below_fold_form_asset_loader(): void {
                 })
                 .then(function () {
                     return loadScript(config.advanced);
-                })
-                .then(function () {
-                    if (!config.recaptcha) {
-                        return;
-                    }
-                    return loadScript(config.recaptcha);
                 })
                 .then(function () {
                     loaded = true;

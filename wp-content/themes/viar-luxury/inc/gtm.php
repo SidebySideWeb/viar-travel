@@ -50,7 +50,7 @@ function viar_gtm_head_snippet(): void {
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm'+'.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer',<?php echo wp_json_encode($container_id); ?>);}['pointerdown','keydown','scroll','touchstart'].forEach(function(type){window.addEventListener(type,loadGtm,{once:true,passive:true});});if('requestIdleCallback' in window){requestIdleCallback(loadGtm,{timeout:3000});}else{setTimeout(loadGtm,3000);}})();</script>
+})(window,document,'script','dataLayer',<?php echo wp_json_encode($container_id); ?>);}['pointerdown','keydown','scroll','touchstart'].forEach(function(type){window.addEventListener(type,loadGtm,{once:true,passive:true});});})();</script>
 <!-- End Google Tag Manager -->
     <?php
 }
