@@ -248,6 +248,21 @@ function viar_below_fold_fluent_form_defer_enabled(): bool {
  *
  * @return string[]
  */
+function viar_get_below_fold_fluent_form_style_handles(): array {
+    return [
+        'flatpickr',
+        'fluent-form-styles',
+        'fluentform-public-default',
+        'viar-luxury-forms',
+        'viar-luxury-fluent-forms',
+    ];
+}
+
+/**
+ * Script handles deferred until the below-fold booking form is near the viewport.
+ *
+ * @return string[]
+ */
 function viar_get_below_fold_fluent_form_script_handles(): array {
     return [
         'jquery',
@@ -257,6 +272,18 @@ function viar_get_below_fold_fluent_form_script_handles(): array {
         'fluent-form-submission',
         'fluentform-advanced',
     ];
+}
+
+/**
+ * Resolve a registered stylesheet URL for dynamic loading.
+ */
+function viar_get_registered_style_href(string $handle): string {
+    $styles = wp_styles();
+    if (!isset($styles->registered[$handle])) {
+        return '';
+    }
+
+    return (string) $styles->registered[$handle]->src;
 }
 
 /**
@@ -306,6 +333,10 @@ function viar_defer_below_fold_fluent_form_assets(): void {
     foreach (viar_get_below_fold_fluent_form_script_handles() as $handle) {
         wp_dequeue_script($handle);
     }
+
+    foreach (viar_get_below_fold_fluent_form_style_handles() as $handle) {
+        wp_dequeue_style($handle);
+    }
 }
 add_action('wp_enqueue_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
 add_action('wp_print_scripts', 'viar_defer_below_fold_fluent_form_assets', 9998);
@@ -327,7 +358,6 @@ function viar_sync_fluent_form_scripts(): void {
         }
 
         unset($scripts->registered[$handle]->extra['strategy']);
-        $scripts->registered[$handle]->args = false;
     }
 }
 add_action('wp_enqueue_scripts', 'viar_sync_fluent_form_scripts', 999);
@@ -587,6 +617,10 @@ function viar_print_below_fold_form_asset_loader(): void {
     }
 
     $payload = [
+        'styles' => array_values(array_filter(array_map(
+            static fn(string $handle): string => viar_get_registered_style_href($handle),
+            viar_get_below_fold_fluent_form_style_handles()
+        ))),
         'jquery' => viar_get_registered_script_src('jquery') ?: viar_get_registered_script_src('jquery-core'),
         'flatpickr' => viar_get_registered_script_src('flatpickr'),
         'submission' => viar_get_registered_script_src('fluent-form-submission'),
@@ -648,13 +682,40 @@ function viar_print_below_fold_form_asset_loader(): void {
             window.jQuery(document).trigger('reInitExtras');
         }
 
+        function loadStylesheet(href) {
+            return new Promise(function (resolve) {
+                if (!href) {
+                    resolve();
+                    return;
+                }
+
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                link.onload = link.onerror = function () { resolve(); };
+                document.head.appendChild(link);
+            });
+        }
+
+        function loadStyles() {
+            var hrefs = config.styles || [];
+            return hrefs.reduce(function (chain, href) {
+                return chain.then(function () {
+                    return loadStylesheet(href);
+                });
+            }, Promise.resolve());
+        }
+
         function loadAssets() {
             if (loading || loaded) {
                 return;
             }
             loading = true;
 
-            loadScript(config.jquery)
+            loadStyles()
+                .then(function () {
+                    return loadScript(config.jquery);
+                })
                 .then(function () {
                     runInline(config.bootstrap);
                     return loadScript(config.flatpickr);
@@ -728,12 +789,36 @@ function viar_add_fluent_form_async_style_handles(array $handles): array {
         return $handles;
     }
 
-    $handles[] = 'flatpickr-css';
+    $handles[] = 'flatpickr';
     $handles[] = 'fluent-form-styles';
     $handles[] = 'fluentform-public-default';
-    $handles[] = 'viar-luxury-material-symbols';
 
     return $handles;
 }
 add_filter('viar_async_style_handles', 'viar_add_fluent_form_async_style_handles');
 
+/**
+ * Keep Breeze from combining non-critical stylesheets into one blocking bundle.
+ *
+ * @param string $exclude
+ */
+function viar_breeze_exclude_async_styles(string $exclude): string {
+    $fragments = [
+        'fluentform-public-default',
+        'fluent-forms-public',
+        'flatpickr.min.css',
+        'fonts-text.css',
+        'fonts-icons.css',
+        'icons.css',
+        'forms.css',
+        'fluent-forms.css',
+        'messenger-buttons.css',
+        'click-to-chat',
+    ];
+
+    $existing = array_filter(array_map('trim', explode(',', $exclude)));
+    $merged = array_values(array_unique(array_merge($existing, $fragments)));
+
+    return implode(',', $merged);
+}
+add_filter('breeze_filter_css_exclude', 'viar_breeze_exclude_async_styles');

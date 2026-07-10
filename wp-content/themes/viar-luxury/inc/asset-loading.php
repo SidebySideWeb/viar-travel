@@ -143,6 +143,7 @@ function viar_get_async_style_handles(): array {
     $handles = [
         'viar-luxury-text-fonts',
         'viar-luxury-icons',
+        'viar-luxury-material-symbols',
     ];
 
     if (viar_page_needs_messenger_styles()) {
