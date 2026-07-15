@@ -9,10 +9,30 @@
 
 get_header();
 
+$page_id = get_queried_object_id() ?: get_the_ID();
+
 $contact_phone = get_theme_mod('viar_footer_phone', '+30 000 000 0000');
 $contact_email = get_theme_mod('viar_footer_email', 'concierge@viartravel.com');
 $contact_address = get_theme_mod('viar_footer_address', 'Athens, Greece');
 $contact_phone_href = viar_phone_href($contact_phone);
+
+$other_ways_title = viar_field_value('viar_contact_other_title', 'Other Ways To Reach Us', $page_id);
+$other_ways_intro = viar_field_value('viar_contact_other_intro', 'Prefer to contact us directly? We\'re here to help.', $page_id);
+$phone_card_title = viar_field_value('viar_contact_phone_title', 'Phone', $page_id);
+$phone_card_description = viar_field_value('viar_contact_phone_description', "Call us Monday - Friday\n9:00 AM - 6:00 PM (EET)", $page_id);
+$email_card_title = viar_field_value('viar_contact_email_title', 'Email', $page_id);
+$email_card_description = viar_field_value('viar_contact_email_description', "Send us an email anytime\nWe'll respond within 24 hours", $page_id);
+$office_card_title = viar_field_value('viar_contact_office_title', 'Office', $page_id);
+$office_card_description = viar_field_value('viar_contact_office_description', "Visit us at our Athens office\nBy appointment only", $page_id);
+
+$hours_title = viar_field_value('viar_contact_hours_title', 'Business Hours', $page_id);
+$hours_monfri_label = viar_field_value('viar_contact_hours_monfri_label', 'Monday - Friday', $page_id);
+$hours_monfri_time = viar_field_value('viar_contact_hours_monfri_time', '9:00 AM - 6:00 PM', $page_id);
+$hours_sat_label = viar_field_value('viar_contact_hours_sat_label', 'Saturday', $page_id);
+$hours_sat_time = viar_field_value('viar_contact_hours_sat_time', '10:00 AM - 4:00 PM', $page_id);
+$hours_sun_label = viar_field_value('viar_contact_hours_sun_label', 'Sunday', $page_id);
+$hours_sun_time = viar_field_value('viar_contact_hours_sun_time', 'Closed', $page_id);
+$hours_note = viar_field_value('viar_contact_hours_note', '24/7 emergency support available for our traveling clients', $page_id);
 
 if (viar_has_editor_sections()) {
     viar_render_editor_sections_page();
@@ -73,10 +93,10 @@ if (viar_has_editor_sections()) {
 
             <div class="text-center mb-16">
                 <h2 class="font-['Noto_Serif'] text-4xl text-[#00234B] mb-4">
-                    Other Ways To Reach Us
+                    <?php echo esc_html($other_ways_title); ?>
                 </h2>
                 <p class="font-['Manrope'] text-lg text-[#43474e]">
-                    Prefer to contact us directly? We're here to help.
+                    <?php echo esc_html($other_ways_intro); ?>
                 </p>
             </div>
 
@@ -88,11 +108,10 @@ if (viar_has_editor_sections()) {
                         <?php viar_render_icon('phone', ['size' => 'xl', 'color' => 'gold', 'label' => __('Phone', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
-                        Phone
+                        <?php echo esc_html($phone_card_title); ?>
                     </h3>
                     <p class="font-['Manrope'] text-[#43474e] mb-4">
-                        Call us Monday - Friday<br>
-                        9:00 AM - 6:00 PM (EET)
+                        <?php echo nl2br(esc_html($phone_card_description)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </p>
                     <?php if ($contact_phone !== '') : ?>
                         <?php if ($contact_phone_href !== '') : ?>
@@ -114,11 +133,10 @@ if (viar_has_editor_sections()) {
                         <?php viar_render_icon('email', ['size' => 'xl', 'color' => 'gold', 'label' => __('Email', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
-                        Email
+                        <?php echo esc_html($email_card_title); ?>
                     </h3>
                     <p class="font-['Manrope'] text-[#43474e] mb-4">
-                        Send us an email anytime<br>
-                        We'll respond within 24 hours
+                        <?php echo nl2br(esc_html($email_card_description)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </p>
                     <?php if ($contact_email !== '') : ?>
                         <a href="mailto:<?php echo esc_attr($contact_email); ?>"
@@ -134,11 +152,10 @@ if (viar_has_editor_sections()) {
                         <?php viar_render_icon('address', ['size' => 'xl', 'color' => 'gold', 'label' => __('Office', 'viar-luxury')]); ?>
                     </div>
                     <h3 class="font-['Noto_Serif'] text-2xl text-[#00234B] mb-3">
-                        Office
+                        <?php echo esc_html($office_card_title); ?>
                     </h3>
                     <p class="font-['Manrope'] text-[#43474e] mb-4">
-                        Visit us at our Athens office<br>
-                        By appointment only
+                        <?php echo nl2br(esc_html($office_card_description)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </p>
                     <?php if ($contact_address !== '') : ?>
                         <p class="font-['Manrope'] text-lg font-semibold text-[#C5A059]">
@@ -156,30 +173,32 @@ if (viar_has_editor_sections()) {
         <div class="max-w-[800px] mx-auto px-6 md:px-12 text-center">
 
             <h2 class="font-['Noto_Serif'] text-4xl text-[#00234B] mb-12">
-                Business Hours
+                <?php echo esc_html($hours_title); ?>
             </h2>
 
             <div class="bg-[#F9F9F9] p-8 md:p-12 border border-[#e2e2e2]">
                 <div class="space-y-4 font-['Manrope']">
                     <div class="flex justify-between items-center pb-4 border-b border-[#e2e2e2]">
-                        <span class="text-[#00234B] font-semibold">Monday - Friday</span>
-                        <span class="text-[#43474e]">9:00 AM - 6:00 PM</span>
+                        <span class="text-[#00234B] font-semibold"><?php echo esc_html($hours_monfri_label); ?></span>
+                        <span class="text-[#43474e]"><?php echo esc_html($hours_monfri_time); ?></span>
                     </div>
                     <div class="flex justify-between items-center pb-4 border-b border-[#e2e2e2]">
-                        <span class="text-[#00234B] font-semibold">Saturday</span>
-                        <span class="text-[#43474e]">10:00 AM - 4:00 PM</span>
+                        <span class="text-[#00234B] font-semibold"><?php echo esc_html($hours_sat_label); ?></span>
+                        <span class="text-[#43474e]"><?php echo esc_html($hours_sat_time); ?></span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-[#00234B] font-semibold">Sunday</span>
-                        <span class="text-[#43474e]">Closed</span>
+                        <span class="text-[#00234B] font-semibold"><?php echo esc_html($hours_sun_label); ?></span>
+                        <span class="text-[#43474e]"><?php echo esc_html($hours_sun_time); ?></span>
                     </div>
                 </div>
 
-                <div class="mt-8 pt-8 border-t border-[#e2e2e2]">
-                    <p class="text-sm text-[#43474e] italic">
-                        24/7 emergency support available for our traveling clients
-                    </p>
-                </div>
+                <?php if ($hours_note !== '') : ?>
+                    <div class="mt-8 pt-8 border-t border-[#e2e2e2]">
+                        <p class="text-sm text-[#43474e] italic">
+                            <?php echo esc_html($hours_note); ?>
+                        </p>
+                    </div>
+                <?php endif; ?>
             </div>
 
         </div>
